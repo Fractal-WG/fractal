@@ -8,6 +8,9 @@ import (
 )
 
 func getOnChainTransactionsCount(s *TokenisationStore) (int, error) {
+	if s.backend == "postgres" {
+		return approximateTableCountPostgres(s.DB, "onchain_transactions")
+	}
 	rows, err := s.DB.Query("SELECT COUNT(*) FROM onchain_transactions")
 	if err != nil {
 		return 0, err
