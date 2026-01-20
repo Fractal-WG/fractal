@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+import "types.proto";
+
+service OfferService {
+  rpc ListSellOffers(ListSellOffersRequest) returns (ListSellOffersResponse) {}
+  rpc CreateSellOffer(CreateSellOfferRequest) returns (CreateSellOfferResponse) {}
+  rpc DeleteSellOffer(DeleteSellOfferRequest) returns (DeleteSellOfferResponse) {}
+
+  rpc ListBuyOffers(ListBuyOffersRequest) returns (ListBuyOffersResponse) {}
+  rpc CreateBuyOffer(CreateBuyOfferRequest) returns (CreateBuyOfferResponse) {}
+  rpc DeleteBuyOffer(DeleteBuyOfferRequest) returns (DeleteBuyOfferResponse) {}
+}
+
+message ListSellOffersRequest {
+  int32 limit = 1;
+  int32 page = 2;
+  string mint_hash = 3;
+  string offerer_address = 4;
+}
+
+message ListSellOffersResponse {
+  repeated SellOfferWithMint offers = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message CreateSellOfferRequest {
+  CreateSellOfferPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateSellOfferPayload {
+  string offerer_address = 1;
+  string mint_hash = 2;
+  int32 quantity = 3;
+  int32 price = 4;
+}
+
+message DeleteSellOfferRequest {
+  DeleteOfferPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateSellOfferResponse {
+  string id = 1;
+  string hash = 2;
+}
+
+message DeleteSellOfferResponse {
+  string message = 1;
+}
+
+message ListBuyOffersRequest {
+  int32 limit = 1;
+  int32 page = 2;
+  string mint_hash = 3;
+  string seller_address = 4;
+}
+
+message ListBuyOffersResponse {
+  repeated BuyOfferWithMint offers = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message CreateBuyOfferRequest {
+  CreateBuyOfferPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateBuyOfferPayload {
+  string offerer_address = 1;
+  string seller_address = 2;
+  string mint_hash = 3;
+  int32 quantity = 4;
+  int32 price = 5;
+}
+
+message DeleteBuyOfferRequest {
+  DeleteOfferPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateBuyOfferResponse {
+  string id = 1;
+  string hash = 2;
+}
+
+message DeleteBuyOfferResponse {
+  string message = 1;
+}
+
+message DeleteOfferPayload {
+  string offer_hash = 1;
+}
+
+message SellOfferWithMint {
+  SellOffer offer = 1;
+  Mint mint = 2;
+}
+
+message BuyOfferWithMint {
+  BuyOffer offer = 1;
+  Mint mint = 2;
+}

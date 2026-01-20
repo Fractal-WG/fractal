@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+enum SignatureRequirementType {
+  SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED = 0;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES = 1;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE = 2;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES = 3;
+  SIGNATURE_REQUIREMENT_TYPE_NONE = 4;
+}
+
+message AssetManager {
+  string name = 1;
+  string public_key = 2;
+  string url = 3;
+}
+
+message Mint {
+  string id = 1;
+  string hash = 2;
+  string title = 3;
+  int32 fraction_count = 4;
+  string description = 5;
+  repeated string tags = 6;
+  google.protobuf.Struct metadata = 7;
+  string transaction_hash = 8;
+  int64 block_height = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Struct requirements = 11;
+  google.protobuf.Struct lockup_options = 12;
+  string feed_url = 13;
+  string public_key = 14;
+  string owner_address = 15;
+  string signature = 16;
+  string contract_of_sale = 17;
+  SignatureRequirementType signature_requirement_type = 18;
+  repeated AssetManager asset_managers = 19;
+  int32 min_signatures = 20;
+}
+
+message BuyOffer {
+  string id = 1;
+  string hash = 2;
+  string mint_hash = 3;
+  string offerer_address = 4;
+  string seller_address = 5;
+  int32 quantity = 6;
+  int32 price = 7;
+  google.protobuf.Timestamp created_at = 8;
+  string public_key = 9;
+}
+
+message SellOffer {
+  string id = 1;
+  string hash = 2;
+  string mint_hash = 3;
+  string offerer_address = 4;
+  int32 quantity = 5;
+  int32 price = 6;
+  google.protobuf.Timestamp created_at = 7;
+  string public_key = 8;
+  string signature = 9;
+}
+
+message Invoice {
+  string id = 1;
+  string hash = 2;
+  string payment_address = 3;
+  string buyer_address = 4;
+  string mint_hash = 5;
+  int32 quantity = 6;
+  int32 price = 7;
+  google.protobuf.Timestamp created_at = 8;
+  string seller_address = 9;
+  int64 block_height = 10;
+  string transaction_hash = 11;
+  string pending_token_balance_id = 12;
+  string public_key = 13;
+  string signature = 14;
+  google.protobuf.Timestamp paid_at = 15;
+}
+
+message TokenBalance {
+  string mint_hash = 1;
+  string address = 2;
+  int32 quantity = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message TokenBalanceWithMint {
+  Mint mint = 1;
+  TokenBalance balance = 2;
+}
+
+message PendingTokenBalance {
+  string invoice_hash = 1;
+  string mint_hash = 2;
+  int32 quantity = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  string owner_address = 6;
+}

@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+import "google/protobuf/struct.proto";
+import "types.proto";
+
+service MintService {
+  rpc GetMint(GetMintRequest) returns (GetMintResponse) {}
+  rpc ListMints(ListMintsRequest) returns (ListMintsResponse) {}
+  rpc CreateMint(CreateMintRequest) returns (CreateMintResponse) {}
+}
+
+message GetMintRequest {
+  string hash = 1;
+}
+
+message GetMintResponse {
+  Mint mint = 1;
+}
+
+message ListMintsRequest {
+  int32 limit = 1;
+  int32 page = 2;
+  string public_key = 3;
+  string address = 4;
+  bool include_unconfirmed = 5;
+}
+
+message ListMintsResponse {
+  repeated Mint mints = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message CreateMintRequest {
+  CreateMintPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateMintPayload {
+  string title = 1;
+  int32 fraction_count = 2;
+  string description = 3;
+  repeated string tags = 4;
+  google.protobuf.Struct metadata = 5;
+  google.protobuf.Struct requirements = 6;
+  google.protobuf.Struct lockup_options = 7;
+  string feed_url = 8;
+  string contract_of_sale = 9;
+  string owner_address = 10;
+  SignatureRequirementType signature_requirement_type = 11;
+  repeated AssetManager asset_managers = 12;
+  int32 min_signatures = 13;
+}
+
+message CreateMintResponse {
+  string hash = 1;
+  string encoded_transaction_body = 2;
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+service StatsService {
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse) {}
+}
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  map<string, int64> stats = 1;
+}

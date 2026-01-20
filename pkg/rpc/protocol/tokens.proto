@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+import "types.proto";
+
+service TokenService {
+  rpc GetTokenBalances(GetTokenBalancesRequest) returns (GetTokenBalancesResponse) {}
+  rpc GetTokenBalancesWithMints(GetTokenBalancesWithMintsRequest) returns (GetTokenBalancesWithMintsResponse) {}
+  rpc GetPendingTokenBalances(GetPendingTokenBalancesRequest) returns (GetPendingTokenBalancesResponse) {}
+}
+
+message GetTokenBalancesRequest {
+  string address = 1;
+  string mint_hash = 2;
+}
+
+message GetTokenBalancesResponse {
+  repeated TokenBalance balances = 1;
+}
+
+message GetTokenBalancesWithMintsRequest {
+  string address = 1;
+  int32 limit = 2;
+  int32 page = 3;
+}
+
+message GetTokenBalancesWithMintsResponse {
+  repeated TokenBalanceWithMint mints = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message GetPendingTokenBalancesRequest {
+  string address = 1;
+  string mint_hash = 2;
+}
+
+message GetPendingTokenBalancesResponse {
+  repeated PendingTokenBalance balances = 1;
+}

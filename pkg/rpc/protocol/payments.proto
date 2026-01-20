@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+service PaymentService {
+  rpc CreateNewPayment(CreateNewPaymentRequest) returns (CreateNewPaymentResponse) {}
+}
+
+message CreateNewPaymentRequest {
+  string invoice_hash = 1;
+}
+
+message CreateNewPaymentResponse {
+  string encoded_transaction_body = 1;
+}

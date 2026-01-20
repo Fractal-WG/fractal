@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+
+import "types.proto";
+
+service InvoiceService {
+  rpc ListInvoices(ListInvoicesRequest) returns (ListInvoicesResponse) {}
+  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse) {}
+  rpc CreateInvoiceSignature(CreateInvoiceSignatureRequest) returns (CreateInvoiceSignatureResponse) {}
+}
+
+message ListInvoicesRequest {
+  string address = 1;
+  int32 limit = 2;
+  int32 page = 3;
+  string mint_hash = 4;
+}
+
+message ListInvoicesResponse {
+  repeated Invoice invoices = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message CreateInvoiceRequest {
+  CreateInvoicePayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateInvoicePayload {
+  string payment_address = 1;
+  string buyer_address = 2;
+  string mint_hash = 3;
+  int32 quantity = 4;
+  int32 price = 5;
+  string seller_address = 6;
+}
+
+message CreateInvoiceResponse {
+  string hash = 1;
+  string encoded_transaction_body = 2;
+}
+
+message CreateInvoiceSignatureRequest {
+  CreateInvoiceSignaturePayload payload = 1;
+}
+
+message CreateInvoiceSignaturePayload {
+  string invoice_hash = 1;
+  string signature = 2;
+  string public_key = 3;
+}
+
+message CreateInvoiceSignatureResponse {
+  string id = 1;
+}
