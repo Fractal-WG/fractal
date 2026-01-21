@@ -2,31 +2,26 @@ syntax = "proto3";
 
 package fractalengine.rpc.v1;
 
-option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+option go_package = "pkg/rpc/protocol";
 
-
-service DogeService {
-  rpc SendRawTransaction(SendRawTransactionRequest) returns (SendRawTransactionResponse) {}
-  rpc ConfirmTransactions(ConfirmTransactionsRequest) returns (ConfirmTransactionsResponse) {}
-  rpc TopUpAddress(TopUpAddressRequest) returns (TopUpAddressResponse) {}
+message DogeTopUpRequest {
+  string address = 1;
 }
 
-message SendRawTransactionRequest {
+message DogeTopUpResponse {
+  string value = 1;
+}
+
+message DogeConfirmRequest {}
+
+message DogeConfirmResponse {
+  map<string, string> values = 1;
+}
+
+message DogeSendRequest {
   string encoded_transaction_hex = 1;
 }
 
-message SendRawTransactionResponse {
+message DogeSendResponse {
   string transaction_id = 1;
-}
-
-message ConfirmTransactionsRequest {}
-
-message ConfirmTransactionsResponse {}
-
-message TopUpAddressRequest {
-  string address = 1;
-}
-
-message TopUpAddressResponse {
-  string address = 1;
 }

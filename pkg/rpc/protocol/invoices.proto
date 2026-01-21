@@ -1,38 +1,61 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+
 package fractalengine.rpc.v1;
 
-option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+option go_package = "pkg/rpc/protocol";
 
-import "types.proto";
-
-service InvoiceService {
-  rpc ListInvoices(ListInvoicesRequest) returns (ListInvoicesResponse) {}
-  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse) {}
-  rpc CreateInvoiceSignature(CreateInvoiceSignatureRequest) returns (CreateInvoiceSignatureResponse) {}
+message GetInvoicesRequest {
+  string address = 1;
+  google.protobuf.Int32Value limit = 2;
+  google.protobuf.Int32Value page = 3;
+  google.protobuf.StringValue mint_hash = 4;
 }
 
-message ListInvoicesRequest {
-  string address = 1;
+message GetAllInvoicesRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
+  google.protobuf.StringValue mint_hash = 3;
+}
+
+message GetInvoicesResponse {
+  repeated Invoice invoices = 1;
   int32 limit = 2;
   int32 page = 3;
-  string mint_hash = 4;
+  int32 total = 4;
 }
 
-message ListInvoicesResponse {
+message GetAllInvoicesResponse {
   repeated Invoice invoices = 1;
-  int32 total = 2;
+  int32 limit = 2;
   int32 page = 3;
-  int32 limit = 4;
+  int32 total = 4;
 }
 
-message CreateInvoiceRequest {
-  CreateInvoicePayload payload = 1;
+message CreateInvoiceSignatureRequest {
+  CreateInvoiceSignatureRequestPayload payload = 1;
+}
+
+message CreateInvoiceSignatureRequestPayload {
+  string invoice_hash = 1;
   string public_key = 2;
   string signature = 3;
 }
 
-message CreateInvoicePayload {
+message CreateInvoiceSignatureResponse {
+  string id = 1;
+}
+
+message CreateInvoiceRequest {
+  CreateInvoiceRequestPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateInvoiceRequestPayload {
   string payment_address = 1;
   string buyer_address = 2;
   string mint_hash = 3;
@@ -44,18 +67,4 @@ message CreateInvoicePayload {
 message CreateInvoiceResponse {
   string hash = 1;
   string encoded_transaction_body = 2;
-}
-
-message CreateInvoiceSignatureRequest {
-  CreateInvoiceSignaturePayload payload = 1;
-}
-
-message CreateInvoiceSignaturePayload {
-  string invoice_hash = 1;
-  string signature = 2;
-  string public_key = 3;
-}
-
-message CreateInvoiceSignatureResponse {
-  string id = 1;
 }

@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message StringResponse {
+  string value = 1;
+}
+
+message StringMapResponse {
+  map<string, string> values = 1;
+}
+
+message SqlNullTime {
+  string time = 1;
+  bool valid = 2;
+}
+
+message AssetManager {
+  string name = 1;
+  string public_key = 2;
+  string url = 3;
+}
+
+enum SignatureRequirementType {
+  SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED = 0;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES = 1;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE = 2;
+  SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES = 3;
+  SIGNATURE_REQUIREMENT_TYPE_NONE = 4;
+}
+
+message StringInterfaceMap {
+  google.protobuf.Struct value = 1;
+}
+
+message Mint {
+  repeated AssetManager asset_managers = 1;
+  int32 block_height = 2;
+  string contract_of_sale = 3;
+  string created_at = 4;
+  string description = 5;
+  string feed_url = 6;
+  int32 fraction_count = 7;
+  string hash = 8;
+  string id = 9;
+  StringInterfaceMap lockup_options = 10;
+  StringInterfaceMap metadata = 11;
+  int32 min_signatures = 12;
+  string owner_address = 13;
+  string public_key = 14;
+  StringInterfaceMap requirements = 15;
+  string signature = 16;
+  SignatureRequirementType signature_requirement_type = 17;
+  repeated string tags = 18;
+  string title = 19;
+  string transaction_hash = 20;
+}
+
+message Invoice {
+  int32 block_height = 1;
+  string buyer_address = 2;
+  string created_at = 3;
+  string hash = 4;
+  string id = 5;
+  string mint_hash = 6;
+  SqlNullTime paid_at = 7;
+  string payment_address = 8;
+  string pending_token_balance_id = 9;
+  int32 price = 10;
+  string public_key = 11;
+  int32 quantity = 12;
+  string seller_address = 13;
+  string signature = 14;
+  string transaction_hash = 15;
+}
+
+message TokenBalance {
+  string address = 1;
+  string created_at = 2;
+  string mint_hash = 3;
+  int32 quantity = 4;
+  string updated_at = 5;
+}
+
+message BuyOffer {
+  string hash = 1;
+  string mint_hash = 2;
+  string offerer_address = 3;
+  string seller_address = 4;
+  int32 quantity = 5;
+  int32 price = 6;
+  string created_at = 7;
+  string public_key = 8;
+  string signature = 9;
+  string id = 10;
+}
+
+message SellOffer {
+  string hash = 1;
+  string mint_hash = 2;
+  string offerer_address = 3;
+  int32 quantity = 4;
+  int32 price = 5;
+  string created_at = 6;
+  string public_key = 7;
+  string signature = 8;
+  string id = 9;
+}
+
+message BuyOfferWithMint {
+  BuyOffer offer = 1;
+  Mint mint = 2;
+}
+
+message SellOfferWithMint {
+  SellOffer offer = 1;
+  Mint mint = 2;
+}

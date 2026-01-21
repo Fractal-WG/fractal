@@ -2,21 +2,15 @@ syntax = "proto3";
 
 package fractalengine.rpc.v1;
 
-option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+option go_package = "pkg/rpc/protocol";
 
-import "google/protobuf/timestamp.proto";
-
-service HealthService {
-  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {}
+message GetHealthResponse {
+  string chain = 1;
+  int32 current_block_height = 2;
+  int32 latest_block_height = 3;
+  string updated_at = 4;
+  string version = 5;
+  bool wallets_enabled = 6;
 }
 
 message GetHealthRequest {}
-
-message GetHealthResponse {
-  int64 current_block_height = 1;
-  int64 latest_block_height = 2;
-  string chain = 3;
-  bool wallets_enabled = 4;
-  google.protobuf.Timestamp updated_at = 5;
-  string version = 6;
-}

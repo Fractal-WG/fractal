@@ -1,44 +1,31 @@
 syntax = "proto3";
 
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+
 package fractalengine.rpc.v1;
 
-option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+option go_package = "pkg/rpc/protocol";
 
-import "types.proto";
+message GetPendingTokenBalancesRequest {
+  string address = 1;
+  google.protobuf.StringValue mint_hash = 2;
+}
 
-service TokenService {
-  rpc GetTokenBalances(GetTokenBalancesRequest) returns (GetTokenBalancesResponse) {}
-  rpc GetTokenBalancesWithMints(GetTokenBalancesWithMintsRequest) returns (GetTokenBalancesWithMintsResponse) {}
-  rpc GetPendingTokenBalances(GetPendingTokenBalancesRequest) returns (GetPendingTokenBalancesResponse) {}
+message GetPendingTokenBalancesResponse {
+  repeated TokenBalance balances = 1;
 }
 
 message GetTokenBalancesRequest {
   string address = 1;
-  string mint_hash = 2;
+  google.protobuf.StringValue mint_hash = 2;
+  google.protobuf.BoolValue include_mint_details = 3;
+  google.protobuf.Int32Value limit = 4;
+  google.protobuf.Int32Value page = 5;
 }
 
 message GetTokenBalancesResponse {
-  repeated TokenBalance balances = 1;
-}
-
-message GetTokenBalancesWithMintsRequest {
-  string address = 1;
-  int32 limit = 2;
-  int32 page = 3;
-}
-
-message GetTokenBalancesWithMintsResponse {
-  repeated TokenBalanceWithMint mints = 1;
-  int32 total = 2;
-  int32 page = 3;
-  int32 limit = 4;
-}
-
-message GetPendingTokenBalancesRequest {
-  string address = 1;
-  string mint_hash = 2;
-}
-
-message GetPendingTokenBalancesResponse {
-  repeated PendingTokenBalance balances = 1;
+  google.protobuf.Struct data = 1;
 }

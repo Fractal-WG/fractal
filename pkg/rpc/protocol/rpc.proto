@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+import "doge.proto";
+import "health.proto";
+import "invoices.proto";
+import "mints.proto";
+import "offers.proto";
+import "payments.proto";
+import "stats.proto";
+import "tokens.proto";
+
+service FractalEngineRpcService {
+  rpc DogeConfirm(DogeConfirmRequest) returns (DogeConfirmResponse);
+  rpc DogeSend(DogeSendRequest) returns (DogeSendResponse);
+  rpc DogeTopUp(DogeTopUpRequest) returns (DogeTopUpResponse);
+
+  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+
+  rpc GetInvoices(GetInvoicesRequest) returns (GetInvoicesResponse);
+  rpc GetAllInvoices(GetAllInvoicesRequest) returns (GetAllInvoicesResponse);
+  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse);
+  rpc CreateInvoiceSignature(CreateInvoiceSignatureRequest) returns (CreateInvoiceSignatureResponse);
+
+  rpc GetMints(GetMintsRequest) returns (GetMintsResponse);
+  rpc GetMint(GetMintRequest) returns (GetMintResponse);
+  rpc CreateMint(CreateMintRequest) returns (CreateMintResponse);
+
+  rpc CreateNewPayment(CreateNewPaymentRequest) returns (CreateNewPaymentResponse);
+
+  rpc GetPendingTokenBalances(GetPendingTokenBalancesRequest) returns (GetPendingTokenBalancesResponse);
+  rpc GetTokenBalances(GetTokenBalancesRequest) returns (GetTokenBalancesResponse);
+
+  rpc GetSellOffers(GetSellOffersRequest) returns (GetSellOffersResponse);
+  rpc CreateSellOffer(CreateSellOfferRequest) returns (CreateSellOfferResponse);
+  rpc DeleteSellOffer(DeleteSellOfferRequest) returns (DeleteSellOfferResponse);
+
+  rpc GetBuyOffers(GetBuyOffersRequest) returns (GetBuyOffersResponse);
+  rpc CreateBuyOffer(CreateBuyOfferRequest) returns (CreateBuyOfferResponse);
+  rpc DeleteBuyOffer(DeleteBuyOfferRequest) returns (DeleteBuyOfferResponse);
+}

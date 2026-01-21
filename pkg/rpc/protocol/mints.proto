@@ -1,64 +1,56 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+
 package fractalengine.rpc.v1;
 
-option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
+option go_package = "pkg/rpc/protocol";
 
-import "google/protobuf/struct.proto";
-import "types.proto";
-
-service MintService {
-  rpc GetMint(GetMintRequest) returns (GetMintResponse) {}
-  rpc ListMints(ListMintsRequest) returns (ListMintsResponse) {}
-  rpc CreateMint(CreateMintRequest) returns (CreateMintResponse) {}
+message GetMintsRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
 }
 
 message GetMintRequest {
   string hash = 1;
 }
 
+message GetMintsResponse {
+  int32 limit = 1;
+  repeated Mint mints = 2;
+  int32 page = 3;
+  int32 total = 4;
+}
+
 message GetMintResponse {
   Mint mint = 1;
 }
 
-message ListMintsRequest {
-  int32 limit = 1;
-  int32 page = 2;
-  string public_key = 3;
-  string address = 4;
-  bool include_unconfirmed = 5;
-}
-
-message ListMintsResponse {
-  repeated Mint mints = 1;
-  int32 total = 2;
-  int32 page = 3;
-  int32 limit = 4;
-}
-
 message CreateMintRequest {
-  CreateMintPayload payload = 1;
+  CreateMintRequestPayload payload = 1;
   string public_key = 2;
   string signature = 3;
 }
 
-message CreateMintPayload {
-  string title = 1;
-  int32 fraction_count = 2;
+message CreateMintRequestPayload {
+  repeated AssetManager asset_managers = 1;
+  string contract_of_sale = 2;
   string description = 3;
-  repeated string tags = 4;
-  google.protobuf.Struct metadata = 5;
-  google.protobuf.Struct requirements = 6;
-  google.protobuf.Struct lockup_options = 7;
-  string feed_url = 8;
-  string contract_of_sale = 9;
-  string owner_address = 10;
+  string feed_url = 4;
+  int32 fraction_count = 5;
+  StringInterfaceMap lockup_options = 6;
+  StringInterfaceMap metadata = 7;
+  int32 min_signatures = 8;
+  string owner_address = 9;
+  StringInterfaceMap requirements = 10;
   SignatureRequirementType signature_requirement_type = 11;
-  repeated AssetManager asset_managers = 12;
-  int32 min_signatures = 13;
+  repeated string tags = 12;
+  string title = 13;
 }
 
 message CreateMintResponse {
-  string hash = 1;
-  string encoded_transaction_body = 2;
+  string encoded_transaction_body = 1;
+  string hash = 2;
 }
