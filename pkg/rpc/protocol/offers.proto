@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
@@ -21,15 +22,15 @@ message CreateBuyOfferResponse {
 message GetSellOffersRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3;
-  google.protobuf.StringValue offerer_address = 4;
+  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  google.protobuf.StringValue offerer_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
 }
 
 message GetBuyOffersRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3;
-  google.protobuf.StringValue seller_address = 4;
+  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  google.protobuf.StringValue seller_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
 }
 
 message GetSellOffersResponse {
@@ -48,35 +49,35 @@ message GetBuyOffersResponse {
 
 message CreateSellOfferRequest {
   CreateSellOfferRequestPayload payload = 1;
-  string public_key = 2;
-  string signature = 3;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateSellOfferRequestPayload {
-  string offerer_address = 1;
-  string mint_hash = 2;
-  int32 quantity = 3;
-  int32 price = 4;
+  string offerer_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  string mint_hash = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  int32 quantity = 3 [(buf.validate.field).int32.gt = 0];
+  int32 price = 4 [(buf.validate.field).int32.gt = 0];
 }
 
 message CreateBuyOfferRequest {
   CreateBuyOfferRequestPayload payload = 1;
-  string public_key = 2;
-  string signature = 3;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateBuyOfferRequestPayload {
-  string offerer_address = 1;
-  string seller_address = 2;
-  string mint_hash = 3;
-  int32 quantity = 4;
-  int32 price = 5;
+  string offerer_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  string seller_address = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  string mint_hash = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
+  int32 price = 5 [(buf.validate.field).int32.gt = 0];
 }
 
 message DeleteSellOfferRequest {
   DeleteSellOfferRequestPayload payload = 1;
-  string public_key = 2;
-  string signature = 3;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message DeleteSellOfferResponse {
@@ -84,13 +85,13 @@ message DeleteSellOfferResponse {
 }
 
 message DeleteSellOfferRequestPayload {
-  string offer_hash = 1;
+  string offer_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message DeleteBuyOfferRequest {
   DeleteBuyOfferRequestPayload payload = 1;
-  string public_key = 2;
-  string signature = 3;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message DeleteBuyOfferResponse {
@@ -98,5 +99,5 @@ message DeleteBuyOfferResponse {
 }
 
 message DeleteBuyOfferRequestPayload {
-  string offer_hash = 1;
+  string offer_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }

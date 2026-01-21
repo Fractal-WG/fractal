@@ -4,8 +4,10 @@ package fractalengine.rpc.v1;
 
 option go_package = "pkg/rpc/protocol";
 
+import "buf/validate/validate.proto";
+
 message CreateNewPaymentRequest {
-  string invoice_hash = 1;
+  string invoice_hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message CreateNewPaymentResponse {

@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
@@ -9,16 +10,16 @@ package fractalengine.rpc.v1;
 option go_package = "pkg/rpc/protocol";
 
 message GetInvoicesRequest {
-  string address = 1;
+  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
   google.protobuf.Int32Value limit = 2;
   google.protobuf.Int32Value page = 3;
-  google.protobuf.StringValue mint_hash = 4;
+  google.protobuf.StringValue mint_hash = 4 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message GetAllInvoicesRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3;
+  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message GetInvoicesResponse {
@@ -40,9 +41,9 @@ message CreateInvoiceSignatureRequest {
 }
 
 message CreateInvoiceSignatureRequestPayload {
-  string invoice_hash = 1;
-  string public_key = 2;
-  string signature = 3;
+  string invoice_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateInvoiceSignatureResponse {
@@ -51,17 +52,17 @@ message CreateInvoiceSignatureResponse {
 
 message CreateInvoiceRequest {
   CreateInvoiceRequestPayload payload = 1;
-  string public_key = 2;
-  string signature = 3;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateInvoiceRequestPayload {
-  string payment_address = 1;
-  string buyer_address = 2;
-  string mint_hash = 3;
-  int32 quantity = 4;
-  int32 price = 5;
-  string seller_address = 6;
+  string payment_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  string buyer_address = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  string mint_hash = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
+  int32 price = 5 [(buf.validate.field).int32.gt = 0];
+  string seller_address = 6 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
 }
 
 message CreateInvoiceResponse {

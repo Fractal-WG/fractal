@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
@@ -37,17 +38,17 @@ message CreateMintRequest {
 message CreateMintRequestPayload {
   repeated AssetManager asset_managers = 1;
   string contract_of_sale = 2;
-  string description = 3;
+  string description = 3 [(buf.validate.field).string.min_len = 1];
   string feed_url = 4;
-  int32 fraction_count = 5;
+  int32 fraction_count = 5 [(buf.validate.field).int32.gt = 0];
   StringInterfaceMap lockup_options = 6;
   StringInterfaceMap metadata = 7;
   int32 min_signatures = 8;
-  string owner_address = 9;
+  string owner_address = 9 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
   StringInterfaceMap requirements = 10;
   SignatureRequirementType signature_requirement_type = 11;
   repeated string tags = 12;
-  string title = 13;
+  string title = 13 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateMintResponse {
