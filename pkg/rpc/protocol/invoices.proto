@@ -66,6 +66,6 @@ message CreateInvoiceRequestPayload {
 }
 
 message CreateInvoiceResponse {
-  string hash = 1;
+  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string encoded_transaction_body = 2;
 }

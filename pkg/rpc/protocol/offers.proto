@@ -11,12 +11,12 @@ option go_package = "pkg/rpc/protocol";
 
 message CreateSellOfferResponse {
   string id = 1;
-  string hash = 2;
+  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message CreateBuyOfferResponse {
   string id = 1;
-  string hash = 2;
+  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message GetSellOffersRequest {

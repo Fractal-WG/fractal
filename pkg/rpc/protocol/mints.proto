@@ -15,7 +15,7 @@ message GetMintsRequest {
 }
 
 message GetMintRequest {
-  string hash = 1;
+  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }
 
 message GetMintsResponse {
@@ -53,5 +53,5 @@ message CreateMintRequestPayload {
 
 message CreateMintResponse {
   string encoded_transaction_body = 1;
-  string hash = 2;
+  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
 }

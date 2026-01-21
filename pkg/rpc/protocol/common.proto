@@ -46,7 +46,7 @@ message Mint {
   string description = 5;
   string feed_url = 6;
   int32 fraction_count = 7;
-  string hash = 8;
+  string hash = 8 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string id = 9;
   StringInterfaceMap lockup_options = 10;
   StringInterfaceMap metadata = 11;
@@ -65,7 +65,7 @@ message Invoice {
   int32 block_height = 1;
   string buyer_address = 2 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
   string created_at = 3;
-  string hash = 4;
+  string hash = 4 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string id = 5;
   string mint_hash = 6 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   SqlNullTime paid_at = 7;
@@ -88,7 +88,7 @@ message TokenBalance {
 }
 
 message BuyOffer {
-  string hash = 1;
+  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string offerer_address = 3 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
   string seller_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
@@ -101,7 +101,7 @@ message BuyOffer {
 }
 
 message SellOffer {
-  string hash = 1;
+  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
   string offerer_address = 3 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
   int32 quantity = 4;
