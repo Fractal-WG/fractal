@@ -4,6 +4,7 @@ package fractalengine.rpc.v1;
 
 option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol;protocol";
 
+
 service DogeService {
   rpc SendRawTransaction(SendRawTransactionRequest) returns (SendRawTransactionResponse) {}
   rpc ConfirmTransactions(ConfirmTransactionsRequest) returns (ConfirmTransactionsResponse) {}
