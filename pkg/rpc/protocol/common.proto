@@ -5,7 +5,7 @@ import "google/protobuf/struct.proto";
 
 package fractalengine.rpc.v1;
 
-option go_package = "pkg/rpc/protocol";
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 message StringResponse {
   string value = 1;

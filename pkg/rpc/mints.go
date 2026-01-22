@@ -1,204 +1,87 @@
 package rpc
 
 import (
-	"bytes"
+	"context"
 	"encoding/hex"
-	"encoding/json"
-	"io"
-	"log"
-	"net/http"
-	"strconv"
 	"time"
 
-	"dogecoin.org/fractal-engine/pkg/config"
-	"dogecoin.org/fractal-engine/pkg/doge"
-	"dogecoin.org/fractal-engine/pkg/dogenet"
-	"dogecoin.org/fractal-engine/pkg/protocol"
+	connect "connectrpc.com/connect"
+	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	"dogecoin.org/fractal-engine/pkg/validation"
-	"github.com/gorilla/mux"
 )
 
-type MintRoutes struct {
-	store        *store.TokenisationStore
-	gossipClient dogenet.GossipClient
-	cfg          *config.Config
-	dogeClient   *doge.RpcClient
-}
 
-func HandleMintRoutes(store *store.TokenisationStore, gossipClient dogenet.GossipClient, mux *http.ServeMux, cfg *config.Config, dogeClient *doge.RpcClient) {
-	mr := &MintRoutes{store: store, gossipClient: gossipClient, cfg: cfg, dogeClient: dogeClient}
-
-	mux.HandleFunc("/mints/{hash}", mr.handleMint)
-	mux.HandleFunc("/mints", mr.handleMints)
-
-}
-
-func (mr *MintRoutes) handleMints(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		mr.getMints(w, r)
-	case http.MethodPost:
-		mr.postMint(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (mr *MintRoutes) handleMint(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		mr.getMint(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (mr *MintRoutes) getMint(w http.ResponseWriter, r *http.Request) {
-	hash := validation.SanitizeQueryParam(mux.Vars(r)["hash"])
-
-	// Validate hash format
-	if err := validation.ValidateHash(hash); err != nil {
-		http.Error(w, "Invalid hash format", http.StatusBadRequest)
-		return
+func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[protocol.GetMintsRequest]) (*connect.Response[protocol.GetMintsResponse], error) {
+	limit := int32(100)
+	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
+		limit = req.Msg.GetLimit().GetValue()
 	}
 
-	mint, err := mr.store.GetMintByHash(hash)
+	page := int32(0)
+	if req.Msg.GetPage() != nil && req.Msg.GetPage().GetValue() > 0 && req.Msg.GetPage().GetValue() <= 1000 {
+		page = req.Msg.GetPage().GetValue()
+	}
+
+	start := int(page * limit)
+	end := int(start + int(limit))
+
+	mints, err := s.store.GetMints(start, end)
 	if err != nil {
-		http.Error(w, "Mint not found", http.StatusNotFound)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	response := GetMintResponse{
-		Mint: mint,
-	}
-
-	respondJSON(w, http.StatusOK, response)
-}
-
-// @Summary		Get all mints
-// @Description	Returns a list of mints
-// @Tags			mints
-// @Accept			json
-// @Produce		json
-// @Param			limit	query		int	false	"Limit"
-// @Param			page	query		int	false	"Page"
-// @Success		200		{object}	GetMintsResponse
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/mints [get]
-func (mr *MintRoutes) getMints(w http.ResponseWriter, r *http.Request) {
-	limitStr := validation.SanitizeQueryParam(r.URL.Query().Get("limit"))
-	limit := 100
-
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= limit {
-			limit = l
-		}
-	}
-
-	pageStr := validation.SanitizeQueryParam(r.URL.Query().Get("page"))
-	page := 0
-
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 && p <= 1000 { // Reasonable page limit
-			page = p
-		}
-	}
-
-	publicKey := validation.SanitizeQueryParam(r.URL.Query().Get("public_key"))
-	address := validation.SanitizeQueryParam(r.URL.Query().Get("address"))
-	includeUnconfirmed := validation.SanitizeQueryParam(r.URL.Query().Get("include_unconfirmed")) == "true"
-
-	// Validate public key format if provided
-	if publicKey != "" {
-		if err := validation.ValidatePublicKey(publicKey); err != nil {
-			http.Error(w, "Invalid public key format", http.StatusBadRequest)
-			return
-		}
-	}
-
-	start := page * limit
-	end := start + limit
-
-	var mints []store.Mint
-	var err error
-
-	if publicKey != "" {
-		mints, err = mr.store.GetMintsByPublicKey(start, end, publicKey, includeUnconfirmed)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-	} else if address != "" {
-		mints, err = mr.store.GetMintsByAddress(start, end, address, includeUnconfirmed)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-	} else {
-		mints, err = mr.store.GetMints(start, end)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-	}
-
-	// Clamp the slice range
 	if start >= len(mints) {
-		respondJSON(w, http.StatusOK, GetMintsResponse{})
-		return
+		return connect.NewResponse(&protocol.GetMintsResponse{}), nil
 	}
 
 	if end > len(mints) {
 		end = len(mints)
 	}
 
-	response := GetMintsResponse{
-		Mints: mints[start:end],
-		Total: len(mints),
-		Page:  page,
-		Limit: limit,
+	responseMints, err := toProtoMints(mints[start:end])
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetMintsResponse{}
+	resp.SetMints(responseMints)
+	resp.SetTotal(int32(len(mints)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
+	return connect.NewResponse(resp), nil
 }
 
-// @Summary		Create a mint
-// @Description	Creates a new mint
-// @Tags			mints
-// @Accept			json
-// @Produce		json
-// @Param			request	body		CreateMintRequest	true	"Mint request"
-// @Success		201		{object}	CreateMintResponse
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/mints [post]
-func (mr *MintRoutes) postMint(w http.ResponseWriter, r *http.Request) {
-	var request CreateMintRequest
-
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println("error reading request body", err)
-		http.Error(w, "Error reading request", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	if err := json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&request); err != nil {
-		log.Println("error decoding request", err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error) {
+	hash := req.Msg.GetHash()
+	if err := validation.ValidateHash(hash); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	err = request.Validate()
+	mint, err := s.store.GetMintByHash(hash)
 	if err != nil {
-		log.Println("error validating mint", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeNotFound, err)
+	}
+
+	protoMint, err := toProtoMint(mint)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := &protocol.GetMintResponse{}
+	resp.SetMint(protoMint)
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) CreateMint(_ context.Context, req *connect.Request[protocol.CreateMintRequest]) (*connect.Response[protocol.CreateMintResponse], error) {
+	request, err := toCreateMintRequest(req.Msg)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	newMintWithoutId := &store.MintWithoutID{
@@ -222,15 +105,12 @@ func (mr *MintRoutes) postMint(w http.ResponseWriter, r *http.Request) {
 
 	newMintWithoutId.Hash, err = newMintWithoutId.GenerateHash()
 	if err != nil {
-		http.Error(w, "Failed to generate hash", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := mr.store.SaveUnconfirmedMint(newMintWithoutId)
+	id, err := s.store.SaveUnconfirmedMint(newMintWithoutId)
 	if err != nil {
-		log.Println("error saving unconfirmed mint", err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	newMint := &store.Mint{
@@ -238,20 +118,15 @@ func (mr *MintRoutes) postMint(w http.ResponseWriter, r *http.Request) {
 		Id:            id,
 	}
 
-	// Continue even if gossiping fails
-	// it will eventually be gossiped by the engine
-	err = mr.gossipClient.GossipMint(*newMint)
-	if err != nil {
-		log.Println("error gossiping mint", err)
+	if err := s.gossipClient.GossipMint(*newMint); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	envelope := protocol.NewMintTransactionEnvelope(newMintWithoutId.Hash, protocol.ACTION_MINT)
+	envelope := engineprotocol.NewMintTransactionEnvelope(newMintWithoutId.Hash, engineprotocol.ACTION_MINT)
 	encodedTransactionBody := envelope.Serialize()
 
-	response := CreateMintResponse{
-		Hash:                   newMintWithoutId.Hash,
-		EncodedTransactionBody: hex.EncodeToString(encodedTransactionBody),
-	}
-
-	respondJSON(w, http.StatusCreated, response)
+	resp := &protocol.CreateMintResponse{}
+	resp.SetHash(newMintWithoutId.Hash)
+	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
+	return connect.NewResponse(resp), nil
 }

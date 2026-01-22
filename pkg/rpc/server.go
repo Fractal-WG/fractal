@@ -12,7 +12,10 @@ import (
 	"dogecoin.org/fractal-engine/pkg/config"
 	"dogecoin.org/fractal-engine/pkg/doge"
 	"dogecoin.org/fractal-engine/pkg/dogenet"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol/protocolconnect"
 	"dogecoin.org/fractal-engine/pkg/store"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"golang.org/x/time/rate"
 )
 
@@ -30,7 +33,11 @@ type RpcServer struct {
 func NewRpcServer(cfg *config.Config, store *store.TokenisationStore, gossipClient dogenet.GossipClient, dogeClient *doge.RpcClient) *RpcServer {
 	mux := http.NewServeMux()
 
-	handler := withCORS(cfg.CORSAllowedOrigins, mux)
+	connectService := NewConnectRpcService(store, gossipClient, cfg, dogeClient)
+	connectPath, connectHandler := protocolconnect.NewFractalEngineRpcServiceHandler(connectService)
+	mux.Handle(connectPath, connectHandler)
+
+	handler := withCORS(cfg.CORSAllowedOrigins, h2c.NewHandler(mux, &http2.Server{}))
 
 	if cfg.RpcApiKey != "" {
 		handler = withSecureAPI(cfg.RpcApiKey, handler)
@@ -38,15 +45,6 @@ func NewRpcServer(cfg *config.Config, store *store.TokenisationStore, gossipClie
 
 	limiter := rate.NewLimiter(rate.Limit(cfg.RateLimitPerSecond), cfg.RateLimitPerSecond*3)
 	handler = rateLimitMiddleware(limiter, handler)
-
-	HandleMintRoutes(store, gossipClient, mux, cfg, dogeClient)
-	HandleOfferRoutes(store, gossipClient, mux, cfg)
-	HandleInvoiceRoutes(store, gossipClient, mux, cfg)
-	HandleStatRoutes(store, mux)
-	HandleHealthRoutes(store, mux)
-	HandleTokenRoutes(store, mux)
-	HandleDogeRoutes(store, dogeClient, mux)
-	HandlePaymentRoutes(store, gossipClient, mux, cfg)
 
 	server := &http.Server{
 		Addr:    cfg.RpcServerHost + ":" + cfg.RpcServerPort,

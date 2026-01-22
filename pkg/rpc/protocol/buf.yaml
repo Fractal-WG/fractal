@@ -1,11 +1,12 @@
-version: v1
-
+version: v2
+modules:
+  - path: .
+    name: buf.build/fractal-engine/rpc
 lint:
   use:
     - STANDARD
   except:
     - PACKAGE_DIRECTORY_MATCH
-
 deps:
   - buf.build/bufbuild/protovalidate
 

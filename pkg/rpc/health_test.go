@@ -1,26 +1,27 @@
 package rpc_test
 
 import (
+	"context"
 	"testing"
 
-	"dogecoin.org/fractal-engine/pkg/rpc"
+	connect "connectrpc.com/connect"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"gotest.tools/assert"
 )
 
 func TestGetHealth(t *testing.T) {
-	tokenisationStore, _, mux, feClient := SetupRpcTest(t)
-	rpc.HandleHealthRoutes(tokenisationStore, mux)
+	tokenisationStore, _, feClient := SetupRpcTest(t)
 
-	_, err := feClient.GetHealth()
-	assert.Error(t, err, "failed to get health: 404 Not Found")
+	_, err := feClient.GetHealth(context.Background(), connect.NewRequest(&protocol.GetHealthRequest{}))
+	assert.Equal(t, connect.CodeOf(err), connect.CodeNotFound)
 
 	tokenisationStore.UpsertHealth(100, 200, "test", true)
 
-	healthResponse, err := feClient.GetHealth()
+	healthResponse, err := feClient.GetHealth(context.Background(), connect.NewRequest(&protocol.GetHealthRequest{}))
 	assert.NilError(t, err)
-	assert.Equal(t, healthResponse.CurrentBlockHeight, int64(100))
-	assert.Equal(t, healthResponse.LatestBlockHeight, int64(200))
-	assert.Equal(t, healthResponse.UpdatedAt.IsZero(), false)
-	assert.Equal(t, healthResponse.Chain, "test")
-	assert.Equal(t, healthResponse.WalletsEnabled, true)
+	assert.Equal(t, healthResponse.Msg.GetCurrentBlockHeight(), int32(100))
+	assert.Equal(t, healthResponse.Msg.GetLatestBlockHeight(), int32(200))
+	assert.Equal(t, healthResponse.Msg.GetUpdatedAt() != "", true)
+	assert.Equal(t, healthResponse.Msg.GetChain(), "test")
+	assert.Equal(t, healthResponse.Msg.GetWalletsEnabled(), true)
 }

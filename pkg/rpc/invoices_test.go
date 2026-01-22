@@ -1,71 +1,95 @@
 package rpc_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
+	connect "connectrpc.com/connect"
 	"dogecoin.org/fractal-engine/internal/test/support"
-	"dogecoin.org/fractal-engine/pkg/config"
 	"dogecoin.org/fractal-engine/pkg/doge"
 	"dogecoin.org/fractal-engine/pkg/rpc"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	"gotest.tools/assert"
 )
 
 func TestInvoices(t *testing.T) {
-	tokenisationStore, dogenetClient, mux, feClient := SetupRpcTest(t)
-	rpc.HandleInvoiceRoutes(tokenisationStore, dogenetClient, mux, config.NewConfig())
+	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
-	MintHash := support.GenerateDogecoinAddress(true)
+	buyerAddress := support.GenerateDogecoinAddress(true)
 	sellOfferAddress := support.GenerateDogecoinAddress(true)
+	mintHash := support.GenerateRandomHash()
 
-	buyOfferMintHash := support.GenerateRandomHash()
+	_, err := tokenisationStore.SaveMint(&store.MintWithoutID{
+		Title:         "mint1",
+		Description:   "description1",
+		FractionCount: 100,
+		Hash:          mintHash,
+	}, "owner")
+	assert.NilError(t, err)
 
-	invoice := rpc.CreateInvoiceRequest{
-		Payload: rpc.CreateInvoiceRequestPayload{
-			PaymentAddress: paymentAddress,
-			BuyerAddress:   MintHash,
-			MintHash:       buyOfferMintHash,
-			Quantity:       10,
-			Price:          100,
-			SellerAddress:  sellOfferAddress,
-		},
+	invoicePayload := rpc.CreateInvoiceRequestPayload{
+		PaymentAddress: paymentAddress,
+		BuyerAddress:   buyerAddress,
+		MintHash:       mintHash,
+		Quantity:       10,
+		Price:          100,
+		SellerAddress:  sellOfferAddress,
 	}
 
-	invoiceResponse, err := feClient.CreateInvoice(&invoice)
+	privHex, pubHex, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
+
+	signature, err := doge.SignPayload(invoicePayload, privHex, pubHex)
+	assert.NilError(t, err)
+
+	protoPayload := &protocol.CreateInvoiceRequestPayload{}
+	protoPayload.SetPaymentAddress(paymentAddress)
+	protoPayload.SetBuyerAddress(buyerAddress)
+	protoPayload.SetMintHash(mintHash)
+	protoPayload.SetQuantity(10)
+	protoPayload.SetPrice(100)
+	protoPayload.SetSellerAddress(sellOfferAddress)
+
+	invoice := &protocol.CreateInvoiceRequest{}
+	invoice.SetPayload(protoPayload)
+	invoice.SetPublicKey(pubHex)
+	invoice.SetSignature(signature)
+
+	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(invoice))
 	if err != nil {
 		t.Fatalf("Failed to create invoice: %v", err)
 	}
 
-	invoices, err := tokenisationStore.GetUnconfirmedInvoices(0, 10, buyOfferMintHash, MintHash)
+	invoices, err := tokenisationStore.GetUnconfirmedInvoices(0, 10, mintHash, buyerAddress)
 	if err != nil {
 		t.Fatalf("Failed to get invoices: %v", err)
 	}
 
 	assert.Equal(t, len(invoices), 1)
-	assert.Equal(t, invoices[0].Hash, invoiceResponse.Hash)
-	assert.Equal(t, invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
-	assert.Equal(t, invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
-	assert.Equal(t, invoices[0].MintHash, invoice.Payload.MintHash)
-	assert.Equal(t, invoices[0].Quantity, invoice.Payload.Quantity)
-	assert.Equal(t, invoices[0].Price, invoice.Payload.Price)
-	assert.Equal(t, invoices[0].SellerAddress, invoice.Payload.SellerAddress)
+	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, invoices[0].PaymentAddress, invoicePayload.PaymentAddress)
+	assert.Equal(t, invoices[0].BuyerAddress, invoicePayload.BuyerAddress)
+	assert.Equal(t, invoices[0].MintHash, invoicePayload.MintHash)
+	assert.Equal(t, invoices[0].Quantity, invoicePayload.Quantity)
+	assert.Equal(t, invoices[0].Price, invoicePayload.Price)
+	assert.Equal(t, invoices[0].SellerAddress, invoicePayload.SellerAddress)
 	assert.Equal(t, invoices[0].Status, "draft")
 
 	assert.Equal(t, len(dogenetClient.invoices), 1)
-	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Hash)
-	assert.Equal(t, dogenetClient.invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
-	assert.Equal(t, dogenetClient.invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
-	assert.Equal(t, dogenetClient.invoices[0].MintHash, invoice.Payload.MintHash)
-	assert.Equal(t, dogenetClient.invoices[0].Quantity, invoice.Payload.Quantity)
-	assert.Equal(t, dogenetClient.invoices[0].Price, invoice.Payload.Price)
-	assert.Equal(t, dogenetClient.invoices[0].SellerAddress, invoice.Payload.SellerAddress)
+	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, dogenetClient.invoices[0].PaymentAddress, invoicePayload.PaymentAddress)
+	assert.Equal(t, dogenetClient.invoices[0].BuyerAddress, invoicePayload.BuyerAddress)
+	assert.Equal(t, dogenetClient.invoices[0].MintHash, invoicePayload.MintHash)
+	assert.Equal(t, dogenetClient.invoices[0].Quantity, invoicePayload.Quantity)
+	assert.Equal(t, dogenetClient.invoices[0].Price, invoicePayload.Price)
+	assert.Equal(t, dogenetClient.invoices[0].SellerAddress, invoicePayload.SellerAddress)
 }
 
 func TestInvoicesWithSignatureRequired(t *testing.T) {
-	tokenisationStore, dogenetClient, mux, feClient := SetupRpcTest(t)
-	rpc.HandleInvoiceRoutes(tokenisationStore, dogenetClient, mux, config.NewConfig())
+	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
 	sellOfferAddress := support.GenerateDogecoinAddress(true)
@@ -110,7 +134,26 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 		},
 	}
 
-	invoiceResponse, err := feClient.CreateInvoice(&invoice)
+	privHex, pubHex, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
+
+	signature, err := doge.SignPayload(invoice.Payload, privHex, pubHex)
+	assert.NilError(t, err)
+
+	protoPayload := &protocol.CreateInvoiceRequestPayload{}
+	protoPayload.SetPaymentAddress(paymentAddress)
+	protoPayload.SetBuyerAddress(buyerAddress)
+	protoPayload.SetMintHash(confirmedMint.Hash)
+	protoPayload.SetQuantity(10)
+	protoPayload.SetPrice(100)
+	protoPayload.SetSellerAddress(sellOfferAddress)
+
+	protoInvoice := &protocol.CreateInvoiceRequest{}
+	protoInvoice.SetPayload(protoPayload)
+	protoInvoice.SetPublicKey(pubHex)
+	protoInvoice.SetSignature(signature)
+
+	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(protoInvoice))
 	if err != nil {
 		t.Fatalf("Failed to create invoice: %v", err)
 	}
@@ -121,7 +164,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	}
 
 	assert.Equal(t, len(invoices), 1)
-	assert.Equal(t, invoices[0].Hash, invoiceResponse.Hash)
+	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash())
 	assert.Equal(t, invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
 	assert.Equal(t, invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
 	assert.Equal(t, invoices[0].MintHash, invoice.Payload.MintHash)
@@ -131,7 +174,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	assert.Equal(t, invoices[0].Status, "pending_signatures")
 
 	assert.Equal(t, len(dogenetClient.invoices), 1)
-	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Hash)
+	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash())
 	assert.Equal(t, dogenetClient.invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
 	assert.Equal(t, dogenetClient.invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
 	assert.Equal(t, dogenetClient.invoices[0].MintHash, invoice.Payload.MintHash)
@@ -141,8 +184,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 }
 
 func TestCreateInvoiceSignature(t *testing.T) {
-	tokenisationStore, dogenetClient, mux, feClient := SetupRpcTest(t)
-	rpc.HandleInvoiceRoutes(tokenisationStore, dogenetClient, mux, config.NewConfig())
+	tokenisationStore, _, feClient := SetupRpcTest(t)
 
 	assetManagerPrivKey, assetManagerPubKey, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
 	assert.NilError(t, err)
@@ -213,21 +255,21 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	signature, err := doge.SignPayload(invoiceBody, assetManagerPrivKey, assetManagerPubKey)
 	assert.NilError(t, err)
 
-	createInvoiceSignatureRequest := rpc.CreateInvoiceSignatureRequest{
-		Payload: rpc.CreateInvoiceSignatureRequestPayload{
-			InvoiceHash: invoice.Hash,
-			Signature:   signature,
-			PublicKey:   assetManagerPubKey,
-		},
-	}
+	protoPayload := &protocol.CreateInvoiceSignatureRequestPayload{}
+	protoPayload.SetInvoiceHash(invoice.Hash)
+	protoPayload.SetSignature(signature)
+	protoPayload.SetPublicKey(assetManagerPubKey)
 
-	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(&createInvoiceSignatureRequest)
+	protoRequest := &protocol.CreateInvoiceSignatureRequest{}
+	protoRequest.SetPayload(protoPayload)
+
+	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(context.Background(), connect.NewRequest(protoRequest))
 	if err != nil {
 		t.Fatalf("Failed to create invoice signature: %v", err)
 	}
 
 	var savedInvoiceHash string
-	tokenisationStore.DB.QueryRow("SELECT invoice_hash FROM invoice_signatures WHERE id = $1", createInvoiceSignatureResponse.Id).Scan(&savedInvoiceHash)
+	tokenisationStore.DB.QueryRow("SELECT invoice_hash FROM invoice_signatures WHERE id = $1", createInvoiceSignatureResponse.Msg.GetId()).Scan(&savedInvoiceHash)
 	if err != nil {
 		t.Fatalf("Failed to get invoice signature: %v", err)
 	}

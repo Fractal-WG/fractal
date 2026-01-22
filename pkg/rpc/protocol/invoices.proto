@@ -7,7 +7,7 @@ import "common.proto";
 
 package fractalengine.rpc.v1;
 
-option go_package = "pkg/rpc/protocol";
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 message GetInvoicesRequest {
   string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
