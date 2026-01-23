@@ -1,6 +1,7 @@
 package support
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -18,6 +19,7 @@ import (
 )
 
 func SetupTestDB() *store.TokenisationStore {
+	ctx := context.Background()
 	randoDb := rand.Intn(10000)
 
 	url := "file:memdb" + fmt.Sprintf("%d", randoDb) + "?mode=memory&cache=shared"
@@ -27,7 +29,7 @@ func SetupTestDB() *store.TokenisationStore {
 		log.Fatal(err)
 	}
 
-	err = tokenStore.Migrate()
+	err = tokenStore.Migrate(ctx)
 	if err != nil && err.Error() != "no change" {
 		log.Fatal(err)
 	}

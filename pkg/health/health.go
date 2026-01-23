@@ -1,6 +1,7 @@
 package health
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -20,6 +21,7 @@ func NewHealthService(dogeClient *doge.RpcClient, tokenStore *store.Tokenisation
 
 func (h *HealthService) Start() {
 	h.running = true
+	ctx := context.Background()
 
 	for {
 		bestBlockHash, err := h.dogeClient.GetBestBlockHash()
@@ -45,7 +47,7 @@ func (h *HealthService) Start() {
 		chain := blockchainInfo.Chain
 
 		latestBlockHeight := int(blockHeader.Height)
-		currentBlockHeight, _, _, err := h.tokenStore.GetChainPosition()
+		currentBlockHeight, _, _, err := h.tokenStore.GetChainPosition(ctx)
 		if err != nil {
 			log.Println("Error getting chain position:", err)
 			time.Sleep(10 * time.Second)
@@ -54,7 +56,7 @@ func (h *HealthService) Start() {
 
 		_, err = h.dogeClient.GetWalletInfo()
 
-		err = h.tokenStore.UpsertHealth(int64(currentBlockHeight), int64(latestBlockHeight), chain, err == nil)
+		err = h.tokenStore.UpsertHealth(ctx, int64(currentBlockHeight), int64(latestBlockHeight), chain, err == nil)
 		if err != nil {
 			log.Println("Error upserting health:", err)
 		}

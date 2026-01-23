@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -21,11 +22,12 @@ func NewFractalEngineProcessor(store *store.TokenisationStore, dogeClient *doge.
 }
 
 func (p *FractalEngineProcessor) Process() error {
+	ctx := context.Background()
 	offset := 0
 	limit := 100
 
 	for {
-		txs, err := p.store.GetOnChainTransactions(offset, limit)
+		txs, err := p.store.GetOnChainTransactions(ctx, offset, limit)
 		if err != nil {
 			return err
 		}
@@ -38,10 +40,10 @@ func (p *FractalEngineProcessor) Process() error {
 			fmt.Println("Processing transaction:", tx.TxHash)
 
 			if tx.ActionType == protocol.ACTION_MINT {
-				if p.store.MatchMint(tx) {
+				if p.store.MatchMint(ctx, tx) {
 					continue
 				}
-				err = p.store.MatchUnconfirmedMint(tx)
+				err = p.store.MatchUnconfirmedMint(ctx, tx)
 				if err == nil {
 					log.Println("Matched mint:", tx.TxHash)
 				}

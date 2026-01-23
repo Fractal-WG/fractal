@@ -13,8 +13,9 @@ import (
 
 func TestGetTokenBalance(t *testing.T) {
 	tokenisationStore, _, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
-	err := tokenisationStore.UpsertTokenBalance("address1", "mint1", 10)
+	err := tokenisationStore.UpsertTokenBalance(ctx, "address1", "mint1", 10)
 	if err != nil {
 		t.Fatalf("Failed to upsert token balance: %v", err)
 	}
@@ -27,7 +28,7 @@ func TestGetTokenBalance(t *testing.T) {
 	request.SetAddress(addressProto)
 	request.SetMintHash(mintHashProto)
 
-	response, err := feClient.GetTokenBalances(context.Background(), connect.NewRequest(request))
+	response, err := feClient.GetTokenBalances(ctx, connect.NewRequest(request))
 	if err != nil {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}
@@ -46,8 +47,9 @@ func TestGetTokenBalance(t *testing.T) {
 
 func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 	tokenisationStore, _, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
-	_, err := tokenisationStore.SaveMint(&store.MintWithoutID{
+	_, err := tokenisationStore.SaveMint(ctx, &store.MintWithoutID{
 		Title:         "mint1",
 		Description:   "description1",
 		FractionCount: 10,
@@ -57,7 +59,7 @@ func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 		t.Fatalf("Failed to save mint: %v", err)
 	}
 
-	err = tokenisationStore.UpsertTokenBalance("address1", "mint1", 10)
+	err = tokenisationStore.UpsertTokenBalance(ctx, "address1", "mint1", 10)
 	if err != nil {
 		t.Fatalf("Failed to upsert token balance: %v", err)
 	}
@@ -68,7 +70,7 @@ func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 	request.SetAddress(addressProto)
 	request.SetIncludeMintDetails(wrapperspb.Bool(true))
 
-	response, err := feClient.GetTokenBalances(context.Background(), connect.NewRequest(request))
+	response, err := feClient.GetTokenBalances(ctx, connect.NewRequest(request))
 	if err != nil {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}

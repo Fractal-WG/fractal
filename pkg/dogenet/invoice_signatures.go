@@ -1,6 +1,7 @@
 package dogenet
 
 import (
+	"context"
 	"log"
 
 	"code.dogecoin.org/gossip/dnet"
@@ -41,6 +42,7 @@ func (c *DogeNetClient) GossipInvoiceSignature(record store.InvoiceSignature) er
 
 func (c *DogeNetClient) recvInvoiceSignature(msg dnet.Message) {
 	log.Printf("[FE] received invoice signature message")
+	ctx := context.Background()
 
 	envelope := protocol.InvoiceSignatureMessageEnvelope{}
 	err := proto.Unmarshal(msg.Payload, &envelope)
@@ -63,7 +65,7 @@ func (c *DogeNetClient) recvInvoiceSignature(msg dnet.Message) {
 		CreatedAt:   invoiceSignature.CreatedAt.AsTime(),
 	}
 
-	id, err := c.store.SaveApprovedInvoiceSignature(&invoiceSignatureWithoutID)
+	id, err := c.store.SaveApprovedInvoiceSignature(ctx, &invoiceSignatureWithoutID)
 	if err != nil {
 		log.Println("Error saving unconfirmed invoice:", err)
 		return

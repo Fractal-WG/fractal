@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -9,7 +10,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (s *TokenisationStore) ProcessPayment(onchainTransaction OnChainTransaction, invoice Invoice) error {
+func (s *TokenisationStore) ProcessPayment(ctx context.Context, onchainTransaction OnChainTransaction, invoice Invoice) error {
 	tx, err := s.DB.Begin()
 	if err != nil {
 		return err
@@ -29,13 +30,13 @@ func (s *TokenisationStore) ProcessPayment(onchainTransaction OnChainTransaction
 		return err
 	}
 
-	pendingTokenBalance, err := s.GetPendingTokenBalanceForQuantity(invoice.Hash, invoice.MintHash, invoice.Quantity, tx)
+	pendingTokenBalance, err := s.GetPendingTokenBalanceForQuantity(ctx, invoice.Hash, invoice.MintHash, invoice.Quantity, tx)
 	if err != nil {
 		log.Println("Error getting pending token balance:", err)
 		return err
 	}
 
-	err = s.MovePendingToTokenBalance(pendingTokenBalance, invoice.BuyerAddress, tx)
+	err = s.MovePendingToTokenBalance(ctx, pendingTokenBalance, invoice.BuyerAddress, tx)
 	if err != nil {
 		log.Println("Error moving pending to token balance:", err)
 		return err
@@ -49,7 +50,7 @@ func (s *TokenisationStore) ProcessPayment(onchainTransaction OnChainTransaction
 	return nil
 }
 
-func (s *TokenisationStore) MatchPayment(onchainTransaction OnChainTransaction) (Invoice, error) {
+func (s *TokenisationStore) MatchPayment(ctx context.Context, onchainTransaction OnChainTransaction) (Invoice, error) {
 	if onchainTransaction.ActionType != protocol.ACTION_PAYMENT {
 		return Invoice{}, fmt.Errorf("action type is not payment: %d", onchainTransaction.ActionType)
 	}

@@ -14,6 +14,7 @@ import (
 
 func TestMints(t *testing.T) {
 	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
 	privHex, pubHex, address, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
 	if err != nil {
@@ -72,12 +73,12 @@ func TestMints(t *testing.T) {
 	protoRequest.SetPublicKey(pubHex)
 	protoRequest.SetSignature(signature)
 
-	mintResponse, err := feClient.CreateMint(context.Background(), connect.NewRequest(protoRequest))
+	mintResponse, err := feClient.CreateMint(ctx, connect.NewRequest(protoRequest))
 	if err != nil {
 		t.Fatalf("Failed to create mint: %v", err)
 	}
 
-	mints, err := tokenisationStore.GetUnconfirmedMints(0, 10)
+	mints, err := tokenisationStore.GetUnconfirmedMints(ctx, 0, 10)
 	if err != nil {
 		t.Fatalf("Failed to get mints: %v", err)
 	}

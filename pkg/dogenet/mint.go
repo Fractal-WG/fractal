@@ -1,6 +1,7 @@
 package dogenet
 
 import (
+	"context"
 	"log"
 
 	"code.dogecoin.org/gossip/dnet"
@@ -65,6 +66,7 @@ func (c *DogeNetClient) GossipMint(record store.Mint) error {
 
 func (c *DogeNetClient) recvMint(msg dnet.Message) {
 	log.Printf("[FE] received mint message")
+	ctx := context.Background()
 
 	envelope := protocol.MintMessageEnvelope{}
 	err := proto.Unmarshal(msg.Payload, &envelope)
@@ -161,7 +163,7 @@ func (c *DogeNetClient) recvMint(msg dnet.Message) {
 		return
 	}
 
-	id, err := c.store.SaveUnconfirmedMint(mintRecord)
+	id, err := c.store.SaveUnconfirmedMint(ctx, mintRecord)
 
 	if err != nil {
 		log.Println("Error saving unconfirmed mint:", err)

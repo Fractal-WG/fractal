@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -12,8 +13,9 @@ import (
 
 func TestHealth(t *testing.T) {
 	tokenisationStore := test_support.SetupTestDB()
+	ctx := context.Background()
 
-	tokenisationStore.UpsertChainPosition(50, "0000000000000000000000000000000000000000000000000000000000000000", false)
+	tokenisationStore.UpsertChainPosition(ctx, 50, "0000000000000000000000000000000000000000000000000000000000000000", false)
 
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -22,7 +24,7 @@ func TestHealth(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := tokenisationStore.GetHealth()
+	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := tokenisationStore.GetHealth(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

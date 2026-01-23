@@ -8,7 +8,7 @@ import (
 	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 )
 
-func (s *ConnectRpcService) GetPendingTokenBalances(_ context.Context, req *connect.Request[protocol.GetPendingTokenBalancesRequest]) (*connect.Response[protocol.GetPendingTokenBalancesResponse], error) {
+func (s *ConnectRpcService) GetPendingTokenBalances(ctx context.Context, req *connect.Request[protocol.GetPendingTokenBalancesRequest]) (*connect.Response[protocol.GetPendingTokenBalancesResponse], error) {
 	address := req.Msg.GetAddress()
 	if address == nil || address.GetValue() == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
@@ -19,7 +19,7 @@ func (s *ConnectRpcService) GetPendingTokenBalances(_ context.Context, req *conn
 		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
-	tokenBalances, err := s.store.GetPendingTokenBalances(address.GetValue(), mintHash)
+	tokenBalances, err := s.store.GetPendingTokenBalances(ctx, address.GetValue(), mintHash)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -34,7 +34,7 @@ func (s *ConnectRpcService) GetPendingTokenBalances(_ context.Context, req *conn
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) GetTokenBalances(_ context.Context, req *connect.Request[protocol.GetTokenBalancesRequest]) (*connect.Response[protocol.GetTokenBalancesResponse], error) {
+func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.Request[protocol.GetTokenBalancesRequest]) (*connect.Response[protocol.GetTokenBalancesResponse], error) {
 	address := req.Msg.GetAddress()
 	if address == nil || address.GetValue() == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
@@ -64,7 +64,7 @@ func (s *ConnectRpcService) GetTokenBalances(_ context.Context, req *connect.Req
 		start := int(page * limit)
 		end := int(start + int(limit))
 
-		tokenBalances, err := s.store.GetMyMintTokenBalances(address.GetValue(), start, end)
+		tokenBalances, err := s.store.GetMyMintTokenBalances(ctx, address.GetValue(), start, end)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
@@ -94,7 +94,7 @@ func (s *ConnectRpcService) GetTokenBalances(_ context.Context, req *connect.Req
 		return connect.NewResponse(resp), nil
 	}
 
-	tokenBalances, err := s.store.GetTokenBalances(address.GetValue(), mintHash)
+	tokenBalances, err := s.store.GetTokenBalances(ctx, address.GetValue(), mintHash)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

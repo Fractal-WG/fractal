@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"context"
 	"encoding/hex"
 	"testing"
 	"time"
@@ -33,6 +34,7 @@ func TestNewInvoiceProcessor(t *testing.T) {
 
 func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Setup: Create mint and token balance for seller
@@ -42,7 +44,7 @@ func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 	quantity := int32(50)
 
 	// Create and match mint to establish token balance
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -54,21 +56,21 @@ func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findInvoiceTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Create unconfirmed invoice
-	_, err = tokenStore.SaveUnconfirmedInvoice(&store.UnconfirmedInvoice{
+	_, err = tokenStore.SaveUnconfirmedInvoice(ctx, &store.UnconfirmedInvoice{
 		Hash:           invoiceHash,
 		PaymentAddress: sellerAddress,
 		BuyerAddress:   support.GenerateDogecoinAddress(true),
@@ -92,12 +94,12 @@ func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 		Quantity:    quantity,
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findInvoiceTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
@@ -110,7 +112,7 @@ func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 	tx, _ := tokenStore.DB.Begin()
 	defer tx.Rollback()
 
-	pendingBalance, err := tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, tx)
+	pendingBalance, err := tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, tx)
 	assert.NilError(t, err)
 	assert.Equal(t, int(quantity), pendingBalance.Quantity)
 	assert.Equal(t, invoiceHash, pendingBalance.InvoiceHash)
@@ -141,6 +143,7 @@ func TestInvoiceProcessorProcessInvalidProtobuf(t *testing.T) {
 
 func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Setup: Create mint with small token balance
@@ -150,7 +153,7 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 	quantity := int32(150) // More than available balance
 
 	// Create and match mint to establish small token balance (100 tokens)
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -162,17 +165,17 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findInvoiceTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Create invoice transaction requesting more tokens than available
@@ -187,12 +190,12 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 		Quantity:    quantity,
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findInvoiceTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
@@ -205,11 +208,11 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 	tx, _ := tokenStore.DB.Begin()
 	defer tx.Rollback()
 
-	_, err = tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, tx)
+	_, err = tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, tx)
 	assert.Assert(t, err != nil, "No pending balance should be created")
 
 	// Verify transaction was removed due to insufficient balance
-	txsAfter, err := tokenStore.GetOnChainTransactions(0, 10)
+	txsAfter, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	removedTx := findInvoiceTransactionById(txsAfter, invoiceTxId)
 	assert.Assert(t, removedTx == nil, "Transaction should be removed due to insufficient balance")
@@ -217,6 +220,7 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 
 func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Setup: Create mint and token balance
@@ -226,7 +230,7 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 	quantity := int32(50)
 
 	// Create and match mint
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -238,21 +242,21 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findInvoiceTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Create existing pending token balance
-	err = tokenStore.UpsertPendingTokenBalance(invoiceHash, mintHash, int(quantity), "existingTxId", sellerAddress)
+	err = tokenStore.UpsertPendingTokenBalance(ctx, invoiceHash, mintHash, int(quantity), "existingTxId", sellerAddress)
 	assert.NilError(t, err)
 
 	// Create invoice transaction
@@ -267,12 +271,12 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 		Quantity:    quantity,
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findInvoiceTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
@@ -285,7 +289,7 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 	tx, _ := tokenStore.DB.Begin()
 	defer tx.Rollback()
 
-	pendingBalance, err := tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, tx)
+	pendingBalance, err := tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, tx)
 	assert.NilError(t, err)
 	assert.Equal(t, int(quantity), pendingBalance.Quantity)
 	// Just verify the pending balance exists with correct values
@@ -294,6 +298,7 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 
 func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Setup: Create mint and use some tokens in existing pending balance
@@ -304,7 +309,7 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 	quantity := int32(60) // Will exceed available balance after existing pending
 
 	// Create and match mint (100 tokens)
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -316,21 +321,21 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findInvoiceTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Create existing pending balance (50 tokens)
-	err = tokenStore.UpsertPendingTokenBalance(existingInvoiceHash, mintHash, 50, "existingTxId", sellerAddress)
+	err = tokenStore.UpsertPendingTokenBalance(ctx, existingInvoiceHash, mintHash, 50, "existingTxId", sellerAddress)
 	assert.NilError(t, err)
 
 	// Create invoice transaction requesting 60 tokens (50 available after existing pending)
@@ -345,12 +350,12 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 		Quantity:    quantity,
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findInvoiceTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
@@ -363,16 +368,16 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 	tx, _ := tokenStore.DB.Begin()
 	defer tx.Rollback()
 
-	_, err = tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, tx)
+	_, err = tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, tx)
 	assert.Assert(t, err != nil, "No new pending balance should be created")
 
 	// Verify original pending balance still exists
-	existingBalance, err := tokenStore.GetPendingTokenBalance(existingInvoiceHash, mintHash, tx)
+	existingBalance, err := tokenStore.GetPendingTokenBalance(ctx, existingInvoiceHash, mintHash, tx)
 	assert.NilError(t, err)
 	assert.Equal(t, 50, existingBalance.Quantity)
 
 	// Verify transaction was removed
-	txsAfter, err := tokenStore.GetOnChainTransactions(0, 10)
+	txsAfter, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	removedTx := findInvoiceTransactionById(txsAfter, invoiceTxId)
 	assert.Assert(t, removedTx == nil, "Transaction should be removed")
@@ -380,6 +385,7 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 
 func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Setup: Create mint and token balance
@@ -389,7 +395,7 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
 	quantity := int32(50)
 
 	// Create and match mint
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -401,17 +407,17 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findInvoiceTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Create invoice transaction
@@ -444,13 +450,14 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
 	tx, _ := tokenStore.DB.Begin()
 	defer tx.Rollback()
 
-	pendingBalance, err := tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, tx)
+	pendingBalance, err := tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, tx)
 	assert.NilError(t, err)
 	assert.Equal(t, int(quantity), pendingBalance.Quantity)
 }
 
 func TestInvoiceProcessorEnsurePendingTokenBalanceInsufficientBalance(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	mintHash := support.GenerateRandomHash()
@@ -470,12 +477,12 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceInsufficientBalance(t *testing
 		Quantity:    quantity,
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findInvoiceTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
@@ -486,7 +493,7 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceInsufficientBalance(t *testing
 	assert.Assert(t, !hasPending, "Should not have pending token balance")
 
 	// Verify transaction was removed
-	txsAfter, err := tokenStore.GetOnChainTransactions(0, 10)
+	txsAfter, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	removedTx := findInvoiceTransactionById(txsAfter, invoiceTxId)
 	assert.Assert(t, removedTx == nil, "Transaction should be removed")

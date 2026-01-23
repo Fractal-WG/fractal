@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -48,12 +49,13 @@ func NewTokenisationService(cfg *config.Config, dogenetClient *dogenet.DogeNetCl
 
 func (s *TokenisationService) Run() {
 	log.Println("Starting tokenisation service")
+	ctx := context.Background()
 
 	failures := 0
 	maxFails := 5
 
 	for {
-		err := s.Store.Migrate()
+		err := s.Store.Migrate(ctx)
 		if err != nil && err.Error() != "no change" {
 			if failures < maxFails {
 				failures++
@@ -105,10 +107,12 @@ func (s *TokenisationService) WaitForRunning() {
 }
 
 func (s *TokenisationService) Stop() {
+	ctx := context.Background()
+
 	s.HealthService.Stop()
 	s.Processor.Stop()
 	s.Follower.Stop()
-	s.Store.Close()
+	s.Store.Close(ctx)
 	s.RpcServer.Stop()
 	s.TrimmerService.Stop()
 }

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/url"
@@ -46,8 +47,8 @@ func NewTokenisationStore(dbUrl string, cfg config.Config) (*TokenisationStore, 
 	return &TokenisationStore{DB: sqlite, backend: "sqlite", cfg: cfg}, nil
 }
 
-func (s *TokenisationStore) Migrate() error {
-	driver, err := s.getMigrationDriver()
+func (s *TokenisationStore) Migrate(ctx context.Context) error {
+	driver, err := s.getMigrationDriver(ctx)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func (s *TokenisationStore) Migrate() error {
 	return nil
 }
 
-func (s *TokenisationStore) getMigrationDriver() (database.Driver, error) {
+func (s *TokenisationStore) getMigrationDriver(ctx context.Context) (database.Driver, error) {
 	if s.backend == "postgres" {
 		driver, err := postgres.WithInstance(s.DB, &postgres.Config{})
 		if err != nil {
@@ -101,7 +102,7 @@ func (s *TokenisationStore) getMigrationDriver() (database.Driver, error) {
 	return nil, fmt.Errorf("unsupported database scheme: %s", s.backend)
 }
 
-func (s *TokenisationStore) Close() error {
+func (s *TokenisationStore) Close(ctx context.Context) error {
 	fmt.Println("Closing store")
 	return s.DB.Close()
 }

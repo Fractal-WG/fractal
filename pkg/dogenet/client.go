@@ -3,6 +3,7 @@ package dogenet
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -276,12 +277,13 @@ func (c *DogeNetClient) Stop() {
 }
 
 func (s *DogeNetClient) gossipRandomMints() {
+	ctx := context.Background()
 	for !s.Stopping {
 		// wait for next turn
 		time.Sleep(GossipInterval)
 
 		// choose a random identity
-		mint, err := s.store.ChooseMint()
+		mint, err := s.store.ChooseMint(ctx)
 		if err != nil {
 			log.Printf("[FE] cannot choose mint: %v", err)
 			continue
@@ -297,12 +299,13 @@ func (s *DogeNetClient) gossipRandomMints() {
 }
 
 func (s *DogeNetClient) gossipRandomInvoices() {
+	ctx := context.Background()
 	for !s.Stopping {
 		// wait for next turn
 		time.Sleep(GossipInterval)
 
 		// choose a random identity
-		invoice, err := s.store.ChooseInvoice()
+		invoice, err := s.store.ChooseInvoice(ctx)
 		log.Println("Choose Invoice")
 
 		if err != nil {
@@ -333,12 +336,13 @@ func (s *DogeNetClient) gossipRandomInvoices() {
 }
 
 func (s *DogeNetClient) gossipRandomInvoiceSignatures() {
+	ctx := context.Background()
 	for !s.Stopping {
 		// wait for next turn
 		time.Sleep(GossipInterval)
 
 		// choose a random
-		invoiceSignature, err := s.store.ChooseInvoiceSignature()
+		invoiceSignature, err := s.store.ChooseInvoiceSignature(ctx)
 		log.Println("Choose Invoice Signature")
 
 		if err != nil {

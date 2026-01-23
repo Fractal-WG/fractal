@@ -16,13 +16,14 @@ import (
 
 func TestInvoices(t *testing.T) {
 	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
 	buyerAddress := support.GenerateDogecoinAddress(true)
 	sellOfferAddress := support.GenerateDogecoinAddress(true)
 	mintHash := support.GenerateRandomHash()
 
-	_, err := tokenisationStore.SaveMint(&store.MintWithoutID{
+	_, err := tokenisationStore.SaveMint(ctx, &store.MintWithoutID{
 		Title:         "mint1",
 		Description:   "description1",
 		FractionCount: 100,
@@ -67,12 +68,12 @@ func TestInvoices(t *testing.T) {
 	invoice.SetPublicKey(pubHex)
 	invoice.SetSignature(signature)
 
-	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(invoice))
+	invoiceResponse, err := feClient.CreateInvoice(ctx, connect.NewRequest(invoice))
 	if err != nil {
 		t.Fatalf("Failed to create invoice: %v", err)
 	}
 
-	invoices, err := tokenisationStore.GetUnconfirmedInvoices(0, 10, mintHash, buyerAddress)
+	invoices, err := tokenisationStore.GetUnconfirmedInvoices(ctx, 0, 10, mintHash, buyerAddress)
 	if err != nil {
 		t.Fatalf("Failed to get invoices: %v", err)
 	}
@@ -99,6 +100,7 @@ func TestInvoices(t *testing.T) {
 
 func TestInvoicesWithSignatureRequired(t *testing.T) {
 	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
 	sellOfferAddress := support.GenerateDogecoinAddress(true)
@@ -129,7 +131,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	confirmedMint.Hash, err = confirmedMint.GenerateHash()
 	assert.NilError(t, err)
 
-	_, err = tokenisationStore.SaveMint(confirmedMint, "owner")
+	_, err = tokenisationStore.SaveMint(ctx, confirmedMint, "owner")
 	assert.NilError(t, err)
 
 	invoice := rpc.CreateInvoiceRequest{
@@ -171,12 +173,12 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	protoInvoice.SetPublicKey(pubHex)
 	protoInvoice.SetSignature(signature)
 
-	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(protoInvoice))
+	invoiceResponse, err := feClient.CreateInvoice(ctx, connect.NewRequest(protoInvoice))
 	if err != nil {
 		t.Fatalf("Failed to create invoice: %v", err)
 	}
 
-	invoices, err := tokenisationStore.GetUnconfirmedInvoices(0, 10, confirmedMint.Hash, buyerAddress)
+	invoices, err := tokenisationStore.GetUnconfirmedInvoices(ctx, 0, 10, confirmedMint.Hash, buyerAddress)
 	if err != nil {
 		t.Fatalf("Failed to get invoices: %v", err)
 	}
@@ -203,6 +205,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 
 func TestCreateInvoiceSignature(t *testing.T) {
 	tokenisationStore, _, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
 	assetManagerPrivKey, assetManagerPubKey, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
 	assert.NilError(t, err)
@@ -232,7 +235,7 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	confirmedMint.Hash, err = confirmedMint.GenerateHash()
 	assert.NilError(t, err)
 
-	_, err = tokenisationStore.SaveMint(confirmedMint, "owner")
+	_, err = tokenisationStore.SaveMint(ctx, confirmedMint, "owner")
 	assert.NilError(t, err)
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
@@ -255,7 +258,7 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	invoice.Hash, err = invoice.GenerateHash()
 	assert.NilError(t, err)
 
-	_, err = tokenisationStore.SaveUnconfirmedInvoice(&invoice)
+	_, err = tokenisationStore.SaveUnconfirmedInvoice(ctx, &invoice)
 	if err != nil {
 		t.Fatalf("Failed to save invoice: %v", err)
 	}
@@ -281,7 +284,7 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	protoRequest := &protocol.CreateInvoiceSignatureRequest{}
 	protoRequest.SetPayload(protoPayload)
 
-	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(context.Background(), connect.NewRequest(protoRequest))
+	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(ctx, connect.NewRequest(protoRequest))
 	if err != nil {
 		t.Fatalf("Failed to create invoice signature: %v", err)
 	}

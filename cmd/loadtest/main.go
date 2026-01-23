@@ -64,6 +64,7 @@ var (
 
 func main() {
 	flag.Parse()
+	ctx := context.Background()
 
 	cfg := LoadTestConfig{
 		MintsCount:            *numMints,
@@ -105,10 +106,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer db.Close(ctx)
 
 	// Run migrations
-	err = db.Migrate()
+	err = db.Migrate(ctx)
 	if err != nil && err.Error() != "no change" {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
@@ -116,7 +117,7 @@ func main() {
 	// Clean database if requested
 	if *cleanDB {
 		log.Println("Cleaning database...")
-		if err := cleanDatabase(db); err != nil {
+		if err := cleanDatabase(ctx, db); err != nil {
 			log.Fatalf("Failed to clean database: %v", err)
 		}
 	}
@@ -130,7 +131,7 @@ func main() {
 	if !*skipData {
 		log.Println("Generating test data...")
 		dataStartTime := time.Now()
-		if err := generateTestData(db, cfg); err != nil {
+		if err := generateTestData(ctx, db, cfg); err != nil {
 			log.Fatalf("Failed to generate test data: %v", err)
 		}
 		report.DataGeneration = time.Since(dataStartTime)
@@ -140,12 +141,12 @@ func main() {
 	}
 
 	// Count records
-	report.RecordCounts = countRecords(db)
+	report.RecordCounts = countRecords(ctx, db)
 	log.Printf("Record counts: %+v", report.RecordCounts)
 
 	// Run query performance tests
 	log.Println("\nRunning query performance tests...")
-	report.QueryTests = runQueryTests(db, cfg)
+	report.QueryTests = runQueryTests(ctx, db, cfg)
 
 	// Identify slow queries (threshold: 100ms)
 	for _, result := range report.QueryTests {
@@ -167,7 +168,7 @@ func main() {
 	}
 }
 
-func cleanDatabase(db *store.TokenisationStore) error {
+func cleanDatabase(ctx context.Context, db *store.TokenisationStore) error {
 	tables := []string{
 		"invoice_signatures",
 		"pending_token_balances",
@@ -193,7 +194,7 @@ func cleanDatabase(db *store.TokenisationStore) error {
 	return nil
 }
 
-func generateTestData(db *store.TokenisationStore, cfg LoadTestConfig) error {
+func generateTestData(ctx context.Context, db *store.TokenisationStore, cfg LoadTestConfig) error {
 	// Generate addresses
 	addresses := make([]string, cfg.Addresses)
 	for i := 0; i < cfg.Addresses; i++ {
@@ -211,7 +212,7 @@ func generateTestData(db *store.TokenisationStore, cfg LoadTestConfig) error {
 		go func() {
 			defer wg.Done()
 			for i := range mintChan {
-				_, err := createMintBundle(db, i, addresses, cfg)
+				_, err := createMintBundle(ctx, db, i, addresses, cfg)
 				if err != nil {
 					log.Printf("Error creating mint bundle %d: %v", i, err)
 					continue
@@ -248,7 +249,7 @@ func generateTestData(db *store.TokenisationStore, cfg LoadTestConfig) error {
 	if cfg.UnconfirmedMintsCount > 0 {
 		log.Println("Creating unconfirmed mints...")
 		for i := 0; i < cfg.UnconfirmedMintsCount; i++ {
-			if _, err := createUnconfirmedMint(db, i, addresses); err != nil {
+			if _, err := createUnconfirmedMint(ctx, db, i, addresses); err != nil {
 				log.Printf("Error creating unconfirmed mint %d: %v", i, err)
 			}
 			if (i+1)%100 == 0 {
@@ -261,7 +262,7 @@ func generateTestData(db *store.TokenisationStore, cfg LoadTestConfig) error {
 	return nil
 }
 
-func createMintBundle(db *store.TokenisationStore, index int, addresses []string, cfg LoadTestConfig) (string, error) {
+func createMintBundle(ctx context.Context, db *store.TokenisationStore, index int, addresses []string, cfg LoadTestConfig) (string, error) {
 	tx, err := db.DB.Begin()
 	if err != nil {
 		return "", err
@@ -274,22 +275,22 @@ func createMintBundle(db *store.TokenisationStore, index int, addresses []string
 		}
 	}()
 
-	hash, err := createMintWithTx(db, index, addresses, tx)
+	hash, err := createMintWithTx(ctx, db, index, addresses, tx)
 	if err != nil {
 		return "", err
 	}
 
 	for j := 0; j < cfg.OffersPerMint; j++ {
-		if err := createSellOfferWithTx(db, hash, addresses, tx); err != nil {
+		if err := createSellOfferWithTx(ctx, db, hash, addresses, tx); err != nil {
 			return "", err
 		}
-		if err := createBuyOfferWithTx(db, hash, addresses, tx); err != nil {
+		if err := createBuyOfferWithTx(ctx, db, hash, addresses, tx); err != nil {
 			return "", err
 		}
 	}
 
 	for j := 0; j < cfg.InvoicesPerMint; j++ {
-		if err := createInvoiceWithTx(db, hash, addresses, tx); err != nil {
+		if err := createInvoiceWithTx(ctx, db, hash, addresses, tx); err != nil {
 			return "", err
 		}
 	}
@@ -297,7 +298,7 @@ func createMintBundle(db *store.TokenisationStore, index int, addresses []string
 	for j := 0; j < cfg.BalancesPerMint; j++ {
 		address := addresses[rand.Intn(len(addresses))]
 		balance := int(rand.Int63n(10000) + 1)
-		if err := db.UpsertTokenBalanceWithTransaction(address, hash, balance, tx); err != nil {
+		if err := db.UpsertTokenBalanceWithTransaction(ctx, address, hash, balance, tx); err != nil {
 			return "", err
 		}
 	}
@@ -310,7 +311,7 @@ func createMintBundle(db *store.TokenisationStore, index int, addresses []string
 	return hash, nil
 }
 
-func createMintWithTx(db *store.TokenisationStore, index int, addresses []string, tx *sql.Tx) (string, error) {
+func createMintWithTx(ctx context.Context, db *store.TokenisationStore, index int, addresses []string, tx *sql.Tx) (string, error) {
 	hash := generateHash()
 	mint := &store.MintWithoutID{
 		Hash:                     hash,
@@ -337,11 +338,11 @@ func createMintWithTx(db *store.TokenisationStore, index int, addresses []string
 		MinSignatures: 1,
 	}
 
-	_, err := db.SaveMintWithTx(mint, mint.OwnerAddress, tx)
+	_, err := db.SaveMintWithTx(ctx, mint, mint.OwnerAddress, tx)
 	return hash, err
 }
 
-func createUnconfirmedMint(db *store.TokenisationStore, index int, addresses []string) (string, error) {
+func createUnconfirmedMint(ctx context.Context, db *store.TokenisationStore, index int, addresses []string) (string, error) {
 	hash := generateHash()
 	mint := &store.MintWithoutID{
 		Hash:                     hash,
@@ -368,11 +369,11 @@ func createUnconfirmedMint(db *store.TokenisationStore, index int, addresses []s
 		MinSignatures: 1,
 	}
 
-	_, err := db.SaveUnconfirmedMint(mint)
+	_, err := db.SaveUnconfirmedMint(ctx, mint)
 	return hash, err
 }
 
-func createSellOfferWithTx(db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
+func createSellOfferWithTx(ctx context.Context, db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
 	offer := &store.SellOfferWithoutID{
 		OffererAddress: addresses[rand.Intn(len(addresses))],
 		MintHash:       mintHash,
@@ -380,11 +381,11 @@ func createSellOfferWithTx(db *store.TokenisationStore, mintHash string, address
 		Price:          int(rand.Int63n(1000000) + 1),
 		PublicKey:      generateHash(),
 	}
-	_, err := db.SaveSellOfferWithTx(offer, tx)
+	_, err := db.SaveSellOfferWithTx(ctx, offer, tx)
 	return err
 }
 
-func createBuyOfferWithTx(db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
+func createBuyOfferWithTx(ctx context.Context, db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
 	offer := &store.BuyOfferWithoutID{
 		OffererAddress: addresses[rand.Intn(len(addresses))],
 		SellerAddress:  addresses[rand.Intn(len(addresses))],
@@ -393,11 +394,11 @@ func createBuyOfferWithTx(db *store.TokenisationStore, mintHash string, addresse
 		Price:          int(rand.Int63n(1000000) + 1),
 		PublicKey:      generateHash(),
 	}
-	_, err := db.SaveBuyOfferWithTx(offer, tx)
+	_, err := db.SaveBuyOfferWithTx(ctx, offer, tx)
 	return err
 }
 
-func createInvoiceWithTx(db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
+func createInvoiceWithTx(ctx context.Context, db *store.TokenisationStore, mintHash string, addresses []string, tx *sql.Tx) error {
 	invoice := &store.Invoice{
 		Hash:            generateHash(),
 		PaymentAddress:  addresses[rand.Intn(len(addresses))],
@@ -412,11 +413,11 @@ func createInvoiceWithTx(db *store.TokenisationStore, mintHash string, addresses
 		PublicKey:       generateHash(),
 		Signature:       generateHash(),
 	}
-	_, err := db.SaveInvoiceWithTx(invoice, tx)
+	_, err := db.SaveInvoiceWithTx(ctx, invoice, tx)
 	return err
 }
 
-func countRecords(db *store.TokenisationStore) map[string]int {
+func countRecords(ctx context.Context, db *store.TokenisationStore) map[string]int {
 	counts := make(map[string]int)
 	tables := []string{
 		"mints",
@@ -431,7 +432,7 @@ func countRecords(db *store.TokenisationStore) map[string]int {
 
 	for _, table := range tables {
 		var count int
-		err := db.DB.QueryRowContext(context.Background(), fmt.Sprintf("SELECT COUNT(*) FROM %s", table)).Scan(&count)
+		err := db.DB.QueryRowContext(ctx, fmt.Sprintf("SELECT COUNT(*) FROM %s", table)).Scan(&count)
 		if err != nil {
 			log.Printf("Warning: Failed to count %s: %v", table, err)
 			continue
@@ -442,26 +443,26 @@ func countRecords(db *store.TokenisationStore) map[string]int {
 	return counts
 }
 
-func runQueryTests(db *store.TokenisationStore, cfg LoadTestConfig) []QueryResult {
+func runQueryTests(ctx context.Context, db *store.TokenisationStore, cfg LoadTestConfig) []QueryResult {
 	var results []QueryResult
 
 	// Test 1: GetMints (paginated)
 	results = append(results, testQuery("GetMints(limit=50)", func() (int, error) {
-		mints, err := db.GetMints(50, 0)
+		mints, err := db.GetMints(ctx, 50, 0)
 		return len(mints), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 2: GetMints (large page)
 	results = append(results, testQuery("GetMints(limit=500)", func() (int, error) {
-		mints, err := db.GetMints(500, 0)
+		mints, err := db.GetMints(ctx, 500, 0)
 		return len(mints), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 3: GetMintByHash
-	hash := getRandomMintHash(db)
+	hash := getRandomMintHash(ctx, db)
 	if hash != "" {
 		results = append(results, testQuery("GetMintByHash", func() (int, error) {
-			mint, err := db.GetMintByHash(hash)
+			mint, err := db.GetMintByHash(ctx, hash)
 			if err != nil {
 				return 0, err
 			}
@@ -473,71 +474,71 @@ func runQueryTests(db *store.TokenisationStore, cfg LoadTestConfig) []QueryResul
 	}
 
 	// Test 4: GetMintsByPublicKey (confirmed only)
-	mintPublicKey := getRandomMintPublicKey(db)
+	mintPublicKey := getRandomMintPublicKey(ctx, db)
 	if mintPublicKey != "" {
 		results = append(results, testQuery("GetMintsByPublicKey(confirmed)", func() (int, error) {
-			mints, err := db.GetMintsByPublicKey(0, 100, mintPublicKey, false)
+			mints, err := db.GetMintsByPublicKey(ctx, 0, 100, mintPublicKey, false)
 			return len(mints), err
 		}, cfg.QueryIterations, cfg.QueryConcurrency))
 	}
 
 	// Test 5: GetMintsByPublicKey (include unconfirmed)
-	unconfirmedPublicKey := getRandomUnconfirmedPublicKey(db)
+	unconfirmedPublicKey := getRandomUnconfirmedPublicKey(ctx, db)
 	if unconfirmedPublicKey != "" {
 		results = append(results, testQuery("GetMintsByPublicKey(includeUnconfirmed)", func() (int, error) {
-			mints, err := db.GetMintsByPublicKey(0, 100, unconfirmedPublicKey, true)
+			mints, err := db.GetMintsByPublicKey(ctx, 0, 100, unconfirmedPublicKey, true)
 			return len(mints), err
 		}, cfg.QueryIterations, cfg.QueryConcurrency))
 	}
 
 	// Test 6: GetMintsByAddress (confirmed only)
-	address := getRandomAddress(db)
+	address := getRandomAddress(ctx, db)
 	if address != "" {
 		results = append(results, testQuery("GetMintsByAddress(confirmed)", func() (int, error) {
-			mints, err := db.GetMintsByAddress(0, 100, address, false)
+			mints, err := db.GetMintsByAddress(ctx, 0, 100, address, false)
 			return len(mints), err
 		}, cfg.QueryIterations, cfg.QueryConcurrency))
 	}
 
 	// Test 7: GetMintsByAddress (include unconfirmed)
-	unconfirmedAddress := getRandomUnconfirmedAddress(db)
+	unconfirmedAddress := getRandomUnconfirmedAddress(ctx, db)
 	if unconfirmedAddress != "" {
 		results = append(results, testQuery("GetMintsByAddress(includeUnconfirmed)", func() (int, error) {
-			mints, err := db.GetMintsByAddress(0, 100, unconfirmedAddress, true)
+			mints, err := db.GetMintsByAddress(ctx, 0, 100, unconfirmedAddress, true)
 			return len(mints), err
 		}, cfg.QueryIterations, cfg.QueryConcurrency))
 	}
 
 	// Test 8: GetUnconfirmedMints
 	results = append(results, testQuery("GetUnconfirmedMints(limit=100)", func() (int, error) {
-		mints, err := db.GetUnconfirmedMints(0, 100)
+		mints, err := db.GetUnconfirmedMints(ctx, 0, 100)
 		return len(mints), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 9: GetSellOffers
 	results = append(results, testQuery("GetSellOffers(limit=100)", func() (int, error) {
-		offers, err := db.GetSellOffers(0, 100, "", "")
+		offers, err := db.GetSellOffers(ctx, 0, 100, "", "")
 		return len(offers), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 10: GetBuyOffers
 	results = append(results, testQuery("GetBuyOffers(limit=100)", func() (int, error) {
-		offers, err := db.GetBuyOffersByMintAndSellerAddress(0, 100, "", "")
+		offers, err := db.GetBuyOffersByMintAndSellerAddress(ctx, 0, 100, "", "")
 		return len(offers), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 11: GetInvoices
 	results = append(results, testQuery("GetInvoices(limit=100)", func() (int, error) {
-		invoices, err := db.GetInvoices(0, 100, "", "")
+		invoices, err := db.GetInvoices(ctx, 0, 100, "", "")
 		return len(invoices), err
 	}, cfg.QueryIterations, cfg.QueryConcurrency))
 
 	// Test 12: GetTokenBalances
 	if hash != "" {
-		address := getRandomAddress(db)
+		address := getRandomAddress(ctx, db)
 		if address != "" {
 			results = append(results, testQuery("GetTokenBalances", func() (int, error) {
-				balances, err := db.GetTokenBalances(address, hash)
+				balances, err := db.GetTokenBalances(ctx, address, hash)
 				if err != nil {
 					return 0, err
 				}
@@ -548,7 +549,7 @@ func runQueryTests(db *store.TokenisationStore, cfg LoadTestConfig) []QueryResul
 
 	// Test 13: GetStats
 	results = append(results, testQuery("GetStats", func() (int, error) {
-		stats, err := db.GetStats()
+		stats, err := db.GetStats(ctx)
 		if err != nil {
 			return 0, err
 		}
@@ -562,7 +563,7 @@ func runQueryTests(db *store.TokenisationStore, cfg LoadTestConfig) []QueryResul
 	if hash != "" {
 		results = append(results, testQuery("GetSellOffersForMint", func() (int, error) {
 			var count int
-			err := db.DB.QueryRowContext(context.Background(),
+			err := db.DB.QueryRowContext(ctx,
 				"SELECT COUNT(*) FROM sell_offers WHERE mint_hash = $1", hash).Scan(&count)
 			return count, err
 		}, cfg.QueryIterations, cfg.QueryConcurrency))
@@ -570,7 +571,7 @@ func runQueryTests(db *store.TokenisationStore, cfg LoadTestConfig) []QueryResul
 
 	// Test 15: Balance aggregation query
 	results = append(results, testQuery("AggregateBalancesByMint", func() (int, error) {
-		rows, err := db.DB.QueryContext(context.Background(),
+		rows, err := db.DB.QueryContext(ctx,
 			"SELECT mint_hash, SUM(quantity) as total FROM token_balances GROUP BY mint_hash ORDER BY mint_hash LIMIT 100")
 		if err != nil {
 			return 0, err
@@ -665,9 +666,9 @@ func testQuery(name string, queryFunc func() (int, error), iterations int, concu
 	return result
 }
 
-func getRandomMintHash(db *store.TokenisationStore) string {
+func getRandomMintHash(ctx context.Context, db *store.TokenisationStore) string {
 	var hash string
-	err := db.DB.QueryRowContext(context.Background(),
+	err := db.DB.QueryRowContext(ctx,
 		"SELECT hash FROM mints ORDER BY RANDOM() LIMIT 1").Scan(&hash)
 	if err != nil {
 		return ""
@@ -675,9 +676,9 @@ func getRandomMintHash(db *store.TokenisationStore) string {
 	return hash
 }
 
-func getRandomMintPublicKey(db *store.TokenisationStore) string {
+func getRandomMintPublicKey(ctx context.Context, db *store.TokenisationStore) string {
 	var publicKey string
-	err := db.DB.QueryRowContext(context.Background(),
+	err := db.DB.QueryRowContext(ctx,
 		"SELECT public_key FROM mints ORDER BY RANDOM() LIMIT 1").Scan(&publicKey)
 	if err != nil {
 		return ""
@@ -685,9 +686,9 @@ func getRandomMintPublicKey(db *store.TokenisationStore) string {
 	return publicKey
 }
 
-func getRandomAddress(db *store.TokenisationStore) string {
+func getRandomAddress(ctx context.Context, db *store.TokenisationStore) string {
 	var address string
-	err := db.DB.QueryRowContext(context.Background(),
+	err := db.DB.QueryRowContext(ctx,
 		"SELECT owner_address FROM mints ORDER BY RANDOM() LIMIT 1").Scan(&address)
 	if err != nil {
 		return ""
@@ -695,9 +696,9 @@ func getRandomAddress(db *store.TokenisationStore) string {
 	return address
 }
 
-func getRandomUnconfirmedPublicKey(db *store.TokenisationStore) string {
+func getRandomUnconfirmedPublicKey(ctx context.Context, db *store.TokenisationStore) string {
 	var publicKey string
-	err := db.DB.QueryRowContext(context.Background(),
+	err := db.DB.QueryRowContext(ctx,
 		"SELECT public_key FROM unconfirmed_mints ORDER BY RANDOM() LIMIT 1").Scan(&publicKey)
 	if err != nil {
 		return ""
@@ -705,9 +706,9 @@ func getRandomUnconfirmedPublicKey(db *store.TokenisationStore) string {
 	return publicKey
 }
 
-func getRandomUnconfirmedAddress(db *store.TokenisationStore) string {
+func getRandomUnconfirmedAddress(ctx context.Context, db *store.TokenisationStore) string {
 	var address string
-	err := db.DB.QueryRowContext(context.Background(),
+	err := db.DB.QueryRowContext(ctx,
 		"SELECT owner_address FROM unconfirmed_mints ORDER BY RANDOM() LIMIT 1").Scan(&address)
 	if err != nil {
 		return ""

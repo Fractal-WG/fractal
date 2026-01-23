@@ -1,6 +1,7 @@
 package store_test
 
 import (
+	"context"
 	"testing"
 
 	"dogecoin.org/fractal-engine/internal/test/support"
@@ -9,6 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"gotest.tools/assert"
 )
+
+var testCtx = context.Background()
 
 func TestSaveMint(t *testing.T) {
 	db := support.SetupTestDB()
@@ -34,12 +37,12 @@ func TestSaveMint(t *testing.T) {
 		MinSignatures:            1,
 	}
 
-	id, err := db.SaveMint(mint, "ownerAddress123")
+	id, err := db.SaveMint(testCtx, mint, "ownerAddress123")
 	assert.NilError(t, err)
 	assert.Assert(t, id != "")
 
 	// Verify the mint was saved
-	savedMint, err := db.GetMintByHash("testHash123")
+	savedMint, err := db.GetMintByHash(testCtx, "testHash123")
 	assert.NilError(t, err)
 	assert.Equal(t, savedMint.Hash, "testHash123")
 	assert.Equal(t, savedMint.Title, "Test Mint")
@@ -54,7 +57,7 @@ func TestGetMintByHash(t *testing.T) {
 	db := support.SetupTestDB()
 
 	// Test non-existent mint
-	mint, err := db.GetMintByHash("nonExistent")
+	mint, err := db.GetMintByHash(testCtx, "nonExistent")
 	assert.NilError(t, err)
 	assert.Equal(t, mint.Hash, "")
 
@@ -74,11 +77,11 @@ func TestGetMintByHash(t *testing.T) {
 		MinSignatures:            1,
 	}
 
-	_, err = db.SaveMint(mintToSave, "owner456")
+	_, err = db.SaveMint(testCtx, mintToSave, "owner456")
 	assert.NilError(t, err)
 
 	// Get the mint
-	retrievedMint, err := db.GetMintByHash("testHash456")
+	retrievedMint, err := db.GetMintByHash(testCtx, "testHash456")
 	assert.NilError(t, err)
 	assert.Equal(t, retrievedMint.Hash, "testHash456")
 	assert.Equal(t, retrievedMint.Title, "Test Mint 2")
@@ -103,22 +106,22 @@ func TestGetMints(t *testing.T) {
 			LockupOptions: store.StringInterfaceMap{},
 			PublicKey:     "pubKey" + string(rune(i+65)),
 		}
-		_, err := db.SaveMint(mint, "owner"+string(rune(i+65)))
+		_, err := db.SaveMint(testCtx, mint, "owner"+string(rune(i+65)))
 		assert.NilError(t, err)
 	}
 
 	// Test pagination
-	mints, err := db.GetMints(0, 3)
+	mints, err := db.GetMints(testCtx, 0, 3)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 3)
 
 	// Test offset
-	mints, err = db.GetMints(2, 3)
+	mints, err = db.GetMints(testCtx, 2, 3)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 3)
 
 	// Test getting all
-	mints, err = db.GetMints(0, 10)
+	mints, err = db.GetMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 5)
 }
@@ -139,7 +142,7 @@ func TestGetMintsByPublicKey(t *testing.T) {
 		PublicKey:       "pubKey1",
 		TransactionHash: "tx1",
 	}
-	_, err := db.SaveMint(mint1, "owner1")
+	_, err := db.SaveMint(testCtx, mint1, "owner1")
 	assert.NilError(t, err)
 
 	mint2 := &store.MintWithoutID{
@@ -154,7 +157,7 @@ func TestGetMintsByPublicKey(t *testing.T) {
 		PublicKey:       "pubKey1",
 		TransactionHash: "tx2",
 	}
-	_, err = db.SaveMint(mint2, "owner2")
+	_, err = db.SaveMint(testCtx, mint2, "owner2")
 	assert.NilError(t, err)
 
 	mint3 := &store.MintWithoutID{
@@ -169,24 +172,24 @@ func TestGetMintsByPublicKey(t *testing.T) {
 		PublicKey:       "pubKey2",
 		TransactionHash: "tx3",
 	}
-	_, err = db.SaveMint(mint3, "owner3")
+	_, err = db.SaveMint(testCtx, mint3, "owner3")
 	assert.NilError(t, err)
 
 	// Get mints by public key
-	mints, err := db.GetMintsByPublicKey(0, 10, "pubKey1", false)
+	mints, err := db.GetMintsByPublicKey(testCtx, 0, 10, "pubKey1", false)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 2)
 	assert.Equal(t, mints[0].PublicKey, "pubKey1")
 	assert.Equal(t, mints[1].PublicKey, "pubKey1")
 
 	// Test with different public key
-	mints, err = db.GetMintsByPublicKey(0, 10, "pubKey2", false)
+	mints, err = db.GetMintsByPublicKey(testCtx, 0, 10, "pubKey2", false)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 1)
 	assert.Equal(t, mints[0].PublicKey, "pubKey2")
 
 	// Test with non-existent public key
-	mints, err = db.GetMintsByPublicKey(0, 10, "nonExistent", false)
+	mints, err = db.GetMintsByPublicKey(testCtx, 0, 10, "nonExistent", false)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 0)
 }
@@ -212,12 +215,12 @@ func TestSaveUnconfirmedMint(t *testing.T) {
 		MinSignatures:            1,
 	}
 
-	id, err := db.SaveUnconfirmedMint(mint)
+	id, err := db.SaveUnconfirmedMint(testCtx, mint)
 	assert.NilError(t, err)
 	assert.Assert(t, id != "")
 
 	// Verify the unconfirmed mint was saved
-	unconfirmedMints, err := db.GetUnconfirmedMints(0, 10)
+	unconfirmedMints, err := db.GetUnconfirmedMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(unconfirmedMints), 1)
 	assert.Equal(t, unconfirmedMints[0].Hash, "unconfirmedHash123")
@@ -243,17 +246,17 @@ func TestGetUnconfirmedMints(t *testing.T) {
 			LockupOptions: store.StringInterfaceMap{},
 			PublicKey:     "pubKey" + string(rune(i+65)),
 		}
-		_, err := db.SaveUnconfirmedMint(mint)
+		_, err := db.SaveUnconfirmedMint(testCtx, mint)
 		assert.NilError(t, err)
 	}
 
 	// Test pagination
-	mints, err := db.GetUnconfirmedMints(0, 2)
+	mints, err := db.GetUnconfirmedMints(testCtx, 0, 2)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 2)
 
 	// Test getting all
-	mints, err = db.GetUnconfirmedMints(0, 10)
+	mints, err = db.GetUnconfirmedMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 3)
 }
@@ -274,16 +277,16 @@ func TestTrimOldUnconfirmedMints(t *testing.T) {
 			LockupOptions: store.StringInterfaceMap{},
 			PublicKey:     "pubKey",
 		}
-		_, err := db.SaveUnconfirmedMint(mint)
+		_, err := db.SaveUnconfirmedMint(testCtx, mint)
 		assert.NilError(t, err)
 	}
 
 	// Trim to keep only 3 most recent
-	err := db.TrimOldUnconfirmedMints(3)
+	err := db.TrimOldUnconfirmedMints(testCtx, 3)
 	assert.NilError(t, err)
 
 	// Verify only 3 remain
-	mints, err := db.GetUnconfirmedMints(0, 10)
+	mints, err := db.GetUnconfirmedMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 3)
 }
@@ -305,7 +308,7 @@ func TestMatchMint(t *testing.T) {
 		TransactionHash: "matchTxHash",
 		BlockHeight:     1000,
 	}
-	_, err := db.SaveMint(mint, "owner")
+	_, err := db.SaveMint(testCtx, mint, "owner")
 	assert.NilError(t, err)
 
 	// Create matching onchain message with same hash
@@ -316,7 +319,7 @@ func TestMatchMint(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Save onchain transaction
-	txId, err := db.SaveOnChainTransaction("matchTxHash", 1000, "blockHash", 1, protocol.ACTION_MINT, 1, actionData, "addr", map[string]interface{}{
+	txId, err := db.SaveOnChainTransaction(testCtx, "matchTxHash", 1000, "blockHash", 1, protocol.ACTION_MINT, 1, actionData, "addr", map[string]interface{}{
 		"addr": 0,
 	})
 	assert.NilError(t, err)
@@ -337,11 +340,11 @@ func TestMatchMint(t *testing.T) {
 	}
 
 	// Test matching
-	matched := db.MatchMint(onchainTx)
+	matched := db.MatchMint(testCtx, onchainTx)
 	assert.Assert(t, matched)
 
 	// Verify the onchain transaction was deleted
-	transactions, err := db.GetOnChainTransactions(0, 10)
+	transactions, err := db.GetOnChainTransactions(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(transactions), 0)
 }
@@ -362,7 +365,7 @@ func TestMatchUnconfirmedMint(t *testing.T) {
 		FeedURL:       "https://example.com",
 		PublicKey:     "pubKeyMatch",
 	}
-	_, err := db.SaveUnconfirmedMint(unconfirmedMint)
+	_, err := db.SaveUnconfirmedMint(testCtx, unconfirmedMint)
 	assert.NilError(t, err)
 
 	// Create matching onchain message
@@ -373,7 +376,7 @@ func TestMatchUnconfirmedMint(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Save onchain transaction
-	txId, err := db.SaveOnChainTransaction("confirmTxHash", 2000, "blockHash", 1, protocol.ACTION_MINT, 1, actionData, "confirmedAddr", map[string]interface{}{
+	txId, err := db.SaveOnChainTransaction(testCtx, "confirmTxHash", 2000, "blockHash", 1, protocol.ACTION_MINT, 1, actionData, "confirmedAddr", map[string]interface{}{
 		"addr": 0,
 	})
 	assert.NilError(t, err)
@@ -394,11 +397,11 @@ func TestMatchUnconfirmedMint(t *testing.T) {
 	}
 
 	// Match the unconfirmed mint
-	err = db.MatchUnconfirmedMint(onchainTx)
+	err = db.MatchUnconfirmedMint(testCtx, onchainTx)
 	assert.NilError(t, err)
 
 	// Verify the mint is now confirmed
-	confirmedMint, err := db.GetMintByHash("unconfMatchHash")
+	confirmedMint, err := db.GetMintByHash(testCtx, "unconfMatchHash")
 	assert.NilError(t, err)
 	assert.Equal(t, confirmedMint.Hash, "unconfMatchHash")
 	assert.Equal(t, confirmedMint.TransactionHash, "confirmTxHash")
@@ -406,12 +409,12 @@ func TestMatchUnconfirmedMint(t *testing.T) {
 	assert.Equal(t, confirmedMint.OwnerAddress, "confirmedAddr")
 
 	// Verify the unconfirmed mint was deleted
-	unconfirmedMints, err := db.GetUnconfirmedMints(0, 10)
+	unconfirmedMints, err := db.GetUnconfirmedMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(unconfirmedMints), 0)
 
 	// Verify the onchain transaction was deleted
-	transactions, err := db.GetOnChainTransactions(0, 10)
+	transactions, err := db.GetOnChainTransactions(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(transactions), 0)
 }
@@ -432,21 +435,21 @@ func TestClearMints(t *testing.T) {
 			LockupOptions: store.StringInterfaceMap{},
 			PublicKey:     "pubKey",
 		}
-		_, err := db.SaveMint(mint, "owner")
+		_, err := db.SaveMint(testCtx, mint, "owner")
 		assert.NilError(t, err)
 	}
 
 	// Verify mints exist
-	mints, err := db.GetMints(0, 10)
+	mints, err := db.GetMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 3)
 
 	// Clear all mints
-	err = db.ClearMints()
+	err = db.ClearMints(testCtx)
 	assert.NilError(t, err)
 
 	// Verify all mints are gone
-	mints, err = db.GetMints(0, 10)
+	mints, err = db.GetMints(testCtx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 0)
 }
@@ -485,12 +488,12 @@ func TestMintWithComplexMetadata(t *testing.T) {
 		PublicKey: "complexPubKey",
 	}
 
-	id, err := db.SaveMint(mint, "complexOwner")
+	id, err := db.SaveMint(testCtx, mint, "complexOwner")
 	assert.NilError(t, err)
 	assert.Assert(t, id != "")
 
 	// Retrieve and verify
-	retrievedMint, err := db.GetMintByHash("complexHash")
+	retrievedMint, err := db.GetMintByHash(testCtx, "complexHash")
 	assert.NilError(t, err)
 	assert.Equal(t, retrievedMint.Hash, "complexHash")
 	assert.Equal(t, len(retrievedMint.Tags), 3)
@@ -515,7 +518,7 @@ func TestGetMintsByPublicKeyWithUnconfirmed(t *testing.T) {
 		PublicKey:       "testPubKey",
 		TransactionHash: "txHash",
 	}
-	_, err := db.SaveMint(confirmedMint, "owner")
+	_, err := db.SaveMint(testCtx, confirmedMint, "owner")
 	assert.NilError(t, err)
 
 	// Save an unconfirmed mint with same public key
@@ -530,17 +533,17 @@ func TestGetMintsByPublicKeyWithUnconfirmed(t *testing.T) {
 		LockupOptions: store.StringInterfaceMap{},
 		PublicKey:     "testPubKey",
 	}
-	_, err = db.SaveUnconfirmedMint(unconfirmedMint)
+	_, err = db.SaveUnconfirmedMint(testCtx, unconfirmedMint)
 	assert.NilError(t, err)
 
 	// Get mints without unconfirmed
-	mints, err := db.GetMintsByPublicKey(0, 10, "testPubKey", false)
+	mints, err := db.GetMintsByPublicKey(testCtx, 0, 10, "testPubKey", false)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 1)
 	assert.Equal(t, mints[0].Title, "Confirmed Mint")
 
 	// Get mints with unconfirmed
-	mints, err = db.GetMintsByPublicKey(0, 10, "testPubKey", true)
+	mints, err = db.GetMintsByPublicKey(testCtx, 0, 10, "testPubKey", true)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 2)
 }

@@ -27,7 +27,7 @@ type CreateInvoiceSignatureResponse struct {
 	Id string `json:"id"`
 }
 
-func (s *ConnectRpcService) GetInvoices(_ context.Context, req *connect.Request[protocol.GetInvoicesRequest]) (*connect.Response[protocol.GetInvoicesResponse], error) {
+func (s *ConnectRpcService) GetInvoices(ctx context.Context, req *connect.Request[protocol.GetInvoicesRequest]) (*connect.Response[protocol.GetInvoicesResponse], error) {
 	address := req.Msg.GetAddress()
 	if address == nil || address.GetValue() == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
@@ -57,9 +57,9 @@ func (s *ConnectRpcService) GetInvoices(_ context.Context, req *connect.Request[
 	var invoices []store.Invoice
 	var err error
 	if mintHash == "" {
-		invoices, err = s.store.GetInvoicesForMe(start, end, address.GetValue())
+		invoices, err = s.store.GetInvoicesForMe(ctx, start, end, address.GetValue())
 	} else {
-		invoices, err = s.store.GetInvoices(start, end, mintHash, address.GetValue())
+		invoices, err = s.store.GetInvoices(ctx, start, end, mintHash, address.GetValue())
 	}
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -85,7 +85,7 @@ func (s *ConnectRpcService) GetInvoices(_ context.Context, req *connect.Request[
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) GetAllInvoices(_ context.Context, req *connect.Request[protocol.GetAllInvoicesRequest]) (*connect.Response[protocol.GetAllInvoicesResponse], error) {
+func (s *ConnectRpcService) GetAllInvoices(ctx context.Context, req *connect.Request[protocol.GetAllInvoicesRequest]) (*connect.Response[protocol.GetAllInvoicesResponse], error) {
 	limit := int32(100)
 	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
 		limit = req.Msg.GetLimit().GetValue()
@@ -104,7 +104,7 @@ func (s *ConnectRpcService) GetAllInvoices(_ context.Context, req *connect.Reque
 		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
-	invoices, err := s.store.GetAllInvoices(start, end, mintHash)
+	invoices, err := s.store.GetAllInvoices(ctx, start, end, mintHash)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -130,7 +130,7 @@ func (s *ConnectRpcService) GetAllInvoices(_ context.Context, req *connect.Reque
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Request[protocol.CreateInvoiceRequest]) (*connect.Response[protocol.CreateInvoiceResponse], error) {
+func (s *ConnectRpcService) CreateInvoice(ctx context.Context, req *connect.Request[protocol.CreateInvoiceRequest]) (*connect.Response[protocol.CreateInvoiceResponse], error) {
 	request, err := toCreateInvoiceRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -140,7 +140,7 @@ func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Reques
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := s.store.CountUnconfirmedInvoices(request.Payload.MintHash, request.Payload.BuyerAddress)
+	count, err := s.store.CountUnconfirmedInvoices(ctx, request.Payload.MintHash, request.Payload.BuyerAddress)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -149,7 +149,7 @@ func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Reques
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invoice limit reached"))
 	}
 
-	mint, err := s.store.GetMintByHash(request.Payload.MintHash)
+	mint, err := s.store.GetMintByHash(ctx, request.Payload.MintHash)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -177,7 +177,7 @@ func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Reques
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := s.store.SaveUnconfirmedInvoice(newInvoiceWithoutId)
+	id, err := s.store.SaveUnconfirmedInvoice(ctx, newInvoiceWithoutId)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -197,7 +197,7 @@ func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Reques
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) CreateInvoiceSignature(_ context.Context, req *connect.Request[protocol.CreateInvoiceSignatureRequest]) (*connect.Response[protocol.CreateInvoiceSignatureResponse], error) {
+func (s *ConnectRpcService) CreateInvoiceSignature(ctx context.Context, req *connect.Request[protocol.CreateInvoiceSignatureRequest]) (*connect.Response[protocol.CreateInvoiceSignatureResponse], error) {
 	payload := req.Msg.GetPayload()
 	if payload == nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("payload is required"))
@@ -210,12 +210,12 @@ func (s *ConnectRpcService) CreateInvoiceSignature(_ context.Context, req *conne
 		CreatedAt:   time.Now(),
 	}
 
-	invoice, err := s.store.GetUnconfirmedInvoiceByHash(payload.GetInvoiceHash())
+	invoice, err := s.store.GetUnconfirmedInvoiceByHash(ctx, payload.GetInvoiceHash())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	mint, err := s.store.GetMintByHash(invoice.MintHash)
+	mint, err := s.store.GetMintByHash(ctx, invoice.MintHash)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -224,7 +224,7 @@ func (s *ConnectRpcService) CreateInvoiceSignature(_ context.Context, req *conne
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := s.store.SaveApprovedInvoiceSignature(newInvoiceSignature)
+	id, err := s.store.SaveApprovedInvoiceSignature(ctx, newInvoiceSignature)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}

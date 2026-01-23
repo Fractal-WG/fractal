@@ -8,8 +8,8 @@ import (
 )
 
 
-func (s *ConnectRpcService) GetStats(_ context.Context, _ *connect.Request[protocol.GetStatsRequest]) (*connect.Response[protocol.GetStatsResponse], error) {
-	stats, err := s.store.GetStats()
+func (s *ConnectRpcService) GetStats(ctx context.Context, _ *connect.Request[protocol.GetStatsRequest]) (*connect.Response[protocol.GetStatsResponse], error) {
+	stats, err := s.store.GetStats(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

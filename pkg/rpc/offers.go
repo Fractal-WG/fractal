@@ -10,7 +10,7 @@ import (
 	"dogecoin.org/fractal-engine/pkg/store"
 )
 
-func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Request[protocol.GetSellOffersRequest]) (*connect.Response[protocol.GetSellOffersResponse], error) {
+func (s *ConnectRpcService) GetSellOffers(ctx context.Context, req *connect.Request[protocol.GetSellOffersRequest]) (*connect.Response[protocol.GetSellOffersResponse], error) {
 	limit := int32(100)
 	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() < limit {
 		limit = req.Msg.GetLimit().GetValue()
@@ -34,7 +34,7 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 		offererAddress = req.Msg.GetOffererAddress().GetValue()
 	}
 
-	offers, err := s.store.GetSellOffers(start, end, mintHash, offererAddress)
+	offers, err := s.store.GetSellOffers(ctx, start, end, mintHash, offererAddress)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -49,7 +49,7 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 
 	offersWithMints := make([]*protocol.SellOfferWithMint, 0, len(offers))
 	for _, offer := range offers {
-		mint, err := s.store.GetMintByHash(offer.MintHash)
+		mint, err := s.store.GetMintByHash(ctx, offer.MintHash)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
@@ -68,7 +68,7 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Request[protocol.CreateSellOfferRequest]) (*connect.Response[protocol.CreateSellOfferResponse], error) {
+func (s *ConnectRpcService) CreateSellOffer(ctx context.Context, req *connect.Request[protocol.CreateSellOfferRequest]) (*connect.Response[protocol.CreateSellOfferResponse], error) {
 	request, err := toCreateSellOfferRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -78,7 +78,7 @@ func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Requ
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := s.store.CountSellOffers(request.Payload.MintHash, request.Payload.OffererAddress)
+	count, err := s.store.CountSellOffers(ctx, request.Payload.MintHash, request.Payload.OffererAddress)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -101,7 +101,7 @@ func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Requ
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := s.store.SaveSellOffer(newOfferWithoutId)
+	id, err := s.store.SaveSellOffer(ctx, newOfferWithoutId)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -121,7 +121,7 @@ func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Requ
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) DeleteSellOffer(_ context.Context, req *connect.Request[protocol.DeleteSellOfferRequest]) (*connect.Response[protocol.DeleteSellOfferResponse], error) {
+func (s *ConnectRpcService) DeleteSellOffer(ctx context.Context, req *connect.Request[protocol.DeleteSellOfferRequest]) (*connect.Response[protocol.DeleteSellOfferResponse], error) {
 	request, err := toDeleteSellOfferRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -131,7 +131,7 @@ func (s *ConnectRpcService) DeleteSellOffer(_ context.Context, req *connect.Requ
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	if err := s.store.DeleteSellOffer(request.Payload.OfferHash, request.PublicKey); err != nil {
+	if err := s.store.DeleteSellOffer(ctx, request.Payload.OfferHash, request.PublicKey); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
@@ -144,7 +144,7 @@ func (s *ConnectRpcService) DeleteSellOffer(_ context.Context, req *connect.Requ
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request[protocol.GetBuyOffersRequest]) (*connect.Response[protocol.GetBuyOffersResponse], error) {
+func (s *ConnectRpcService) GetBuyOffers(ctx context.Context, req *connect.Request[protocol.GetBuyOffersRequest]) (*connect.Response[protocol.GetBuyOffersResponse], error) {
 	limit := int32(100)
 	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() < limit {
 		limit = req.Msg.GetLimit().GetValue()
@@ -168,7 +168,7 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 		sellerAddress = req.Msg.GetSellerAddress().GetValue()
 	}
 
-	offers, err := s.store.GetBuyOffersByMintAndSellerAddress(start, end, mintHash, sellerAddress)
+	offers, err := s.store.GetBuyOffersByMintAndSellerAddress(ctx, start, end, mintHash, sellerAddress)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -183,7 +183,7 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 
 	offersWithMints := make([]*protocol.BuyOfferWithMint, 0, len(offers))
 	for _, offer := range offers {
-		mint, err := s.store.GetMintByHash(offer.MintHash)
+		mint, err := s.store.GetMintByHash(ctx, offer.MintHash)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
@@ -202,7 +202,7 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Request[protocol.CreateBuyOfferRequest]) (*connect.Response[protocol.CreateBuyOfferResponse], error) {
+func (s *ConnectRpcService) CreateBuyOffer(ctx context.Context, req *connect.Request[protocol.CreateBuyOfferRequest]) (*connect.Response[protocol.CreateBuyOfferResponse], error) {
 	request, err := toCreateBuyOfferRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -212,7 +212,7 @@ func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Reque
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := s.store.CountBuyOffers(request.Payload.MintHash, request.Payload.OffererAddress, request.Payload.SellerAddress)
+	count, err := s.store.CountBuyOffers(ctx, request.Payload.MintHash, request.Payload.OffererAddress, request.Payload.SellerAddress)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -235,7 +235,7 @@ func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Reque
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := s.store.SaveBuyOffer(newOfferWithoutId)
+	id, err := s.store.SaveBuyOffer(ctx, newOfferWithoutId)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -255,7 +255,7 @@ func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Reque
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) DeleteBuyOffer(_ context.Context, req *connect.Request[protocol.DeleteBuyOfferRequest]) (*connect.Response[protocol.DeleteBuyOfferResponse], error) {
+func (s *ConnectRpcService) DeleteBuyOffer(ctx context.Context, req *connect.Request[protocol.DeleteBuyOfferRequest]) (*connect.Response[protocol.DeleteBuyOfferResponse], error) {
 	request, err := toDeleteBuyOfferRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -265,7 +265,7 @@ func (s *ConnectRpcService) DeleteBuyOffer(_ context.Context, req *connect.Reque
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	if err := s.store.DeleteBuyOffer(request.Payload.OfferHash, request.PublicKey); err != nil {
+	if err := s.store.DeleteBuyOffer(ctx, request.Payload.OfferHash, request.PublicKey); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 

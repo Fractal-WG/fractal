@@ -11,8 +11,8 @@ import (
 	"dogecoin.org/fractal-engine/pkg/version"
 )
 
-func (s *ConnectRpcService) GetHealth(_ context.Context, _ *connect.Request[protocol.GetHealthRequest]) (*connect.Response[protocol.GetHealthResponse], error) {
-	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := s.store.GetHealth()
+func (s *ConnectRpcService) GetHealth(ctx context.Context, _ *connect.Request[protocol.GetHealthRequest]) (*connect.Response[protocol.GetHealthResponse], error) {
+	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := s.store.GetHealth(ctx)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, err)

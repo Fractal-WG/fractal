@@ -1,13 +1,14 @@
 package store
 
 import (
+	"context"
 	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 )
 
-func (s *TokenisationStore) DebugPrintStore() {
+func (s *TokenisationStore) DebugPrintStore(ctx context.Context) {
 	// Get table names
 	rows, err := s.DB.Query(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`)
 	if err != nil {

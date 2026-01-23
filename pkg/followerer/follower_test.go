@@ -1,6 +1,7 @@
 package followerer_test
 
 import (
+	"context"
 	"encoding/hex"
 	"testing"
 	"time"
@@ -33,6 +34,7 @@ func (f *FakeChainFollower) Stop() {
 
 func TestDogeFollower(t *testing.T) {
 	tokenisationStore := test_support.SetupTestDB()
+	ctx := context.Background()
 
 	chainFollower := &FakeChainFollower{
 		Messages: make(chan messages.Message),
@@ -73,7 +75,7 @@ func TestDogeFollower(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	transactions, err := tokenisationStore.GetOnChainTransactions(0, 100)
+	transactions, err := tokenisationStore.GetOnChainTransactions(ctx, 0, 100)
 	if err != nil {
 		t.Fatalf("Failed to get on chain transactions: %v", err)
 	}

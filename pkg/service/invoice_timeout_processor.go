@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/hex"
 	"log"
 
@@ -18,7 +19,8 @@ func NewInvoiceTimeoutProcessor(store *store.TokenisationStore) *InvoiceTimeoutP
 }
 
 func (p *InvoiceTimeoutProcessor) Process(oldestBlockHeight int) error {
-	unconfirmedInvoices, err := p.store.GetOldOnchainTransactions(oldestBlockHeight)
+	ctx := context.Background()
+	unconfirmedInvoices, err := p.store.GetOldOnchainTransactions(ctx, oldestBlockHeight)
 	if err != nil {
 		log.Println("Error getting old onchain transactions:", err)
 		return err
@@ -34,14 +36,14 @@ func (p *InvoiceTimeoutProcessor) Process(oldestBlockHeight int) error {
 				continue
 			}
 
-			pendingTokenBalance, err := p.store.GetPendingTokenBalance(hex.EncodeToString(invoiceMessage.InvoiceHash), hex.EncodeToString(invoiceMessage.MintHash), nil)
+			pendingTokenBalance, err := p.store.GetPendingTokenBalance(ctx, hex.EncodeToString(invoiceMessage.InvoiceHash), hex.EncodeToString(invoiceMessage.MintHash), nil)
 			if err != nil {
 				log.Println("Error getting pending token balance:", err)
 				continue
 			}
 
 			if pendingTokenBalance.InvoiceHash != "" {
-				err = p.store.RemovePendingTokenBalance(hex.EncodeToString(invoiceMessage.InvoiceHash), hex.EncodeToString(invoiceMessage.MintHash))
+				err = p.store.RemovePendingTokenBalance(ctx, hex.EncodeToString(invoiceMessage.InvoiceHash), hex.EncodeToString(invoiceMessage.MintHash))
 				if err != nil {
 					log.Println("Error removing pending token balance:", err)
 					continue

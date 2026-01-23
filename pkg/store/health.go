@@ -1,11 +1,12 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"time"
 )
 
-func (s *TokenisationStore) GetHealth() (int64, int64, string, bool, time.Time, error) {
+func (s *TokenisationStore) GetHealth(ctx context.Context) (int64, int64, string, bool, time.Time, error) {
 	rows, err := s.DB.Query("SELECT current_block_height, latest_block_height, chain, wallets_enabled, updated_at FROM health")
 	if err != nil {
 		return 0, 0, "", false, time.Time{}, err
@@ -31,7 +32,7 @@ func (s *TokenisationStore) GetHealth() (int64, int64, string, bool, time.Time, 
 	return currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, nil
 }
 
-func (s *TokenisationStore) UpsertHealth(currentBlockHeight int64, latestBlockHeight int64, chain string, walletsEnabled bool) error {
+func (s *TokenisationStore) UpsertHealth(ctx context.Context, currentBlockHeight int64, latestBlockHeight int64, chain string, walletsEnabled bool) error {
 	tx, err := s.DB.Begin()
 	if err != nil {
 		return err

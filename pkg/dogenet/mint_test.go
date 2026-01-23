@@ -2,6 +2,7 @@ package dogenet_test
 
 import (
 	"bufio"
+	"context"
 	"io"
 	"net"
 	"testing"
@@ -221,6 +222,7 @@ func TestGossipMintWithNilMetadata(t *testing.T) {
 
 func TestRecvMintViaStartWithConn(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -303,7 +305,7 @@ func TestRecvMintViaStartWithConn(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Verify unconfirmed mint was saved
-	mints, err := tokenStore.GetUnconfirmedMints(0, 10)
+	mints, err := tokenStore.GetUnconfirmedMints(ctx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(mints))
 
@@ -330,6 +332,7 @@ func TestRecvMintViaStartWithConn(t *testing.T) {
 
 func TestRecvMintInvalidEnvelope(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -370,7 +373,7 @@ func TestRecvMintInvalidEnvelope(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Verify no mint was saved
-	mints, err := tokenStore.GetUnconfirmedMints(0, 10)
+	mints, err := tokenStore.GetUnconfirmedMints(ctx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(mints))
 
@@ -379,6 +382,7 @@ func TestRecvMintInvalidEnvelope(t *testing.T) {
 
 func TestRecvMintWrongActionType(t *testing.T) {
 	tokenStore := test_support.SetupTestDB()
+	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -435,7 +439,7 @@ func TestRecvMintWrongActionType(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Verify no mint was saved due to wrong action type
-	mints, err := tokenStore.GetUnconfirmedMints(0, 10)
+	mints, err := tokenStore.GetUnconfirmedMints(ctx, 0, 10)
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(mints))
 

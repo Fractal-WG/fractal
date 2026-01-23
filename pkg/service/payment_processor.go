@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -20,7 +21,8 @@ func NewPaymentProcessor(store *store.TokenisationStore, dogeClient *doge.RpcCli
 }
 
 func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
-	invoice, err := p.store.MatchPayment(tx)
+	ctx := context.Background()
+	invoice, err := p.store.MatchPayment(ctx, tx)
 	if err != nil {
 		log.Println("Match Payment", err)
 		return err
@@ -47,7 +49,7 @@ func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
 		return fmt.Errorf("Minimum confirmations not met: %d < %d", blockHeader.Confirmations, MIN_CONFIRMATIONS_REQUIRED)
 	}
 
-	err = p.store.ProcessPayment(tx, invoice)
+	err = p.store.ProcessPayment(ctx, tx, invoice)
 	if err != nil {
 		log.Println("ProcessPayment:", err)
 		return err

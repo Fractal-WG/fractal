@@ -12,7 +12,7 @@ import (
 	"dogecoin.org/fractal-engine/pkg/validation"
 )
 
-func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[protocol.GetMintsRequest]) (*connect.Response[protocol.GetMintsResponse], error) {
+func (s *ConnectRpcService) GetMints(ctx context.Context, req *connect.Request[protocol.GetMintsRequest]) (*connect.Response[protocol.GetMintsResponse], error) {
 	limit := int32(100)
 	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
 		limit = req.Msg.GetLimit().GetValue()
@@ -26,7 +26,7 @@ func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[pro
 	start := int(page * limit)
 	end := int(start + int(limit))
 
-	mints, err := s.store.GetMints(start, end)
+	mints, err := s.store.GetMints(ctx, start, end)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -52,13 +52,13 @@ func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[pro
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error) {
+func (s *ConnectRpcService) GetMint(ctx context.Context, req *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error) {
 	hash := req.Msg.GetHash()
 	if err := validation.ValidateHash(hash.GetValue()); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	mint, err := s.store.GetMintByHash(hash.GetValue())
+	mint, err := s.store.GetMintByHash(ctx, hash.GetValue())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
@@ -73,7 +73,7 @@ func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[prot
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectRpcService) CreateMint(_ context.Context, req *connect.Request[protocol.CreateMintRequest]) (*connect.Response[protocol.CreateMintResponse], error) {
+func (s *ConnectRpcService) CreateMint(ctx context.Context, req *connect.Request[protocol.CreateMintRequest]) (*connect.Response[protocol.CreateMintResponse], error) {
 	request, err := toCreateMintRequest(req.Msg)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -107,7 +107,7 @@ func (s *ConnectRpcService) CreateMint(_ context.Context, req *connect.Request[p
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := s.store.SaveUnconfirmedMint(newMintWithoutId)
+	id, err := s.store.SaveUnconfirmedMint(ctx, newMintWithoutId)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
