@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+import "types.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message GetInvoicesRequest {
+  Address address = 1;
+  google.protobuf.Int32Value limit = 2;
+  google.protobuf.Int32Value page = 3;
+  Hash mint_hash = 4;
+}
+
+message GetAllInvoicesRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
+  Hash mint_hash = 3;
+}
+
+message GetInvoicesResponse {
+  repeated Invoice invoices = 1;
+  int32 limit = 2;
+  int32 page = 3;
+  int32 total = 4;
+}
+
+message GetAllInvoicesResponse {
+  repeated Invoice invoices = 1;
+  int32 limit = 2;
+  int32 page = 3;
+  int32 total = 4;
+}
+
+message CreateInvoiceSignatureRequest {
+  CreateInvoiceSignatureRequestPayload payload = 1;
+}
+
+message CreateInvoiceSignatureRequestPayload {
+  string invoice_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateInvoiceSignatureResponse {
+  string id = 1;
+}
+
+message CreateInvoiceRequest {
+  CreateInvoiceRequestPayload payload = 1;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateInvoiceRequestPayload {
+  Address payment_address = 1 [(buf.validate.field).string.min_len = 1];
+  Address buyer_address = 2 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 3 [(buf.validate.field).string.min_len = 1];
+  int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
+  int32 price = 5 [(buf.validate.field).int32.gt = 0];
+  Address seller_address = 6 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateInvoiceResponse {
+  Hash hash = 1;
+  string encoded_transaction_body = 2;
+}

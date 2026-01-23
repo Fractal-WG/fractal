@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+import "types.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message CreateSellOfferResponse {
+  string id = 1;
+  Hash hash = 2;
+}
+
+message CreateBuyOfferResponse {
+  string id = 1;
+  Hash hash = 2;
+}
+
+message GetSellOffersRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
+  Hash mint_hash = 3;
+  Address offerer_address = 4;
+}
+
+message GetBuyOffersRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
+  Hash mint_hash = 3;
+  Address seller_address = 4;
+}
+
+message GetSellOffersResponse {
+  repeated SellOfferWithMint offers = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message GetBuyOffersResponse {
+  repeated BuyOfferWithMint offers = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message CreateSellOfferRequest {
+  CreateSellOfferRequestPayload payload = 1;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateSellOfferRequestPayload {
+  Address offerer_address = 1 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 2 [(buf.validate.field).string.min_len = 1];
+  int32 quantity = 3 [(buf.validate.field).int32.gt = 0];
+  int32 price = 4 [(buf.validate.field).int32.gt = 0];
+}
+
+message CreateBuyOfferRequest {
+  CreateBuyOfferRequestPayload payload = 1;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateBuyOfferRequestPayload {
+  Address offerer_address = 1 [(buf.validate.field).string.min_len = 1];
+  Address seller_address = 2 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 3 [(buf.validate.field).string.min_len = 1];
+  int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
+  int32 price = 5 [(buf.validate.field).int32.gt = 0];
+}
+
+message DeleteSellOfferRequest {
+  DeleteSellOfferRequestPayload payload = 1;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message DeleteSellOfferResponse {
+  string value = 1;
+}
+
+message DeleteSellOfferRequestPayload {
+  Hash offer_hash = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message DeleteBuyOfferRequest {
+  DeleteBuyOfferRequestPayload payload = 1;
+  string public_key = 2 [(buf.validate.field).string.min_len = 1];
+  string signature = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+message DeleteBuyOfferResponse {
+  string value = 1;
+}
+
+message DeleteBuyOfferRequestPayload {
+  Hash offer_hash = 1 [(buf.validate.field).string.min_len = 1];
+}

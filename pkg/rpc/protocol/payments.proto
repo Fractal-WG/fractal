@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+import "buf/validate/validate.proto";
+import "types.proto";
+
+message CreateNewPaymentRequest {
+  Hash invoice_hash = 1;
+}
+
+message CreateNewPaymentResponse {
+  map<string, string> values = 1;
+}

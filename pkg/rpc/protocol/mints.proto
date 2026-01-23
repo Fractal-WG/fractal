@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+import "types.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message GetMintsRequest {
+  google.protobuf.Int32Value limit = 1;
+  google.protobuf.Int32Value page = 2;
+}
+
+message GetMintRequest {
+  Hash hash = 1;
+}
+
+message GetMintsResponse {
+  int32 limit = 1;
+  repeated Mint mints = 2;
+  int32 page = 3;
+  int32 total = 4;
+}
+
+message GetMintResponse {
+  Mint mint = 1;
+}
+
+message CreateMintRequest {
+  CreateMintRequestPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message CreateMintRequestPayload {
+  repeated AssetManager asset_managers = 1;
+  string contract_of_sale = 2;
+  string description = 3 [(buf.validate.field).string.min_len = 1];
+  string feed_url = 4;
+  int32 fraction_count = 5 [(buf.validate.field).int32.gt = 0];
+  StringInterfaceMap lockup_options = 6;
+  StringInterfaceMap metadata = 7;
+  int32 min_signatures = 8;
+  Address owner_address = 9;
+  StringInterfaceMap requirements = 10;
+  SignatureRequirementType signature_requirement_type = 11;
+  repeated string tags = 12;
+  string title = 13 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateMintResponse {
+  string encoded_transaction_body = 1;
+  Hash hash = 2;
+}

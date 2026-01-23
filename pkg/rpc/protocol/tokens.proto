@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+import "common.proto";
+import "types.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message GetPendingTokenBalancesRequest {
+  Address address = 1;
+  Hash mint_hash = 2;
+}
+
+message GetPendingTokenBalancesResponse {
+  repeated TokenBalance balances = 1;
+}
+
+message GetTokenBalancesRequest {
+  Address address = 1;
+  Hash mint_hash = 2;
+  google.protobuf.BoolValue include_mint_details = 3;
+  google.protobuf.Int32Value limit = 4;
+  google.protobuf.Int32Value page = 5;
+}
+
+message GetTokenBalancesResponse {
+  google.protobuf.Struct data = 1;
+}

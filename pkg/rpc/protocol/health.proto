@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package fractalengine.rpc.v1;
+
+option go_package = "pkg/rpc/protocol";
+
+message GetHealthResponse {
+  string chain = 1;
+  int32 current_block_height = 2;
+  int32 latest_block_height = 3;
+  string updated_at = 4;
+  string version = 5;
+  bool wallets_enabled = 6;
+}
+
+message GetHealthRequest {}
