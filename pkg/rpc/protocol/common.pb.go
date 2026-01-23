@@ -331,19 +331,19 @@ type Mint struct {
 	Description              string                   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	FeedUrl                  string                   `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl,proto3" json:"feed_url,omitempty"`
 	FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount,proto3" json:"fraction_count,omitempty"`
-	Hash                     string                   `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                     *Hash                    `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
 	Id                       string                   `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
 	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
 	Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
-	OwnerAddress             string                   `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	OwnerAddress             *Address                 `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
 	PublicKey                string                   `protobuf:"bytes,14,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
 	Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements,proto3" json:"requirements,omitempty"`
 	Signature                string                   `protobuf:"bytes,16,opt,name=signature,proto3" json:"signature,omitempty"`
 	SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
 	Tags                     []string                 `protobuf:"bytes,18,rep,name=tags,proto3" json:"tags,omitempty"`
 	Title                    string                   `protobuf:"bytes,19,opt,name=title,proto3" json:"title,omitempty"`
-	TransactionHash          string                   `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -427,11 +427,11 @@ func (x *Mint) GetFractionCount() int32 {
 	return 0
 }
 
-func (x *Mint) GetHash() string {
+func (x *Mint) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 func (x *Mint) GetId() string {
@@ -462,11 +462,11 @@ func (x *Mint) GetMinSignatures() int32 {
 	return 0
 }
 
-func (x *Mint) GetOwnerAddress() string {
+func (x *Mint) GetOwnerAddress() *Address {
 	if x != nil {
 		return x.OwnerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Mint) GetPublicKey() string {
@@ -511,30 +511,30 @@ func (x *Mint) GetTitle() string {
 	return ""
 }
 
-func (x *Mint) GetTransactionHash() string {
+func (x *Mint) GetTransactionHash() *Hash {
 	if x != nil {
 		return x.TransactionHash
 	}
-	return ""
+	return nil
 }
 
 type Invoice struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
-	BuyerAddress          string                 `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	BuyerAddress          *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
 	CreatedAt             string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Hash                  string                 `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                  *Hash                  `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
 	Id                    string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	MintHash              string                 `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash              *Hash                  `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt,proto3" json:"paid_at,omitempty"`
-	PaymentAddress        string                 `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	PaymentAddress        *Address               `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
 	PendingTokenBalanceId string                 `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId,proto3" json:"pending_token_balance_id,omitempty"`
 	Price                 int32                  `protobuf:"varint,10,opt,name=price,proto3" json:"price,omitempty"`
 	PublicKey             string                 `protobuf:"bytes,11,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
 	Quantity              int32                  `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	SellerAddress         string                 `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	SellerAddress         *Address               `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	Signature             string                 `protobuf:"bytes,14,opt,name=signature,proto3" json:"signature,omitempty"`
-	TransactionHash       string                 `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	TransactionHash       *Hash                  `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -576,11 +576,11 @@ func (x *Invoice) GetBlockHeight() int32 {
 	return 0
 }
 
-func (x *Invoice) GetBuyerAddress() string {
+func (x *Invoice) GetBuyerAddress() *Address {
 	if x != nil {
 		return x.BuyerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetCreatedAt() string {
@@ -590,11 +590,11 @@ func (x *Invoice) GetCreatedAt() string {
 	return ""
 }
 
-func (x *Invoice) GetHash() string {
+func (x *Invoice) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetId() string {
@@ -604,11 +604,11 @@ func (x *Invoice) GetId() string {
 	return ""
 }
 
-func (x *Invoice) GetMintHash() string {
+func (x *Invoice) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetPaidAt() *SqlNullTime {
@@ -618,11 +618,11 @@ func (x *Invoice) GetPaidAt() *SqlNullTime {
 	return nil
 }
 
-func (x *Invoice) GetPaymentAddress() string {
+func (x *Invoice) GetPaymentAddress() *Address {
 	if x != nil {
 		return x.PaymentAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetPendingTokenBalanceId() string {
@@ -653,11 +653,11 @@ func (x *Invoice) GetQuantity() int32 {
 	return 0
 }
 
-func (x *Invoice) GetSellerAddress() string {
+func (x *Invoice) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetSignature() string {
@@ -667,18 +667,18 @@ func (x *Invoice) GetSignature() string {
 	return ""
 }
 
-func (x *Invoice) GetTransactionHash() string {
+func (x *Invoice) GetTransactionHash() *Hash {
 	if x != nil {
 		return x.TransactionHash
 	}
-	return ""
+	return nil
 }
 
 type TokenBalance struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	MintHash      string                 `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity      int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -715,11 +715,11 @@ func (*TokenBalance) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *TokenBalance) GetAddress() string {
+func (x *TokenBalance) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
-	return ""
+	return nil
 }
 
 func (x *TokenBalance) GetCreatedAt() string {
@@ -729,11 +729,11 @@ func (x *TokenBalance) GetCreatedAt() string {
 	return ""
 }
 
-func (x *TokenBalance) GetMintHash() string {
+func (x *TokenBalance) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
 func (x *TokenBalance) GetQuantity() int32 {
@@ -752,10 +752,10 @@ func (x *TokenBalance) GetUpdatedAt() string {
 
 type BuyOffer struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       string                 `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress string                 `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	SellerAddress  string                 `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	SellerAddress  *Address               `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	Quantity       int32                  `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
 	CreatedAt      string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -796,32 +796,32 @@ func (*BuyOffer) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BuyOffer) GetHash() string {
+func (x *BuyOffer) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
-func (x *BuyOffer) GetMintHash() string {
+func (x *BuyOffer) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
-func (x *BuyOffer) GetOffererAddress() string {
+func (x *BuyOffer) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
-	return ""
+	return nil
 }
 
-func (x *BuyOffer) GetSellerAddress() string {
+func (x *BuyOffer) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *BuyOffer) GetQuantity() int32 {
@@ -868,9 +868,9 @@ func (x *BuyOffer) GetId() string {
 
 type SellOffer struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       string                 `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress string                 `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
 	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
 	CreatedAt      string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -911,25 +911,25 @@ func (*SellOffer) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *SellOffer) GetHash() string {
+func (x *SellOffer) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
-func (x *SellOffer) GetMintHash() string {
+func (x *SellOffer) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
-func (x *SellOffer) GetOffererAddress() string {
+func (x *SellOffer) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *SellOffer) GetQuantity() int32 {
@@ -1082,7 +1082,7 @@ var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\"&\n" +
+	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\"&\n" +
 	"\x0eStringResponse\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x9b\x01\n" +
 	"\x11StringMapResponse\x12K\n" +
@@ -1099,7 +1099,7 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\"C\n" +
 	"\x12StringInterfaceMap\x12-\n" +
-	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xdb\a\n" +
+	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xcd\a\n" +
 	"\x04Mint\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12!\n" +
 	"\fblock_height\x18\x02 \x01(\x05R\vblockHeight\x12(\n" +
@@ -1108,54 +1108,54 @@ const file_common_proto_rawDesc = "" +
 	"created_at\x18\x04 \x01(\tR\tcreatedAt\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x19\n" +
 	"\bfeed_url\x18\x06 \x01(\tR\afeedUrl\x12%\n" +
-	"\x0efraction_count\x18\a \x01(\x05R\rfractionCount\x12,\n" +
-	"\x04hash\x18\b \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x12\x0e\n" +
+	"\x0efraction_count\x18\a \x01(\x05R\rfractionCount\x12.\n" +
+	"\x04hash\x18\b \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x12\x0e\n" +
 	"\x02id\x18\t \x01(\tR\x02id\x12O\n" +
 	"\x0elockup_options\x18\n" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\rlockupOptions\x12D\n" +
 	"\bmetadata\x18\v \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\bmetadata\x12%\n" +
-	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12T\n" +
-	"\rowner_address\x18\r \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fownerAddress\x12\x1d\n" +
+	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12B\n" +
+	"\rowner_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x0e \x01(\tR\tpublicKey\x12L\n" +
 	"\frequirements\x18\x0f \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12\x1c\n" +
 	"\tsignature\x18\x10 \x01(\tR\tsignature\x12l\n" +
 	"\x1asignature_requirement_type\x18\x11 \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x14\n" +
-	"\x05title\x18\x13 \x01(\tR\x05title\x12C\n" +
-	"\x10transaction_hash\x18\x14 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x0ftransactionHash\"\xf1\x05\n" +
+	"\x05title\x18\x13 \x01(\tR\x05title\x12E\n" +
+	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xc1\x05\n" +
 	"\aInvoice\x12!\n" +
-	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12T\n" +
-	"\rbuyer_address\x18\x02 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fbuyerAddress\x12\x1d\n" +
+	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12B\n" +
+	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fbuyerAddress\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12,\n" +
-	"\x04hash\x18\x04 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x12\x0e\n" +
-	"\x02id\x18\x05 \x01(\tR\x02id\x125\n" +
-	"\tmint_hash\x18\x06 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12:\n" +
-	"\apaid_at\x18\a \x01(\v2!.fractalengine.rpc.v1.SqlNullTimeR\x06paidAt\x12X\n" +
-	"\x0fpayment_address\x18\b \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0epaymentAddress\x127\n" +
+	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12.\n" +
+	"\x04hash\x18\x04 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x12\x0e\n" +
+	"\x02id\x18\x05 \x01(\tR\x02id\x127\n" +
+	"\tmint_hash\x18\x06 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12:\n" +
+	"\apaid_at\x18\a \x01(\v2!.fractalengine.rpc.v1.SqlNullTimeR\x06paidAt\x12F\n" +
+	"\x0fpayment_address\x18\b \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0epaymentAddress\x127\n" +
 	"\x18pending_token_balance_id\x18\t \x01(\tR\x15pendingTokenBalanceId\x12\x14\n" +
 	"\x05price\x18\n" +
 	" \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\v \x01(\tR\tpublicKey\x12\x1a\n" +
-	"\bquantity\x18\f \x01(\x05R\bquantity\x12V\n" +
-	"\x0eseller_address\x18\r \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\x12\x1c\n" +
-	"\tsignature\x18\x0e \x01(\tR\tsignature\x12C\n" +
-	"\x10transaction_hash\x18\x0f \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x0ftransactionHash\"\xea\x01\n" +
-	"\fTokenBalance\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x12\x1d\n" +
+	"\bquantity\x18\f \x01(\x05R\bquantity\x12D\n" +
+	"\x0eseller_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\rsellerAddress\x12\x1c\n" +
+	"\tsignature\x18\x0e \x01(\tR\tsignature\x12E\n" +
+	"\x10transaction_hash\x18\x0f \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xda\x01\n" +
+	"\fTokenBalance\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x02 \x01(\tR\tcreatedAt\x125\n" +
-	"\tmint_hash\x18\x03 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12\x1a\n" +
+	"created_at\x18\x02 \x01(\tR\tcreatedAt\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\tR\tupdatedAt\"\xbf\x03\n" +
-	"\bBuyOffer\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x125\n" +
-	"\tmint_hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12X\n" +
-	"\x0fofferer_address\x18\x03 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x12V\n" +
-	"\x0eseller_address\x18\x04 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\x12\x1a\n" +
+	"updated_at\x18\x05 \x01(\tR\tupdatedAt\"\x9f\x03\n" +
+	"\bBuyOffer\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12F\n" +
+	"\x0fofferer_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0eoffererAddress\x12D\n" +
+	"\x0eseller_address\x18\x04 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\rsellerAddress\x12\x1a\n" +
 	"\bquantity\x18\x05 \x01(\x05R\bquantity\x12\x14\n" +
 	"\x05price\x18\x06 \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
@@ -1164,11 +1164,11 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\b \x01(\tR\tpublicKey\x12\x1c\n" +
 	"\tsignature\x18\t \x01(\tR\tsignature\x12\x0e\n" +
 	"\x02id\x18\n" +
-	" \x01(\tR\x02id\"\xe8\x02\n" +
-	"\tSellOffer\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x125\n" +
-	"\tmint_hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12X\n" +
-	"\x0fofferer_address\x18\x03 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x12\x1a\n" +
+	" \x01(\tR\x02id\"\xda\x02\n" +
+	"\tSellOffer\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12F\n" +
+	"\x0fofferer_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0eoffererAddress\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x14\n" +
 	"\x05price\x18\x05 \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
@@ -1220,25 +1220,45 @@ var file_common_proto_goTypes = []any{
 	(*SellOfferWithMint)(nil),     // 12: fractalengine.rpc.v1.SellOfferWithMint
 	nil,                           // 13: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
 	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
+	(*Hash)(nil),                  // 15: fractalengine.rpc.v1.Hash
+	(*Address)(nil),               // 16: fractalengine.rpc.v1.Address
 }
 var file_common_proto_depIdxs = []int32{
 	13, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
 	14, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
 	4,  // 2: fractalengine.rpc.v1.Mint.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	5,  // 3: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	5,  // 4: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	5,  // 5: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	0,  // 6: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	3,  // 7: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
-	9,  // 8: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
-	6,  // 9: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	10, // 10: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
-	6,  // 11: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	15, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
+	5,  // 4: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	5,  // 5: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	16, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
+	5,  // 7: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	0,  // 8: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	15, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 10: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 11: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 12: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	3,  // 13: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
+	16, // 14: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 15: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 16: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 17: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
+	15, // 18: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 19: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 20: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 21: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 22: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 23: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 24: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 25: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	9,  // 26: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
+	6,  // 27: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	10, // 28: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
+	6,  // 29: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	30, // [30:30] is the sub-list for method output_type
+	30, // [30:30] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_init() }
@@ -1246,6 +1266,7 @@ func file_common_proto_init() {
 	if File_common_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

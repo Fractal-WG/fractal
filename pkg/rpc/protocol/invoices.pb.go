@@ -24,11 +24,11 @@ const (
 )
 
 type GetInvoicesRequest struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Address       string                  `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Limit         *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Page          *wrapperspb.Int32Value  `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash      *wrapperspb.StringValue `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,11 +63,11 @@ func (*GetInvoicesRequest) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetInvoicesRequest) GetAddress() string {
+func (x *GetInvoicesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
-	return ""
+	return nil
 }
 
 func (x *GetInvoicesRequest) GetLimit() *wrapperspb.Int32Value {
@@ -84,7 +84,7 @@ func (x *GetInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetInvoicesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetInvoicesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -92,10 +92,10 @@ func (x *GetInvoicesRequest) GetMintHash() *wrapperspb.StringValue {
 }
 
 type GetAllInvoicesRequest struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Limit         *wrapperspb.Int32Value  `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Page          *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash      *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -144,7 +144,7 @@ func (x *GetAllInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetAllInvoicesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetAllInvoicesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -497,12 +497,12 @@ func (x *CreateInvoiceRequest) GetSignature() string {
 
 type CreateInvoiceRequestPayload struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	PaymentAddress string                 `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
-	BuyerAddress   string                 `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
-	MintHash       string                 `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	PaymentAddress *Address               `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	BuyerAddress   *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
-	SellerAddress  string                 `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	SellerAddress  *Address               `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -537,25 +537,25 @@ func (*CreateInvoiceRequestPayload) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CreateInvoiceRequestPayload) GetPaymentAddress() string {
+func (x *CreateInvoiceRequestPayload) GetPaymentAddress() *Address {
 	if x != nil {
 		return x.PaymentAddress
 	}
-	return ""
+	return nil
 }
 
-func (x *CreateInvoiceRequestPayload) GetBuyerAddress() string {
+func (x *CreateInvoiceRequestPayload) GetBuyerAddress() *Address {
 	if x != nil {
 		return x.BuyerAddress
 	}
-	return ""
+	return nil
 }
 
-func (x *CreateInvoiceRequestPayload) GetMintHash() string {
+func (x *CreateInvoiceRequestPayload) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateInvoiceRequestPayload) GetQuantity() int32 {
@@ -572,16 +572,16 @@ func (x *CreateInvoiceRequestPayload) GetPrice() int32 {
 	return 0
 }
 
-func (x *CreateInvoiceRequestPayload) GetSellerAddress() string {
+func (x *CreateInvoiceRequestPayload) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
-	return ""
+	return nil
 }
 
 type CreateInvoiceResponse struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Hash                   string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                   *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	EncodedTransactionBody string                 `protobuf:"bytes,2,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
@@ -617,11 +617,11 @@ func (*CreateInvoiceResponse) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *CreateInvoiceResponse) GetHash() string {
+func (x *CreateInvoiceResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateInvoiceResponse) GetEncodedTransactionBody() string {
@@ -635,16 +635,16 @@ var File_invoices_proto protoreflect.FileDescriptor
 
 const file_invoices_proto_rawDesc = "" +
 	"\n" +
-	"\x0einvoices.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"\x98\x02\n" +
-	"\x12GetInvoicesRequest\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x121\n" +
+	"\x0einvoices.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"\xea\x01\n" +
+	"\x12GetInvoicesRequest\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x121\n" +
 	"\x05limit\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x04 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\"\xd0\x01\n" +
+	"\x04page\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x04 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\"\xb4\x01\n" +
 	"\x15GetAllInvoicesRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\"\x90\x01\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\"\x90\x01\n" +
 	"\x13GetInvoicesResponse\x129\n" +
 	"\binvoices\x18\x01 \x03(\v2\x1d.fractalengine.rpc.v1.InvoiceR\binvoices\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x12\n" +
@@ -668,16 +668,16 @@ const file_invoices_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v21.fractalengine.rpc.v1.CreateInvoiceRequestPayloadR\apayload\x12&\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
-	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xa8\x03\n" +
-	"\x1bCreateInvoiceRequestPayload\x12Z\n" +
-	"\x0fpayment_address\x18\x01 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0epaymentAddress\x12V\n" +
-	"\rbuyer_address\x18\x02 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fbuyerAddress\x127\n" +
-	"\tmint_hash\x18\x03 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\bmintHash\x12#\n" +
+	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\x90\x03\n" +
+	"\x1bCreateInvoiceRequestPayload\x12O\n" +
+	"\x0fpayment_address\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\x0epaymentAddress\x12K\n" +
+	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\fbuyerAddress\x12@\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\bmintHash\x12#\n" +
 	"\bquantity\x18\x04 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\bquantity\x12\x1d\n" +
-	"\x05price\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\x12X\n" +
-	"\x0eseller_address\x18\x06 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\"\x7f\n" +
-	"\x15CreateInvoiceResponse\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x128\n" +
+	"\x05price\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\x12M\n" +
+	"\x0eseller_address\x18\x06 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\rsellerAddress\"\x81\x01\n" +
+	"\x15CreateInvoiceResponse\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x128\n" +
 	"\x18encoded_transaction_body\x18\x02 \x01(\tR\x16encodedTransactionBodyB\x12Z\x10pkg/rpc/protocolb\x06proto3"
 
 var (
@@ -704,26 +704,33 @@ var file_invoices_proto_goTypes = []any{
 	(*CreateInvoiceRequest)(nil),                 // 7: fractalengine.rpc.v1.CreateInvoiceRequest
 	(*CreateInvoiceRequestPayload)(nil),          // 8: fractalengine.rpc.v1.CreateInvoiceRequestPayload
 	(*CreateInvoiceResponse)(nil),                // 9: fractalengine.rpc.v1.CreateInvoiceResponse
-	(*wrapperspb.Int32Value)(nil),                // 10: google.protobuf.Int32Value
-	(*wrapperspb.StringValue)(nil),               // 11: google.protobuf.StringValue
-	(*Invoice)(nil),                              // 12: fractalengine.rpc.v1.Invoice
+	(*Address)(nil),                              // 10: fractalengine.rpc.v1.Address
+	(*wrapperspb.Int32Value)(nil),                // 11: google.protobuf.Int32Value
+	(*Hash)(nil),                                 // 12: fractalengine.rpc.v1.Hash
+	(*Invoice)(nil),                              // 13: fractalengine.rpc.v1.Invoice
 }
 var file_invoices_proto_depIdxs = []int32{
-	10, // 0: fractalengine.rpc.v1.GetInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
-	10, // 1: fractalengine.rpc.v1.GetInvoicesRequest.page:type_name -> google.protobuf.Int32Value
-	11, // 2: fractalengine.rpc.v1.GetInvoicesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	10, // 3: fractalengine.rpc.v1.GetAllInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
-	10, // 4: fractalengine.rpc.v1.GetAllInvoicesRequest.page:type_name -> google.protobuf.Int32Value
-	11, // 5: fractalengine.rpc.v1.GetAllInvoicesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	12, // 6: fractalengine.rpc.v1.GetInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
-	12, // 7: fractalengine.rpc.v1.GetAllInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
-	5,  // 8: fractalengine.rpc.v1.CreateInvoiceSignatureRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload
-	8,  // 9: fractalengine.rpc.v1.CreateInvoiceRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceRequestPayload
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	10, // 0: fractalengine.rpc.v1.GetInvoicesRequest.address:type_name -> fractalengine.rpc.v1.Address
+	11, // 1: fractalengine.rpc.v1.GetInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
+	11, // 2: fractalengine.rpc.v1.GetInvoicesRequest.page:type_name -> google.protobuf.Int32Value
+	12, // 3: fractalengine.rpc.v1.GetInvoicesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	11, // 4: fractalengine.rpc.v1.GetAllInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
+	11, // 5: fractalengine.rpc.v1.GetAllInvoicesRequest.page:type_name -> google.protobuf.Int32Value
+	12, // 6: fractalengine.rpc.v1.GetAllInvoicesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	13, // 7: fractalengine.rpc.v1.GetInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
+	13, // 8: fractalengine.rpc.v1.GetAllInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
+	5,  // 9: fractalengine.rpc.v1.CreateInvoiceSignatureRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload
+	8,  // 10: fractalengine.rpc.v1.CreateInvoiceRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceRequestPayload
+	10, // 11: fractalengine.rpc.v1.CreateInvoiceRequestPayload.payment_address:type_name -> fractalengine.rpc.v1.Address
+	10, // 12: fractalengine.rpc.v1.CreateInvoiceRequestPayload.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	12, // 13: fractalengine.rpc.v1.CreateInvoiceRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	10, // 14: fractalengine.rpc.v1.CreateInvoiceRequestPayload.seller_address:type_name -> fractalengine.rpc.v1.Address
+	12, // 15: fractalengine.rpc.v1.CreateInvoiceResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_invoices_proto_init() }
@@ -732,6 +739,7 @@ func file_invoices_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

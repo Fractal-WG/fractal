@@ -1,0 +1,19 @@
+edition = "2023";
+
+package fractalengine.rpc.v1;
+
+import "buf/validate/validate.proto";
+
+option go_package = "pkg/rpc/protocol";
+
+message Hash {
+  string value = 1 [
+    (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"
+  ];
+}
+
+message Address {
+  string value = 1 [
+    (buf.validate.field).string.pattern = "(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"
+  ];
+}

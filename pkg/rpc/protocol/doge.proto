@@ -5,9 +5,10 @@ package fractalengine.rpc.v1;
 option go_package = "pkg/rpc/protocol";
 
 import "buf/validate/validate.proto";
+import "types.proto";
 
 message DogeTopUpRequest {
-  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address address = 1;
 }
 
 message DogeTopUpResponse {

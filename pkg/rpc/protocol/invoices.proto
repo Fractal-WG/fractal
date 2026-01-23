@@ -4,22 +4,23 @@ import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
+import "types.proto";
 
 package fractalengine.rpc.v1;
 
 option go_package = "pkg/rpc/protocol";
 
 message GetInvoicesRequest {
-  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address address = 1;
   google.protobuf.Int32Value limit = 2;
   google.protobuf.Int32Value page = 3;
-  google.protobuf.StringValue mint_hash = 4 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash mint_hash = 4;
 }
 
 message GetAllInvoicesRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash mint_hash = 3;
 }
 
 message GetInvoicesResponse {
@@ -57,15 +58,15 @@ message CreateInvoiceRequest {
 }
 
 message CreateInvoiceRequestPayload {
-  string payment_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string buyer_address = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string mint_hash = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Address payment_address = 1 [(buf.validate.field).string.min_len = 1];
+  Address buyer_address = 2 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 3 [(buf.validate.field).string.min_len = 1];
   int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
   int32 price = 5 [(buf.validate.field).int32.gt = 0];
-  string seller_address = 6 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address seller_address = 6 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateInvoiceResponse {
-  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 1;
   string encoded_transaction_body = 2;
 }

@@ -77,7 +77,7 @@ func (x *GetMintsRequest) GetPage() *wrapperspb.Int32Value {
 
 type GetMintRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Hash          string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash          *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -112,11 +112,11 @@ func (*GetMintRequest) Descriptor() ([]byte, []int) {
 	return file_mints_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetMintRequest) GetHash() string {
+func (x *GetMintRequest) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 type GetMintsResponse struct {
@@ -301,7 +301,7 @@ type CreateMintRequestPayload struct {
 	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,6,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
 	Metadata                 *StringInterfaceMap      `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	MinSignatures            int32                    `protobuf:"varint,8,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
-	OwnerAddress             string                   `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	OwnerAddress             *Address                 `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
 	Requirements             *StringInterfaceMap      `protobuf:"bytes,10,opt,name=requirements,proto3" json:"requirements,omitempty"`
 	SignatureRequirementType SignatureRequirementType `protobuf:"varint,11,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
 	Tags                     []string                 `protobuf:"bytes,12,rep,name=tags,proto3" json:"tags,omitempty"`
@@ -396,11 +396,11 @@ func (x *CreateMintRequestPayload) GetMinSignatures() int32 {
 	return 0
 }
 
-func (x *CreateMintRequestPayload) GetOwnerAddress() string {
+func (x *CreateMintRequestPayload) GetOwnerAddress() *Address {
 	if x != nil {
 		return x.OwnerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateMintRequestPayload) GetRequirements() *StringInterfaceMap {
@@ -434,7 +434,7 @@ func (x *CreateMintRequestPayload) GetTitle() string {
 type CreateMintResponse struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
 	EncodedTransactionBody string                 `protobuf:"bytes,1,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
-	Hash                   string                 `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                   *Hash                  `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -476,23 +476,23 @@ func (x *CreateMintResponse) GetEncodedTransactionBody() string {
 	return ""
 }
 
-func (x *CreateMintResponse) GetHash() string {
+func (x *CreateMintResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 var File_mints_proto protoreflect.FileDescriptor
 
 const file_mints_proto_rawDesc = "" +
 	"\n" +
-	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"u\n" +
+	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"u\n" +
 	"\x0fGetMintsRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\">\n" +
-	"\x0eGetMintRequest\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\"\x84\x01\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\"@\n" +
+	"\x0eGetMintRequest\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"\x84\x01\n" +
 	"\x10GetMintsResponse\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x120\n" +
 	"\x05mints\x18\x02 \x03(\v2\x1a.fractalengine.rpc.v1.MintR\x05mints\x12\x12\n" +
@@ -504,7 +504,7 @@ const file_mints_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v2..fractalengine.rpc.v1.CreateMintRequestPayloadR\apayload\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x1c\n" +
-	"\tsignature\x18\x03 \x01(\tR\tsignature\"\x88\x06\n" +
+	"\tsignature\x18\x03 \x01(\tR\tsignature\"\xf6\x05\n" +
 	"\x18CreateMintRequestPayload\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12(\n" +
 	"\x10contract_of_sale\x18\x02 \x01(\tR\x0econtractOfSale\x12)\n" +
@@ -513,16 +513,16 @@ const file_mints_proto_rawDesc = "" +
 	"\x0efraction_count\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\rfractionCount\x12O\n" +
 	"\x0elockup_options\x18\x06 \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\rlockupOptions\x12D\n" +
 	"\bmetadata\x18\a \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\bmetadata\x12%\n" +
-	"\x0emin_signatures\x18\b \x01(\x05R\rminSignatures\x12T\n" +
-	"\rowner_address\x18\t \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fownerAddress\x12L\n" +
+	"\x0emin_signatures\x18\b \x01(\x05R\rminSignatures\x12B\n" +
+	"\rowner_address\x18\t \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\x12L\n" +
 	"\frequirements\x18\n" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12l\n" +
 	"\x1asignature_requirement_type\x18\v \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\f \x03(\tR\x04tags\x12\x1d\n" +
-	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\"|\n" +
+	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\"~\n" +
 	"\x12CreateMintResponse\x128\n" +
-	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12,\n" +
-	"\x04hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hashB\x12Z\x10pkg/rpc/protocolb\x06proto3"
+	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12.\n" +
+	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hashB\x12Z\x10pkg/rpc/protocolb\x06proto3"
 
 var (
 	file_mints_proto_rawDescOnce sync.Once
@@ -546,27 +546,32 @@ var file_mints_proto_goTypes = []any{
 	(*CreateMintRequestPayload)(nil), // 5: fractalengine.rpc.v1.CreateMintRequestPayload
 	(*CreateMintResponse)(nil),       // 6: fractalengine.rpc.v1.CreateMintResponse
 	(*wrapperspb.Int32Value)(nil),    // 7: google.protobuf.Int32Value
-	(*Mint)(nil),                     // 8: fractalengine.rpc.v1.Mint
-	(*AssetManager)(nil),             // 9: fractalengine.rpc.v1.AssetManager
-	(*StringInterfaceMap)(nil),       // 10: fractalengine.rpc.v1.StringInterfaceMap
-	(SignatureRequirementType)(0),    // 11: fractalengine.rpc.v1.SignatureRequirementType
+	(*Hash)(nil),                     // 8: fractalengine.rpc.v1.Hash
+	(*Mint)(nil),                     // 9: fractalengine.rpc.v1.Mint
+	(*AssetManager)(nil),             // 10: fractalengine.rpc.v1.AssetManager
+	(*StringInterfaceMap)(nil),       // 11: fractalengine.rpc.v1.StringInterfaceMap
+	(*Address)(nil),                  // 12: fractalengine.rpc.v1.Address
+	(SignatureRequirementType)(0),    // 13: fractalengine.rpc.v1.SignatureRequirementType
 }
 var file_mints_proto_depIdxs = []int32{
 	7,  // 0: fractalengine.rpc.v1.GetMintsRequest.limit:type_name -> google.protobuf.Int32Value
 	7,  // 1: fractalengine.rpc.v1.GetMintsRequest.page:type_name -> google.protobuf.Int32Value
-	8,  // 2: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
-	8,  // 3: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
-	5,  // 4: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
-	9,  // 5: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	10, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	10, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	10, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	11, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	8,  // 2: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
+	9,  // 3: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
+	9,  // 4: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
+	5,  // 5: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
+	10, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
+	11, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	11, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	12, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	11, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	13, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	8,  // 12: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_mints_proto_init() }
@@ -575,6 +580,7 @@ func file_mints_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

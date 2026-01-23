@@ -24,7 +24,7 @@ const (
 
 type CreateNewPaymentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	InvoiceHash   string                 `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
+	InvoiceHash   *Hash                  `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -59,11 +59,11 @@ func (*CreateNewPaymentRequest) Descriptor() ([]byte, []int) {
 	return file_payments_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateNewPaymentRequest) GetInvoiceHash() string {
+func (x *CreateNewPaymentRequest) GetInvoiceHash() *Hash {
 	if x != nil {
 		return x.InvoiceHash
 	}
-	return ""
+	return nil
 }
 
 type CreateNewPaymentResponse struct {
@@ -114,9 +114,9 @@ var File_payments_proto protoreflect.FileDescriptor
 
 const file_payments_proto_rawDesc = "" +
 	"\n" +
-	"\x0epayments.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\"V\n" +
-	"\x17CreateNewPaymentRequest\x12;\n" +
-	"\finvoice_hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\vinvoiceHash\"\xa9\x01\n" +
+	"\x0epayments.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\vtypes.proto\"X\n" +
+	"\x17CreateNewPaymentRequest\x12=\n" +
+	"\finvoice_hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\vinvoiceHash\"\xa9\x01\n" +
 	"\x18CreateNewPaymentResponse\x12R\n" +
 	"\x06values\x18\x01 \x03(\v2:.fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntryR\x06values\x1a9\n" +
 	"\vValuesEntry\x12\x10\n" +
@@ -140,14 +140,16 @@ var file_payments_proto_goTypes = []any{
 	(*CreateNewPaymentRequest)(nil),  // 0: fractalengine.rpc.v1.CreateNewPaymentRequest
 	(*CreateNewPaymentResponse)(nil), // 1: fractalengine.rpc.v1.CreateNewPaymentResponse
 	nil,                              // 2: fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntry
+	(*Hash)(nil),                     // 3: fractalengine.rpc.v1.Hash
 }
 var file_payments_proto_depIdxs = []int32{
-	2, // 0: fractalengine.rpc.v1.CreateNewPaymentResponse.values:type_name -> fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntry
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3, // 0: fractalengine.rpc.v1.CreateNewPaymentRequest.invoice_hash:type_name -> fractalengine.rpc.v1.Hash
+	2, // 1: fractalengine.rpc.v1.CreateNewPaymentResponse.values:type_name -> fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntry
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_payments_proto_init() }
@@ -155,6 +157,7 @@ func file_payments_proto_init() {
 	if File_payments_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

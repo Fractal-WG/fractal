@@ -25,9 +25,9 @@ const (
 )
 
 type GetPendingTokenBalancesRequest struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Address       string                  `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash      *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -62,14 +62,14 @@ func (*GetPendingTokenBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_tokens_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetPendingTokenBalancesRequest) GetAddress() string {
+func (x *GetPendingTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
-	return ""
+	return nil
 }
 
-func (x *GetPendingTokenBalancesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetPendingTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -121,12 +121,12 @@ func (x *GetPendingTokenBalancesResponse) GetBalances() []*TokenBalance {
 }
 
 type GetTokenBalancesRequest struct {
-	state              protoimpl.MessageState  `protogen:"open.v1"`
-	Address            string                  `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash           *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	IncludeMintDetails *wrapperspb.BoolValue   `protobuf:"bytes,3,opt,name=include_mint_details,json=includeMintDetails,proto3" json:"include_mint_details,omitempty"`
-	Limit              *wrapperspb.Int32Value  `protobuf:"bytes,4,opt,name=limit,proto3" json:"limit,omitempty"`
-	Page               *wrapperspb.Int32Value  `protobuf:"bytes,5,opt,name=page,proto3" json:"page,omitempty"`
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Address            *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	MintHash           *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	IncludeMintDetails *wrapperspb.BoolValue  `protobuf:"bytes,3,opt,name=include_mint_details,json=includeMintDetails,proto3" json:"include_mint_details,omitempty"`
+	Limit              *wrapperspb.Int32Value `protobuf:"bytes,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page               *wrapperspb.Int32Value `protobuf:"bytes,5,opt,name=page,proto3" json:"page,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -161,14 +161,14 @@ func (*GetTokenBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_tokens_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetTokenBalancesRequest) GetAddress() string {
+func (x *GetTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
-	return ""
+	return nil
 }
 
-func (x *GetTokenBalancesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -244,15 +244,15 @@ var File_tokens_proto protoreflect.FileDescriptor
 
 const file_tokens_proto_rawDesc = "" +
 	"\n" +
-	"\ftokens.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"\xc0\x01\n" +
-	"\x1eGetPendingTokenBalancesRequest\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x12S\n" +
-	"\tmint_hash\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\"a\n" +
+	"\ftokens.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"\x92\x01\n" +
+	"\x1eGetPendingTokenBalancesRequest\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\"a\n" +
 	"\x1fGetPendingTokenBalancesResponse\x12>\n" +
-	"\bbalances\x18\x01 \x03(\v2\".fractalengine.rpc.v1.TokenBalanceR\bbalances\"\xeb\x02\n" +
-	"\x17GetTokenBalancesRequest\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x12S\n" +
-	"\tmint_hash\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12L\n" +
+	"\bbalances\x18\x01 \x03(\v2\".fractalengine.rpc.v1.TokenBalanceR\bbalances\"\xbd\x02\n" +
+	"\x17GetTokenBalancesRequest\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12L\n" +
 	"\x14include_mint_details\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueR\x12includeMintDetails\x121\n" +
 	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
 	"\x04page\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\"G\n" +
@@ -277,25 +277,28 @@ var file_tokens_proto_goTypes = []any{
 	(*GetPendingTokenBalancesResponse)(nil), // 1: fractalengine.rpc.v1.GetPendingTokenBalancesResponse
 	(*GetTokenBalancesRequest)(nil),         // 2: fractalengine.rpc.v1.GetTokenBalancesRequest
 	(*GetTokenBalancesResponse)(nil),        // 3: fractalengine.rpc.v1.GetTokenBalancesResponse
-	(*wrapperspb.StringValue)(nil),          // 4: google.protobuf.StringValue
-	(*TokenBalance)(nil),                    // 5: fractalengine.rpc.v1.TokenBalance
-	(*wrapperspb.BoolValue)(nil),            // 6: google.protobuf.BoolValue
-	(*wrapperspb.Int32Value)(nil),           // 7: google.protobuf.Int32Value
-	(*structpb.Struct)(nil),                 // 8: google.protobuf.Struct
+	(*Address)(nil),                         // 4: fractalengine.rpc.v1.Address
+	(*Hash)(nil),                            // 5: fractalengine.rpc.v1.Hash
+	(*TokenBalance)(nil),                    // 6: fractalengine.rpc.v1.TokenBalance
+	(*wrapperspb.BoolValue)(nil),            // 7: google.protobuf.BoolValue
+	(*wrapperspb.Int32Value)(nil),           // 8: google.protobuf.Int32Value
+	(*structpb.Struct)(nil),                 // 9: google.protobuf.Struct
 }
 var file_tokens_proto_depIdxs = []int32{
-	4, // 0: fractalengine.rpc.v1.GetPendingTokenBalancesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	5, // 1: fractalengine.rpc.v1.GetPendingTokenBalancesResponse.balances:type_name -> fractalengine.rpc.v1.TokenBalance
-	4, // 2: fractalengine.rpc.v1.GetTokenBalancesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	6, // 3: fractalengine.rpc.v1.GetTokenBalancesRequest.include_mint_details:type_name -> google.protobuf.BoolValue
-	7, // 4: fractalengine.rpc.v1.GetTokenBalancesRequest.limit:type_name -> google.protobuf.Int32Value
-	7, // 5: fractalengine.rpc.v1.GetTokenBalancesRequest.page:type_name -> google.protobuf.Int32Value
-	8, // 6: fractalengine.rpc.v1.GetTokenBalancesResponse.data:type_name -> google.protobuf.Struct
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	4, // 0: fractalengine.rpc.v1.GetPendingTokenBalancesRequest.address:type_name -> fractalengine.rpc.v1.Address
+	5, // 1: fractalengine.rpc.v1.GetPendingTokenBalancesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	6, // 2: fractalengine.rpc.v1.GetPendingTokenBalancesResponse.balances:type_name -> fractalengine.rpc.v1.TokenBalance
+	4, // 3: fractalengine.rpc.v1.GetTokenBalancesRequest.address:type_name -> fractalengine.rpc.v1.Address
+	5, // 4: fractalengine.rpc.v1.GetTokenBalancesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	7, // 5: fractalengine.rpc.v1.GetTokenBalancesRequest.include_mint_details:type_name -> google.protobuf.BoolValue
+	8, // 6: fractalengine.rpc.v1.GetTokenBalancesRequest.limit:type_name -> google.protobuf.Int32Value
+	8, // 7: fractalengine.rpc.v1.GetTokenBalancesRequest.page:type_name -> google.protobuf.Int32Value
+	9, // 8: fractalengine.rpc.v1.GetTokenBalancesResponse.data:type_name -> google.protobuf.Struct
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_tokens_proto_init() }
@@ -304,6 +307,7 @@ func file_tokens_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

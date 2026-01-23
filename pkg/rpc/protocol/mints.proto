@@ -4,6 +4,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
+import "types.proto";
 
 package fractalengine.rpc.v1;
 
@@ -15,7 +16,7 @@ message GetMintsRequest {
 }
 
 message GetMintRequest {
-  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 1;
 }
 
 message GetMintsResponse {
@@ -44,7 +45,7 @@ message CreateMintRequestPayload {
   StringInterfaceMap lockup_options = 6;
   StringInterfaceMap metadata = 7;
   int32 min_signatures = 8;
-  string owner_address = 9 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address owner_address = 9;
   StringInterfaceMap requirements = 10;
   SignatureRequirementType signature_requirement_type = 11;
   repeated string tags = 12;
@@ -53,5 +54,5 @@ message CreateMintRequestPayload {
 
 message CreateMintResponse {
   string encoded_transaction_body = 1;
-  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 2;
 }

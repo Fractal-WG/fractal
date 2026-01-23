@@ -24,7 +24,7 @@ const (
 
 type DogeTopUpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -59,11 +59,11 @@ func (*DogeTopUpRequest) Descriptor() ([]byte, []int) {
 	return file_doge_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DogeTopUpRequest) GetAddress() string {
+func (x *DogeTopUpRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
-	return ""
+	return nil
 }
 
 type DogeTopUpResponse struct {
@@ -283,9 +283,9 @@ var File_doge_proto protoreflect.FileDescriptor
 const file_doge_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"doge.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\"]\n" +
-	"\x10DogeTopUpRequest\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\")\n" +
+	"doge.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\vtypes.proto\"K\n" +
+	"\x10DogeTopUpRequest\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\")\n" +
 	"\x11DogeTopUpResponse\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x14\n" +
 	"\x12DogeConfirmRequest\"\x9f\x01\n" +
@@ -320,14 +320,16 @@ var file_doge_proto_goTypes = []any{
 	(*DogeSendRequest)(nil),     // 4: fractalengine.rpc.v1.DogeSendRequest
 	(*DogeSendResponse)(nil),    // 5: fractalengine.rpc.v1.DogeSendResponse
 	nil,                         // 6: fractalengine.rpc.v1.DogeConfirmResponse.ValuesEntry
+	(*Address)(nil),             // 7: fractalengine.rpc.v1.Address
 }
 var file_doge_proto_depIdxs = []int32{
-	6, // 0: fractalengine.rpc.v1.DogeConfirmResponse.values:type_name -> fractalengine.rpc.v1.DogeConfirmResponse.ValuesEntry
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 0: fractalengine.rpc.v1.DogeTopUpRequest.address:type_name -> fractalengine.rpc.v1.Address
+	6, // 1: fractalengine.rpc.v1.DogeConfirmResponse.values:type_name -> fractalengine.rpc.v1.DogeConfirmResponse.ValuesEntry
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_doge_proto_init() }
@@ -335,6 +337,7 @@ func file_doge_proto_init() {
 	if File_doge_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

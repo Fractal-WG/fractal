@@ -5,14 +5,15 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
+import "types.proto";
 
 package fractalengine.rpc.v1;
 
 option go_package = "pkg/rpc/protocol";
 
 message GetPendingTokenBalancesRequest {
-  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  google.protobuf.StringValue mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Address address = 1;
+  Hash mint_hash = 2;
 }
 
 message GetPendingTokenBalancesResponse {
@@ -20,8 +21,8 @@ message GetPendingTokenBalancesResponse {
 }
 
 message GetTokenBalancesRequest {
-  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  google.protobuf.StringValue mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Address address = 1;
+  Hash mint_hash = 2;
   google.protobuf.BoolValue include_mint_details = 3;
   google.protobuf.Int32Value limit = 4;
   google.protobuf.Int32Value page = 5;

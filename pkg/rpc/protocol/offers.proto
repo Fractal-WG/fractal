@@ -4,6 +4,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
+import "types.proto";
 
 package fractalengine.rpc.v1;
 
@@ -11,26 +12,26 @@ option go_package = "pkg/rpc/protocol";
 
 message CreateSellOfferResponse {
   string id = 1;
-  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 2;
 }
 
 message CreateBuyOfferResponse {
   string id = 1;
-  string hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 2;
 }
 
 message GetSellOffersRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  google.protobuf.StringValue offerer_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Hash mint_hash = 3;
+  Address offerer_address = 4;
 }
 
 message GetBuyOffersRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
-  google.protobuf.StringValue mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  google.protobuf.StringValue seller_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Hash mint_hash = 3;
+  Address seller_address = 4;
 }
 
 message GetSellOffersResponse {
@@ -54,8 +55,8 @@ message CreateSellOfferRequest {
 }
 
 message CreateSellOfferRequestPayload {
-  string offerer_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string mint_hash = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Address offerer_address = 1 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 2 [(buf.validate.field).string.min_len = 1];
   int32 quantity = 3 [(buf.validate.field).int32.gt = 0];
   int32 price = 4 [(buf.validate.field).int32.gt = 0];
 }
@@ -67,9 +68,9 @@ message CreateBuyOfferRequest {
 }
 
 message CreateBuyOfferRequestPayload {
-  string offerer_address = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string seller_address = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string mint_hash = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Address offerer_address = 1 [(buf.validate.field).string.min_len = 1];
+  Address seller_address = 2 [(buf.validate.field).string.min_len = 1];
+  Hash mint_hash = 3 [(buf.validate.field).string.min_len = 1];
   int32 quantity = 4 [(buf.validate.field).int32.gt = 0];
   int32 price = 5 [(buf.validate.field).int32.gt = 0];
 }
@@ -85,7 +86,7 @@ message DeleteSellOfferResponse {
 }
 
 message DeleteSellOfferRequestPayload {
-  string offer_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash offer_hash = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message DeleteBuyOfferRequest {
@@ -99,5 +100,5 @@ message DeleteBuyOfferResponse {
 }
 
 message DeleteBuyOfferRequestPayload {
-  string offer_hash = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash offer_hash = 1 [(buf.validate.field).string.min_len = 1];
 }
