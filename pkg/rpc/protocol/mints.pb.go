@@ -11,7 +11,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	protocol "pkg/rpc/protocol"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,11 +25,11 @@ const (
 )
 
 type GetMintsRequest struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Limit *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3"`
-	xxx_hidden_Page  *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMintsRequest) Reset() {
@@ -55,71 +57,30 @@ func (x *GetMintsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetMintsRequest.ProtoReflect.Descriptor instead.
+func (*GetMintsRequest) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{0}
+}
+
 func (x *GetMintsRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return nil
 }
 
 func (x *GetMintsRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return nil
 }
 
-func (x *GetMintsRequest) SetLimit(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetMintsRequest) SetPage(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetMintsRequest) HasLimit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Limit != nil
-}
-
-func (x *GetMintsRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Page != nil
-}
-
-func (x *GetMintsRequest) ClearLimit() {
-	x.xxx_hidden_Limit = nil
-}
-
-func (x *GetMintsRequest) ClearPage() {
-	x.xxx_hidden_Page = nil
-}
-
-type GetMintsRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Limit *wrapperspb.Int32Value
-	Page  *wrapperspb.Int32Value
-}
-
-func (b0 GetMintsRequest_builder) Build() *GetMintsRequest {
-	m0 := &GetMintsRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	return m0
-}
-
 type GetMintRequest struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Hash string                 `protobuf:"bytes,1,opt,name=hash,proto3"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Hash          *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMintRequest) Reset() {
@@ -147,39 +108,26 @@ func (x *GetMintRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *GetMintRequest) GetHash() string {
+// Deprecated: Use GetMintRequest.ProtoReflect.Descriptor instead.
+func (*GetMintRequest) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetMintRequest) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
-}
-
-func (x *GetMintRequest) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-type GetMintRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Hash string
-}
-
-func (b0 GetMintRequest_builder) Build() *GetMintRequest {
-	m0 := &GetMintRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Hash = b.Hash
-	return m0
+	return nil
 }
 
 type GetMintsResponse struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Limit int32                  `protobuf:"varint,1,opt,name=limit,proto3"`
-	xxx_hidden_Mints *[]*Mint               `protobuf:"bytes,2,rep,name=mints,proto3"`
-	xxx_hidden_Page  int32                  `protobuf:"varint,3,opt,name=page,proto3"`
-	xxx_hidden_Total int32                  `protobuf:"varint,4,opt,name=total,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Mints         []*Mint                `protobuf:"bytes,2,rep,name=mints,proto3" json:"mints,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMintsResponse) Reset() {
@@ -207,77 +155,44 @@ func (x *GetMintsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetMintsResponse.ProtoReflect.Descriptor instead.
+func (*GetMintsResponse) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{2}
+}
+
 func (x *GetMintsResponse) GetLimit() int32 {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return 0
 }
 
 func (x *GetMintsResponse) GetMints() []*Mint {
 	if x != nil {
-		if x.xxx_hidden_Mints != nil {
-			return *x.xxx_hidden_Mints
-		}
+		return x.Mints
 	}
 	return nil
 }
 
 func (x *GetMintsResponse) GetPage() int32 {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return 0
 }
 
 func (x *GetMintsResponse) GetTotal() int32 {
 	if x != nil {
-		return x.xxx_hidden_Total
+		return x.Total
 	}
 	return 0
 }
 
-func (x *GetMintsResponse) SetLimit(v int32) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetMintsResponse) SetMints(v []*Mint) {
-	x.xxx_hidden_Mints = &v
-}
-
-func (x *GetMintsResponse) SetPage(v int32) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetMintsResponse) SetTotal(v int32) {
-	x.xxx_hidden_Total = v
-}
-
-type GetMintsResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Limit int32
-	Mints []*Mint
-	Page  int32
-	Total int32
-}
-
-func (b0 GetMintsResponse_builder) Build() *GetMintsResponse {
-	m0 := &GetMintsResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Mints = &b.Mints
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_Total = b.Total
-	return m0
-}
-
 type GetMintResponse struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Mint *Mint                  `protobuf:"bytes,1,opt,name=mint,proto3"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Mint          *Mint                  `protobuf:"bytes,1,opt,name=mint,proto3" json:"mint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMintResponse) Reset() {
@@ -305,49 +220,25 @@ func (x *GetMintResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetMintResponse.ProtoReflect.Descriptor instead.
+func (*GetMintResponse) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{3}
+}
+
 func (x *GetMintResponse) GetMint() *Mint {
 	if x != nil {
-		return x.xxx_hidden_Mint
+		return x.Mint
 	}
 	return nil
 }
 
-func (x *GetMintResponse) SetMint(v *Mint) {
-	x.xxx_hidden_Mint = v
-}
-
-func (x *GetMintResponse) HasMint() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Mint != nil
-}
-
-func (x *GetMintResponse) ClearMint() {
-	x.xxx_hidden_Mint = nil
-}
-
-type GetMintResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Mint *Mint
-}
-
-func (b0 GetMintResponse_builder) Build() *GetMintResponse {
-	m0 := &GetMintResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Mint = b.Mint
-	return m0
-}
-
 type CreateMintRequest struct {
-	state                protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *CreateMintRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                    `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                    `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Payload       *CreateMintRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                    `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                    `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateMintRequest) Reset() {
@@ -375,85 +266,49 @@ func (x *CreateMintRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateMintRequest.ProtoReflect.Descriptor instead.
+func (*CreateMintRequest) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{4}
+}
+
 func (x *CreateMintRequest) GetPayload() *CreateMintRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *CreateMintRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *CreateMintRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *CreateMintRequest) SetPayload(v *CreateMintRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *CreateMintRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *CreateMintRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *CreateMintRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *CreateMintRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type CreateMintRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *CreateMintRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 CreateMintRequest_builder) Build() *CreateMintRequest {
-	m0 := &CreateMintRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type CreateMintRequestPayload struct {
-	state                               protoimpl.MessageState   `protogen:"opaque.v1"`
-	xxx_hidden_AssetManagers            *[]*AssetManager         `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers,proto3"`
-	xxx_hidden_ContractOfSale           string                   `protobuf:"bytes,2,opt,name=contract_of_sale,json=contractOfSale,proto3"`
-	xxx_hidden_Description              string                   `protobuf:"bytes,3,opt,name=description,proto3"`
-	xxx_hidden_FeedUrl                  string                   `protobuf:"bytes,4,opt,name=feed_url,json=feedUrl,proto3"`
-	xxx_hidden_FractionCount            int32                    `protobuf:"varint,5,opt,name=fraction_count,json=fractionCount,proto3"`
-	xxx_hidden_LockupOptions            *StringInterfaceMap      `protobuf:"bytes,6,opt,name=lockup_options,json=lockupOptions,proto3"`
-	xxx_hidden_Metadata                 *StringInterfaceMap      `protobuf:"bytes,7,opt,name=metadata,proto3"`
-	xxx_hidden_MinSignatures            int32                    `protobuf:"varint,8,opt,name=min_signatures,json=minSignatures,proto3"`
-	xxx_hidden_OwnerAddress             string                   `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3"`
-	xxx_hidden_Requirements             *StringInterfaceMap      `protobuf:"bytes,10,opt,name=requirements,proto3"`
-	xxx_hidden_SignatureRequirementType SignatureRequirementType `protobuf:"varint,11,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType"`
-	xxx_hidden_Tags                     []string                 `protobuf:"bytes,12,rep,name=tags,proto3"`
-	xxx_hidden_Title                    string                   `protobuf:"bytes,13,opt,name=title,proto3"`
-	unknownFields                       protoimpl.UnknownFields
-	sizeCache                           protoimpl.SizeCache
+	state                    protoimpl.MessageState   `protogen:"open.v1"`
+	AssetManagers            []*AssetManager          `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers,proto3" json:"asset_managers,omitempty"`
+	ContractOfSale           string                   `protobuf:"bytes,2,opt,name=contract_of_sale,json=contractOfSale,proto3" json:"contract_of_sale,omitempty"`
+	Description              string                   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	FeedUrl                  string                   `protobuf:"bytes,4,opt,name=feed_url,json=feedUrl,proto3" json:"feed_url,omitempty"`
+	FractionCount            int32                    `protobuf:"varint,5,opt,name=fraction_count,json=fractionCount,proto3" json:"fraction_count,omitempty"`
+	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,6,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
+	Metadata                 *StringInterfaceMap      `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	MinSignatures            int32                    `protobuf:"varint,8,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
+	OwnerAddress             *protocol.Address        `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	Requirements             *StringInterfaceMap      `protobuf:"bytes,10,opt,name=requirements,proto3" json:"requirements,omitempty"`
+	SignatureRequirementType SignatureRequirementType `protobuf:"varint,11,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
+	Tags                     []string                 `protobuf:"bytes,12,rep,name=tags,proto3" json:"tags,omitempty"`
+	Title                    string                   `protobuf:"bytes,13,opt,name=title,proto3" json:"title,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *CreateMintRequestPayload) Reset() {
@@ -481,228 +336,108 @@ func (x *CreateMintRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateMintRequestPayload.ProtoReflect.Descriptor instead.
+func (*CreateMintRequestPayload) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{5}
+}
+
 func (x *CreateMintRequestPayload) GetAssetManagers() []*AssetManager {
 	if x != nil {
-		if x.xxx_hidden_AssetManagers != nil {
-			return *x.xxx_hidden_AssetManagers
-		}
+		return x.AssetManagers
 	}
 	return nil
 }
 
 func (x *CreateMintRequestPayload) GetContractOfSale() string {
 	if x != nil {
-		return x.xxx_hidden_ContractOfSale
+		return x.ContractOfSale
 	}
 	return ""
 }
 
 func (x *CreateMintRequestPayload) GetDescription() string {
 	if x != nil {
-		return x.xxx_hidden_Description
+		return x.Description
 	}
 	return ""
 }
 
 func (x *CreateMintRequestPayload) GetFeedUrl() string {
 	if x != nil {
-		return x.xxx_hidden_FeedUrl
+		return x.FeedUrl
 	}
 	return ""
 }
 
 func (x *CreateMintRequestPayload) GetFractionCount() int32 {
 	if x != nil {
-		return x.xxx_hidden_FractionCount
+		return x.FractionCount
 	}
 	return 0
 }
 
 func (x *CreateMintRequestPayload) GetLockupOptions() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_LockupOptions
+		return x.LockupOptions
 	}
 	return nil
 }
 
 func (x *CreateMintRequestPayload) GetMetadata() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_Metadata
+		return x.Metadata
 	}
 	return nil
 }
 
 func (x *CreateMintRequestPayload) GetMinSignatures() int32 {
 	if x != nil {
-		return x.xxx_hidden_MinSignatures
+		return x.MinSignatures
 	}
 	return 0
 }
 
-func (x *CreateMintRequestPayload) GetOwnerAddress() string {
+func (x *CreateMintRequestPayload) GetOwnerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_OwnerAddress
+		return x.OwnerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateMintRequestPayload) GetRequirements() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_Requirements
+		return x.Requirements
 	}
 	return nil
 }
 
 func (x *CreateMintRequestPayload) GetSignatureRequirementType() SignatureRequirementType {
 	if x != nil {
-		return x.xxx_hidden_SignatureRequirementType
+		return x.SignatureRequirementType
 	}
 	return SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED
 }
 
 func (x *CreateMintRequestPayload) GetTags() []string {
 	if x != nil {
-		return x.xxx_hidden_Tags
+		return x.Tags
 	}
 	return nil
 }
 
 func (x *CreateMintRequestPayload) GetTitle() string {
 	if x != nil {
-		return x.xxx_hidden_Title
+		return x.Title
 	}
 	return ""
 }
 
-func (x *CreateMintRequestPayload) SetAssetManagers(v []*AssetManager) {
-	x.xxx_hidden_AssetManagers = &v
-}
-
-func (x *CreateMintRequestPayload) SetContractOfSale(v string) {
-	x.xxx_hidden_ContractOfSale = v
-}
-
-func (x *CreateMintRequestPayload) SetDescription(v string) {
-	x.xxx_hidden_Description = v
-}
-
-func (x *CreateMintRequestPayload) SetFeedUrl(v string) {
-	x.xxx_hidden_FeedUrl = v
-}
-
-func (x *CreateMintRequestPayload) SetFractionCount(v int32) {
-	x.xxx_hidden_FractionCount = v
-}
-
-func (x *CreateMintRequestPayload) SetLockupOptions(v *StringInterfaceMap) {
-	x.xxx_hidden_LockupOptions = v
-}
-
-func (x *CreateMintRequestPayload) SetMetadata(v *StringInterfaceMap) {
-	x.xxx_hidden_Metadata = v
-}
-
-func (x *CreateMintRequestPayload) SetMinSignatures(v int32) {
-	x.xxx_hidden_MinSignatures = v
-}
-
-func (x *CreateMintRequestPayload) SetOwnerAddress(v string) {
-	x.xxx_hidden_OwnerAddress = v
-}
-
-func (x *CreateMintRequestPayload) SetRequirements(v *StringInterfaceMap) {
-	x.xxx_hidden_Requirements = v
-}
-
-func (x *CreateMintRequestPayload) SetSignatureRequirementType(v SignatureRequirementType) {
-	x.xxx_hidden_SignatureRequirementType = v
-}
-
-func (x *CreateMintRequestPayload) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
-}
-
-func (x *CreateMintRequestPayload) SetTitle(v string) {
-	x.xxx_hidden_Title = v
-}
-
-func (x *CreateMintRequestPayload) HasLockupOptions() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_LockupOptions != nil
-}
-
-func (x *CreateMintRequestPayload) HasMetadata() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Metadata != nil
-}
-
-func (x *CreateMintRequestPayload) HasRequirements() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Requirements != nil
-}
-
-func (x *CreateMintRequestPayload) ClearLockupOptions() {
-	x.xxx_hidden_LockupOptions = nil
-}
-
-func (x *CreateMintRequestPayload) ClearMetadata() {
-	x.xxx_hidden_Metadata = nil
-}
-
-func (x *CreateMintRequestPayload) ClearRequirements() {
-	x.xxx_hidden_Requirements = nil
-}
-
-type CreateMintRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	AssetManagers            []*AssetManager
-	ContractOfSale           string
-	Description              string
-	FeedUrl                  string
-	FractionCount            int32
-	LockupOptions            *StringInterfaceMap
-	Metadata                 *StringInterfaceMap
-	MinSignatures            int32
-	OwnerAddress             string
-	Requirements             *StringInterfaceMap
-	SignatureRequirementType SignatureRequirementType
-	Tags                     []string
-	Title                    string
-}
-
-func (b0 CreateMintRequestPayload_builder) Build() *CreateMintRequestPayload {
-	m0 := &CreateMintRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_AssetManagers = &b.AssetManagers
-	x.xxx_hidden_ContractOfSale = b.ContractOfSale
-	x.xxx_hidden_Description = b.Description
-	x.xxx_hidden_FeedUrl = b.FeedUrl
-	x.xxx_hidden_FractionCount = b.FractionCount
-	x.xxx_hidden_LockupOptions = b.LockupOptions
-	x.xxx_hidden_Metadata = b.Metadata
-	x.xxx_hidden_MinSignatures = b.MinSignatures
-	x.xxx_hidden_OwnerAddress = b.OwnerAddress
-	x.xxx_hidden_Requirements = b.Requirements
-	x.xxx_hidden_SignatureRequirementType = b.SignatureRequirementType
-	x.xxx_hidden_Tags = b.Tags
-	x.xxx_hidden_Title = b.Title
-	return m0
-}
-
 type CreateMintResponse struct {
-	state                             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_EncodedTransactionBody string                 `protobuf:"bytes,1,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3"`
-	xxx_hidden_Hash                   string                 `protobuf:"bytes,2,opt,name=hash,proto3"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	EncodedTransactionBody string                 `protobuf:"bytes,1,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
+	Hash                   *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CreateMintResponse) Reset() {
@@ -730,54 +465,35 @@ func (x *CreateMintResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateMintResponse.ProtoReflect.Descriptor instead.
+func (*CreateMintResponse) Descriptor() ([]byte, []int) {
+	return file_mints_proto_rawDescGZIP(), []int{6}
+}
+
 func (x *CreateMintResponse) GetEncodedTransactionBody() string {
 	if x != nil {
-		return x.xxx_hidden_EncodedTransactionBody
+		return x.EncodedTransactionBody
 	}
 	return ""
 }
 
-func (x *CreateMintResponse) GetHash() string {
+func (x *CreateMintResponse) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
-}
-
-func (x *CreateMintResponse) SetEncodedTransactionBody(v string) {
-	x.xxx_hidden_EncodedTransactionBody = v
-}
-
-func (x *CreateMintResponse) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-type CreateMintResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	EncodedTransactionBody string
-	Hash                   string
-}
-
-func (b0 CreateMintResponse_builder) Build() *CreateMintResponse {
-	m0 := &CreateMintResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_EncodedTransactionBody = b.EncodedTransactionBody
-	x.xxx_hidden_Hash = b.Hash
-	return m0
+	return nil
 }
 
 var File_mints_proto protoreflect.FileDescriptor
 
 const file_mints_proto_rawDesc = "" +
 	"\n" +
-	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"u\n" +
+	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"u\n" +
 	"\x0fGetMintsRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\">\n" +
-	"\x0eGetMintRequest\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\"\x84\x01\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\"@\n" +
+	"\x0eGetMintRequest\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"\x84\x01\n" +
 	"\x10GetMintsResponse\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x120\n" +
 	"\x05mints\x18\x02 \x03(\v2\x1a.fractalengine.rpc.v1.MintR\x05mints\x12\x12\n" +
@@ -789,7 +505,7 @@ const file_mints_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v2..fractalengine.rpc.v1.CreateMintRequestPayloadR\apayload\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x1c\n" +
-	"\tsignature\x18\x03 \x01(\tR\tsignature\"\x88\x06\n" +
+	"\tsignature\x18\x03 \x01(\tR\tsignature\"\xf6\x05\n" +
 	"\x18CreateMintRequestPayload\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12(\n" +
 	"\x10contract_of_sale\x18\x02 \x01(\tR\x0econtractOfSale\x12)\n" +
@@ -798,16 +514,28 @@ const file_mints_proto_rawDesc = "" +
 	"\x0efraction_count\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\rfractionCount\x12O\n" +
 	"\x0elockup_options\x18\x06 \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\rlockupOptions\x12D\n" +
 	"\bmetadata\x18\a \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\bmetadata\x12%\n" +
-	"\x0emin_signatures\x18\b \x01(\x05R\rminSignatures\x12T\n" +
-	"\rowner_address\x18\t \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fownerAddress\x12L\n" +
+	"\x0emin_signatures\x18\b \x01(\x05R\rminSignatures\x12B\n" +
+	"\rowner_address\x18\t \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\x12L\n" +
 	"\frequirements\x18\n" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12l\n" +
 	"\x1asignature_requirement_type\x18\v \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\f \x03(\tR\x04tags\x12\x1d\n" +
-	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\"|\n" +
+	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\"~\n" +
 	"\x12CreateMintResponse\x128\n" +
-	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12,\n" +
-	"\x04hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12.\n" +
+	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+
+var (
+	file_mints_proto_rawDescOnce sync.Once
+	file_mints_proto_rawDescData []byte
+)
+
+func file_mints_proto_rawDescGZIP() []byte {
+	file_mints_proto_rawDescOnce.Do(func() {
+		file_mints_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mints_proto_rawDesc), len(file_mints_proto_rawDesc)))
+	})
+	return file_mints_proto_rawDescData
+}
 
 var file_mints_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_mints_proto_goTypes = []any{
@@ -819,27 +547,32 @@ var file_mints_proto_goTypes = []any{
 	(*CreateMintRequestPayload)(nil), // 5: fractalengine.rpc.v1.CreateMintRequestPayload
 	(*CreateMintResponse)(nil),       // 6: fractalengine.rpc.v1.CreateMintResponse
 	(*wrapperspb.Int32Value)(nil),    // 7: google.protobuf.Int32Value
-	(*Mint)(nil),                     // 8: fractalengine.rpc.v1.Mint
-	(*AssetManager)(nil),             // 9: fractalengine.rpc.v1.AssetManager
-	(*StringInterfaceMap)(nil),       // 10: fractalengine.rpc.v1.StringInterfaceMap
-	(SignatureRequirementType)(0),    // 11: fractalengine.rpc.v1.SignatureRequirementType
+	(*protocol.Hash)(nil),            // 8: fractalengine.rpc.v1.Hash
+	(*Mint)(nil),                     // 9: fractalengine.rpc.v1.Mint
+	(*AssetManager)(nil),             // 10: fractalengine.rpc.v1.AssetManager
+	(*StringInterfaceMap)(nil),       // 11: fractalengine.rpc.v1.StringInterfaceMap
+	(*protocol.Address)(nil),         // 12: fractalengine.rpc.v1.Address
+	(SignatureRequirementType)(0),    // 13: fractalengine.rpc.v1.SignatureRequirementType
 }
 var file_mints_proto_depIdxs = []int32{
 	7,  // 0: fractalengine.rpc.v1.GetMintsRequest.limit:type_name -> google.protobuf.Int32Value
 	7,  // 1: fractalengine.rpc.v1.GetMintsRequest.page:type_name -> google.protobuf.Int32Value
-	8,  // 2: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
-	8,  // 3: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
-	5,  // 4: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
-	9,  // 5: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	10, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	10, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	10, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	11, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	8,  // 2: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
+	9,  // 3: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
+	9,  // 4: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
+	5,  // 5: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
+	10, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
+	11, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	11, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	12, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	11, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	13, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	8,  // 12: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_mints_proto_init() }

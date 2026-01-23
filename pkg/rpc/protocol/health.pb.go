@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -21,15 +22,15 @@ const (
 )
 
 type GetHealthResponse struct {
-	state                         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Chain              string                 `protobuf:"bytes,1,opt,name=chain,proto3"`
-	xxx_hidden_CurrentBlockHeight int32                  `protobuf:"varint,2,opt,name=current_block_height,json=currentBlockHeight,proto3"`
-	xxx_hidden_LatestBlockHeight  int32                  `protobuf:"varint,3,opt,name=latest_block_height,json=latestBlockHeight,proto3"`
-	xxx_hidden_UpdatedAt          string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3"`
-	xxx_hidden_Version            string                 `protobuf:"bytes,5,opt,name=version,proto3"`
-	xxx_hidden_WalletsEnabled     bool                   `protobuf:"varint,6,opt,name=wallets_enabled,json=walletsEnabled,proto3"`
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Chain              string                 `protobuf:"bytes,1,opt,name=chain,proto3" json:"chain,omitempty"`
+	CurrentBlockHeight int32                  `protobuf:"varint,2,opt,name=current_block_height,json=currentBlockHeight,proto3" json:"current_block_height,omitempty"`
+	LatestBlockHeight  int32                  `protobuf:"varint,3,opt,name=latest_block_height,json=latestBlockHeight,proto3" json:"latest_block_height,omitempty"`
+	UpdatedAt          string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Version            string                 `protobuf:"bytes,5,opt,name=version,proto3" json:"version,omitempty"`
+	WalletsEnabled     bool                   `protobuf:"varint,6,opt,name=wallets_enabled,json=walletsEnabled,proto3" json:"wallets_enabled,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GetHealthResponse) Reset() {
@@ -57,98 +58,55 @@ func (x *GetHealthResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetHealthResponse.ProtoReflect.Descriptor instead.
+func (*GetHealthResponse) Descriptor() ([]byte, []int) {
+	return file_health_proto_rawDescGZIP(), []int{0}
+}
+
 func (x *GetHealthResponse) GetChain() string {
 	if x != nil {
-		return x.xxx_hidden_Chain
+		return x.Chain
 	}
 	return ""
 }
 
 func (x *GetHealthResponse) GetCurrentBlockHeight() int32 {
 	if x != nil {
-		return x.xxx_hidden_CurrentBlockHeight
+		return x.CurrentBlockHeight
 	}
 	return 0
 }
 
 func (x *GetHealthResponse) GetLatestBlockHeight() int32 {
 	if x != nil {
-		return x.xxx_hidden_LatestBlockHeight
+		return x.LatestBlockHeight
 	}
 	return 0
 }
 
 func (x *GetHealthResponse) GetUpdatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_UpdatedAt
+		return x.UpdatedAt
 	}
 	return ""
 }
 
 func (x *GetHealthResponse) GetVersion() string {
 	if x != nil {
-		return x.xxx_hidden_Version
+		return x.Version
 	}
 	return ""
 }
 
 func (x *GetHealthResponse) GetWalletsEnabled() bool {
 	if x != nil {
-		return x.xxx_hidden_WalletsEnabled
+		return x.WalletsEnabled
 	}
 	return false
 }
 
-func (x *GetHealthResponse) SetChain(v string) {
-	x.xxx_hidden_Chain = v
-}
-
-func (x *GetHealthResponse) SetCurrentBlockHeight(v int32) {
-	x.xxx_hidden_CurrentBlockHeight = v
-}
-
-func (x *GetHealthResponse) SetLatestBlockHeight(v int32) {
-	x.xxx_hidden_LatestBlockHeight = v
-}
-
-func (x *GetHealthResponse) SetUpdatedAt(v string) {
-	x.xxx_hidden_UpdatedAt = v
-}
-
-func (x *GetHealthResponse) SetVersion(v string) {
-	x.xxx_hidden_Version = v
-}
-
-func (x *GetHealthResponse) SetWalletsEnabled(v bool) {
-	x.xxx_hidden_WalletsEnabled = v
-}
-
-type GetHealthResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Chain              string
-	CurrentBlockHeight int32
-	LatestBlockHeight  int32
-	UpdatedAt          string
-	Version            string
-	WalletsEnabled     bool
-}
-
-func (b0 GetHealthResponse_builder) Build() *GetHealthResponse {
-	m0 := &GetHealthResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Chain = b.Chain
-	x.xxx_hidden_CurrentBlockHeight = b.CurrentBlockHeight
-	x.xxx_hidden_LatestBlockHeight = b.LatestBlockHeight
-	x.xxx_hidden_UpdatedAt = b.UpdatedAt
-	x.xxx_hidden_Version = b.Version
-	x.xxx_hidden_WalletsEnabled = b.WalletsEnabled
-	return m0
-}
-
 type GetHealthRequest struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -178,16 +136,9 @@ func (x *GetHealthRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-type GetHealthRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-}
-
-func (b0 GetHealthRequest_builder) Build() *GetHealthRequest {
-	m0 := &GetHealthRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	return m0
+// Deprecated: Use GetHealthRequest.ProtoReflect.Descriptor instead.
+func (*GetHealthRequest) Descriptor() ([]byte, []int) {
+	return file_health_proto_rawDescGZIP(), []int{1}
 }
 
 var File_health_proto protoreflect.FileDescriptor
@@ -204,6 +155,18 @@ const file_health_proto_rawDesc = "" +
 	"\aversion\x18\x05 \x01(\tR\aversion\x12'\n" +
 	"\x0fwallets_enabled\x18\x06 \x01(\bR\x0ewalletsEnabled\"\x12\n" +
 	"\x10GetHealthRequestB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+
+var (
+	file_health_proto_rawDescOnce sync.Once
+	file_health_proto_rawDescData []byte
+)
+
+func file_health_proto_rawDescGZIP() []byte {
+	file_health_proto_rawDescOnce.Do(func() {
+		file_health_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_health_proto_rawDesc), len(file_health_proto_rawDesc)))
+	})
+	return file_health_proto_rawDescData
+}
 
 var file_health_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_health_proto_goTypes = []any{

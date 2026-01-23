@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "buf/validate/validate.proto";
 import "google/protobuf/struct.proto";
+import "types.proto";
 
 package fractalengine.rpc.v1;
 
@@ -46,52 +47,52 @@ message Mint {
   string description = 5;
   string feed_url = 6;
   int32 fraction_count = 7;
-  string hash = 8 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 8;
   string id = 9;
   StringInterfaceMap lockup_options = 10;
   StringInterfaceMap metadata = 11;
   int32 min_signatures = 12;
-  string owner_address = 13 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address owner_address = 13;
   string public_key = 14;
   StringInterfaceMap requirements = 15;
   string signature = 16;
   SignatureRequirementType signature_requirement_type = 17;
   repeated string tags = 18;
   string title = 19;
-  string transaction_hash = 20 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash transaction_hash = 20;
 }
 
 message Invoice {
   int32 block_height = 1;
-  string buyer_address = 2 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address buyer_address = 2;
   string created_at = 3;
-  string hash = 4 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash hash = 4;
   string id = 5;
-  string mint_hash = 6 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash mint_hash = 6;
   SqlNullTime paid_at = 7;
-  string payment_address = 8 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address payment_address = 8;
   string pending_token_balance_id = 9;
   int32 price = 10;
   string public_key = 11;
   int32 quantity = 12;
-  string seller_address = 13 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address seller_address = 13;
   string signature = 14;
-  string transaction_hash = 15 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash transaction_hash = 15;
 }
 
 message TokenBalance {
-  string address = 1 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Address address = 1;
   string created_at = 2;
-  string mint_hash = 3 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash mint_hash = 3;
   int32 quantity = 4;
   string updated_at = 5;
 }
 
 message BuyOffer {
-  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  string mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  string offerer_address = 3 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
-  string seller_address = 4 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Hash hash = 1;
+  Hash mint_hash = 2;
+  Address offerer_address = 3;
+  Address seller_address = 4;
   int32 quantity = 5;
   int32 price = 6;
   string created_at = 7;
@@ -101,9 +102,9 @@ message BuyOffer {
 }
 
 message SellOffer {
-  string hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  string mint_hash = 2 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
-  string offerer_address = 3 [(buf.validate.field).string.pattern = "^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$"];
+  Hash hash = 1;
+  Hash mint_hash = 2;
+  Address offerer_address = 3;
   int32 quantity = 4;
   int32 price = 5;
   string created_at = 6;

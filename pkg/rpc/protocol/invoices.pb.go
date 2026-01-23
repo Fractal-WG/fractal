@@ -11,7 +11,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	protocol "pkg/rpc/protocol"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,13 +25,13 @@ const (
 )
 
 type GetInvoicesRequest struct {
-	state               protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Address  string                  `protobuf:"bytes,1,opt,name=address,proto3"`
-	xxx_hidden_Limit    *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=limit,proto3"`
-	xxx_hidden_Page     *wrapperspb.Int32Value  `protobuf:"bytes,3,opt,name=page,proto3"`
-	xxx_hidden_MintHash *wrapperspb.StringValue `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash      *protocol.Hash         `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetInvoicesRequest) Reset() {
@@ -57,110 +59,46 @@ func (x *GetInvoicesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *GetInvoicesRequest) GetAddress() string {
+// Deprecated: Use GetInvoicesRequest.ProtoReflect.Descriptor instead.
+func (*GetInvoicesRequest) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GetInvoicesRequest) GetAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_Address
+		return x.Address
 	}
-	return ""
+	return nil
 }
 
 func (x *GetInvoicesRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return nil
 }
 
 func (x *GetInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return nil
 }
 
-func (x *GetInvoicesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetInvoicesRequest) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.MintHash
 	}
 	return nil
-}
-
-func (x *GetInvoicesRequest) SetAddress(v string) {
-	x.xxx_hidden_Address = v
-}
-
-func (x *GetInvoicesRequest) SetLimit(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetInvoicesRequest) SetPage(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetInvoicesRequest) SetMintHash(v *wrapperspb.StringValue) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *GetInvoicesRequest) HasLimit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Limit != nil
-}
-
-func (x *GetInvoicesRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Page != nil
-}
-
-func (x *GetInvoicesRequest) HasMintHash() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MintHash != nil
-}
-
-func (x *GetInvoicesRequest) ClearLimit() {
-	x.xxx_hidden_Limit = nil
-}
-
-func (x *GetInvoicesRequest) ClearPage() {
-	x.xxx_hidden_Page = nil
-}
-
-func (x *GetInvoicesRequest) ClearMintHash() {
-	x.xxx_hidden_MintHash = nil
-}
-
-type GetInvoicesRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Address  string
-	Limit    *wrapperspb.Int32Value
-	Page     *wrapperspb.Int32Value
-	MintHash *wrapperspb.StringValue
-}
-
-func (b0 GetInvoicesRequest_builder) Build() *GetInvoicesRequest {
-	m0 := &GetInvoicesRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Address = b.Address
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_MintHash = b.MintHash
-	return m0
 }
 
 type GetAllInvoicesRequest struct {
-	state               protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Limit    *wrapperspb.Int32Value  `protobuf:"bytes,1,opt,name=limit,proto3"`
-	xxx_hidden_Page     *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=page,proto3"`
-	xxx_hidden_MintHash *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetAllInvoicesRequest) Reset() {
@@ -188,98 +126,40 @@ func (x *GetAllInvoicesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetAllInvoicesRequest.ProtoReflect.Descriptor instead.
+func (*GetAllInvoicesRequest) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{1}
+}
+
 func (x *GetAllInvoicesRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return nil
 }
 
 func (x *GetAllInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return nil
 }
 
-func (x *GetAllInvoicesRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetAllInvoicesRequest) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.MintHash
 	}
 	return nil
-}
-
-func (x *GetAllInvoicesRequest) SetLimit(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetAllInvoicesRequest) SetPage(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetAllInvoicesRequest) SetMintHash(v *wrapperspb.StringValue) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *GetAllInvoicesRequest) HasLimit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Limit != nil
-}
-
-func (x *GetAllInvoicesRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Page != nil
-}
-
-func (x *GetAllInvoicesRequest) HasMintHash() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MintHash != nil
-}
-
-func (x *GetAllInvoicesRequest) ClearLimit() {
-	x.xxx_hidden_Limit = nil
-}
-
-func (x *GetAllInvoicesRequest) ClearPage() {
-	x.xxx_hidden_Page = nil
-}
-
-func (x *GetAllInvoicesRequest) ClearMintHash() {
-	x.xxx_hidden_MintHash = nil
-}
-
-type GetAllInvoicesRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Limit    *wrapperspb.Int32Value
-	Page     *wrapperspb.Int32Value
-	MintHash *wrapperspb.StringValue
-}
-
-func (b0 GetAllInvoicesRequest_builder) Build() *GetAllInvoicesRequest {
-	m0 := &GetAllInvoicesRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_MintHash = b.MintHash
-	return m0
 }
 
 type GetInvoicesResponse struct {
-	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Invoices *[]*Invoice            `protobuf:"bytes,1,rep,name=invoices,proto3"`
-	xxx_hidden_Limit    int32                  `protobuf:"varint,2,opt,name=limit,proto3"`
-	xxx_hidden_Page     int32                  `protobuf:"varint,3,opt,name=page,proto3"`
-	xxx_hidden_Total    int32                  `protobuf:"varint,4,opt,name=total,proto3"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Invoices      []*Invoice             `protobuf:"bytes,1,rep,name=invoices,proto3" json:"invoices,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetInvoicesResponse) Reset() {
@@ -307,80 +187,47 @@ func (x *GetInvoicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetInvoicesResponse.ProtoReflect.Descriptor instead.
+func (*GetInvoicesResponse) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{2}
+}
+
 func (x *GetInvoicesResponse) GetInvoices() []*Invoice {
 	if x != nil {
-		if x.xxx_hidden_Invoices != nil {
-			return *x.xxx_hidden_Invoices
-		}
+		return x.Invoices
 	}
 	return nil
 }
 
 func (x *GetInvoicesResponse) GetLimit() int32 {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return 0
 }
 
 func (x *GetInvoicesResponse) GetPage() int32 {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return 0
 }
 
 func (x *GetInvoicesResponse) GetTotal() int32 {
 	if x != nil {
-		return x.xxx_hidden_Total
+		return x.Total
 	}
 	return 0
 }
 
-func (x *GetInvoicesResponse) SetInvoices(v []*Invoice) {
-	x.xxx_hidden_Invoices = &v
-}
-
-func (x *GetInvoicesResponse) SetLimit(v int32) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetInvoicesResponse) SetPage(v int32) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetInvoicesResponse) SetTotal(v int32) {
-	x.xxx_hidden_Total = v
-}
-
-type GetInvoicesResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Invoices []*Invoice
-	Limit    int32
-	Page     int32
-	Total    int32
-}
-
-func (b0 GetInvoicesResponse_builder) Build() *GetInvoicesResponse {
-	m0 := &GetInvoicesResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Invoices = &b.Invoices
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_Total = b.Total
-	return m0
-}
-
 type GetAllInvoicesResponse struct {
-	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Invoices *[]*Invoice            `protobuf:"bytes,1,rep,name=invoices,proto3"`
-	xxx_hidden_Limit    int32                  `protobuf:"varint,2,opt,name=limit,proto3"`
-	xxx_hidden_Page     int32                  `protobuf:"varint,3,opt,name=page,proto3"`
-	xxx_hidden_Total    int32                  `protobuf:"varint,4,opt,name=total,proto3"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Invoices      []*Invoice             `protobuf:"bytes,1,rep,name=invoices,proto3" json:"invoices,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetAllInvoicesResponse) Reset() {
@@ -408,77 +255,44 @@ func (x *GetAllInvoicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetAllInvoicesResponse.ProtoReflect.Descriptor instead.
+func (*GetAllInvoicesResponse) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{3}
+}
+
 func (x *GetAllInvoicesResponse) GetInvoices() []*Invoice {
 	if x != nil {
-		if x.xxx_hidden_Invoices != nil {
-			return *x.xxx_hidden_Invoices
-		}
+		return x.Invoices
 	}
 	return nil
 }
 
 func (x *GetAllInvoicesResponse) GetLimit() int32 {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return 0
 }
 
 func (x *GetAllInvoicesResponse) GetPage() int32 {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return 0
 }
 
 func (x *GetAllInvoicesResponse) GetTotal() int32 {
 	if x != nil {
-		return x.xxx_hidden_Total
+		return x.Total
 	}
 	return 0
 }
 
-func (x *GetAllInvoicesResponse) SetInvoices(v []*Invoice) {
-	x.xxx_hidden_Invoices = &v
-}
-
-func (x *GetAllInvoicesResponse) SetLimit(v int32) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetAllInvoicesResponse) SetPage(v int32) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetAllInvoicesResponse) SetTotal(v int32) {
-	x.xxx_hidden_Total = v
-}
-
-type GetAllInvoicesResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Invoices []*Invoice
-	Limit    int32
-	Page     int32
-	Total    int32
-}
-
-func (b0 GetAllInvoicesResponse_builder) Build() *GetAllInvoicesResponse {
-	m0 := &GetAllInvoicesResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Invoices = &b.Invoices
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_Total = b.Total
-	return m0
-}
-
 type CreateInvoiceSignatureRequest struct {
-	state              protoimpl.MessageState                `protogen:"opaque.v1"`
-	xxx_hidden_Payload *CreateInvoiceSignatureRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state         protoimpl.MessageState                `protogen:"open.v1"`
+	Payload       *CreateInvoiceSignatureRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateInvoiceSignatureRequest) Reset() {
@@ -506,49 +320,25 @@ func (x *CreateInvoiceSignatureRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateInvoiceSignatureRequest.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceSignatureRequest) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{4}
+}
+
 func (x *CreateInvoiceSignatureRequest) GetPayload() *CreateInvoiceSignatureRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
-func (x *CreateInvoiceSignatureRequest) SetPayload(v *CreateInvoiceSignatureRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *CreateInvoiceSignatureRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *CreateInvoiceSignatureRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type CreateInvoiceSignatureRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload *CreateInvoiceSignatureRequestPayload
-}
-
-func (b0 CreateInvoiceSignatureRequest_builder) Build() *CreateInvoiceSignatureRequest {
-	m0 := &CreateInvoiceSignatureRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	return m0
-}
-
 type CreateInvoiceSignatureRequestPayload struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_InvoiceHash string                 `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3"`
-	xxx_hidden_PublicKey   string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature   string                 `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InvoiceHash   string                 `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
+	PublicKey     string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                 `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateInvoiceSignatureRequestPayload) Reset() {
@@ -576,60 +366,35 @@ func (x *CreateInvoiceSignatureRequestPayload) ProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateInvoiceSignatureRequestPayload.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceSignatureRequestPayload) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{5}
+}
+
 func (x *CreateInvoiceSignatureRequestPayload) GetInvoiceHash() string {
 	if x != nil {
-		return x.xxx_hidden_InvoiceHash
+		return x.InvoiceHash
 	}
 	return ""
 }
 
 func (x *CreateInvoiceSignatureRequestPayload) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *CreateInvoiceSignatureRequestPayload) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *CreateInvoiceSignatureRequestPayload) SetInvoiceHash(v string) {
-	x.xxx_hidden_InvoiceHash = v
-}
-
-func (x *CreateInvoiceSignatureRequestPayload) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *CreateInvoiceSignatureRequestPayload) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-type CreateInvoiceSignatureRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	InvoiceHash string
-	PublicKey   string
-	Signature   string
-}
-
-func (b0 CreateInvoiceSignatureRequestPayload_builder) Build() *CreateInvoiceSignatureRequestPayload {
-	m0 := &CreateInvoiceSignatureRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_InvoiceHash = b.InvoiceHash
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type CreateInvoiceSignatureResponse struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id string                 `protobuf:"bytes,1,opt,name=id,proto3"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -659,38 +424,25 @@ func (x *CreateInvoiceSignatureResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateInvoiceSignatureResponse.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceSignatureResponse) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{6}
+}
+
 func (x *CreateInvoiceSignatureResponse) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
-func (x *CreateInvoiceSignatureResponse) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-type CreateInvoiceSignatureResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id string
-}
-
-func (b0 CreateInvoiceSignatureResponse_builder) Build() *CreateInvoiceSignatureResponse {
-	m0 := &CreateInvoiceSignatureResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Id = b.Id
-	return m0
-}
-
 type CreateInvoiceRequest struct {
-	state                protoimpl.MessageState       `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *CreateInvoiceRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                       `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                       `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	Payload       *CreateInvoiceRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                       `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                       `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateInvoiceRequest) Reset() {
@@ -718,78 +470,42 @@ func (x *CreateInvoiceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateInvoiceRequest.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceRequest) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{7}
+}
+
 func (x *CreateInvoiceRequest) GetPayload() *CreateInvoiceRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *CreateInvoiceRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *CreateInvoiceRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *CreateInvoiceRequest) SetPayload(v *CreateInvoiceRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *CreateInvoiceRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *CreateInvoiceRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *CreateInvoiceRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *CreateInvoiceRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type CreateInvoiceRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *CreateInvoiceRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 CreateInvoiceRequest_builder) Build() *CreateInvoiceRequest {
-	m0 := &CreateInvoiceRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type CreateInvoiceRequestPayload struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_PaymentAddress string                 `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3"`
-	xxx_hidden_BuyerAddress   string                 `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3"`
-	xxx_hidden_MintHash       string                 `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3"`
-	xxx_hidden_Price          int32                  `protobuf:"varint,5,opt,name=price,proto3"`
-	xxx_hidden_SellerAddress  string                 `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	PaymentAddress *protocol.Address      `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	BuyerAddress   *protocol.Address      `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	SellerAddress  *protocol.Address      `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateInvoiceRequestPayload) Reset() {
@@ -817,102 +533,59 @@ func (x *CreateInvoiceRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateInvoiceRequestPayload) GetPaymentAddress() string {
-	if x != nil {
-		return x.xxx_hidden_PaymentAddress
-	}
-	return ""
+// Deprecated: Use CreateInvoiceRequestPayload.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceRequestPayload) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CreateInvoiceRequestPayload) GetBuyerAddress() string {
+func (x *CreateInvoiceRequestPayload) GetPaymentAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_BuyerAddress
+		return x.PaymentAddress
 	}
-	return ""
+	return nil
 }
 
-func (x *CreateInvoiceRequestPayload) GetMintHash() string {
+func (x *CreateInvoiceRequestPayload) GetBuyerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.BuyerAddress
 	}
-	return ""
+	return nil
+}
+
+func (x *CreateInvoiceRequestPayload) GetMintHash() *protocol.Hash {
+	if x != nil {
+		return x.MintHash
+	}
+	return nil
 }
 
 func (x *CreateInvoiceRequestPayload) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *CreateInvoiceRequestPayload) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
-func (x *CreateInvoiceRequestPayload) GetSellerAddress() string {
+func (x *CreateInvoiceRequestPayload) GetSellerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_SellerAddress
+		return x.SellerAddress
 	}
-	return ""
-}
-
-func (x *CreateInvoiceRequestPayload) SetPaymentAddress(v string) {
-	x.xxx_hidden_PaymentAddress = v
-}
-
-func (x *CreateInvoiceRequestPayload) SetBuyerAddress(v string) {
-	x.xxx_hidden_BuyerAddress = v
-}
-
-func (x *CreateInvoiceRequestPayload) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *CreateInvoiceRequestPayload) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *CreateInvoiceRequestPayload) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-func (x *CreateInvoiceRequestPayload) SetSellerAddress(v string) {
-	x.xxx_hidden_SellerAddress = v
-}
-
-type CreateInvoiceRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	PaymentAddress string
-	BuyerAddress   string
-	MintHash       string
-	Quantity       int32
-	Price          int32
-	SellerAddress  string
-}
-
-func (b0 CreateInvoiceRequestPayload_builder) Build() *CreateInvoiceRequestPayload {
-	m0 := &CreateInvoiceRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_PaymentAddress = b.PaymentAddress
-	x.xxx_hidden_BuyerAddress = b.BuyerAddress
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_Price = b.Price
-	x.xxx_hidden_SellerAddress = b.SellerAddress
-	return m0
+	return nil
 }
 
 type CreateInvoiceResponse struct {
-	state                             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Hash                   string                 `protobuf:"bytes,1,opt,name=hash,proto3"`
-	xxx_hidden_EncodedTransactionBody string                 `protobuf:"bytes,2,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	Hash                   *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	EncodedTransactionBody string                 `protobuf:"bytes,2,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CreateInvoiceResponse) Reset() {
@@ -940,58 +613,39 @@ func (x *CreateInvoiceResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateInvoiceResponse) GetHash() string {
+// Deprecated: Use CreateInvoiceResponse.ProtoReflect.Descriptor instead.
+func (*CreateInvoiceResponse) Descriptor() ([]byte, []int) {
+	return file_invoices_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CreateInvoiceResponse) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateInvoiceResponse) GetEncodedTransactionBody() string {
 	if x != nil {
-		return x.xxx_hidden_EncodedTransactionBody
+		return x.EncodedTransactionBody
 	}
 	return ""
-}
-
-func (x *CreateInvoiceResponse) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-func (x *CreateInvoiceResponse) SetEncodedTransactionBody(v string) {
-	x.xxx_hidden_EncodedTransactionBody = v
-}
-
-type CreateInvoiceResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Hash                   string
-	EncodedTransactionBody string
-}
-
-func (b0 CreateInvoiceResponse_builder) Build() *CreateInvoiceResponse {
-	m0 := &CreateInvoiceResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Hash = b.Hash
-	x.xxx_hidden_EncodedTransactionBody = b.EncodedTransactionBody
-	return m0
 }
 
 var File_invoices_proto protoreflect.FileDescriptor
 
 const file_invoices_proto_rawDesc = "" +
 	"\n" +
-	"\x0einvoices.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"\x98\x02\n" +
-	"\x12GetInvoicesRequest\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x121\n" +
+	"\x0einvoices.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"\xea\x01\n" +
+	"\x12GetInvoicesRequest\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x121\n" +
 	"\x05limit\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x04 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\"\xd0\x01\n" +
+	"\x04page\x18\x03 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x04 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\"\xb4\x01\n" +
 	"\x15GetAllInvoicesRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\"\x90\x01\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\"\x90\x01\n" +
 	"\x13GetInvoicesResponse\x129\n" +
 	"\binvoices\x18\x01 \x03(\v2\x1d.fractalengine.rpc.v1.InvoiceR\binvoices\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x12\n" +
@@ -1015,17 +669,29 @@ const file_invoices_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v21.fractalengine.rpc.v1.CreateInvoiceRequestPayloadR\apayload\x12&\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
-	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xa8\x03\n" +
-	"\x1bCreateInvoiceRequestPayload\x12Z\n" +
-	"\x0fpayment_address\x18\x01 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0epaymentAddress\x12V\n" +
-	"\rbuyer_address\x18\x02 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fbuyerAddress\x127\n" +
-	"\tmint_hash\x18\x03 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\bmintHash\x12#\n" +
+	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\x90\x03\n" +
+	"\x1bCreateInvoiceRequestPayload\x12O\n" +
+	"\x0fpayment_address\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\x0epaymentAddress\x12K\n" +
+	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\fbuyerAddress\x12@\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\bmintHash\x12#\n" +
 	"\bquantity\x18\x04 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\bquantity\x12\x1d\n" +
-	"\x05price\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\x12X\n" +
-	"\x0eseller_address\x18\x06 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\"\x7f\n" +
-	"\x15CreateInvoiceResponse\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x128\n" +
+	"\x05price\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\x12M\n" +
+	"\x0eseller_address\x18\x06 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\rsellerAddress\"\x81\x01\n" +
+	"\x15CreateInvoiceResponse\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x128\n" +
 	"\x18encoded_transaction_body\x18\x02 \x01(\tR\x16encodedTransactionBodyB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+
+var (
+	file_invoices_proto_rawDescOnce sync.Once
+	file_invoices_proto_rawDescData []byte
+)
+
+func file_invoices_proto_rawDescGZIP() []byte {
+	file_invoices_proto_rawDescOnce.Do(func() {
+		file_invoices_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_invoices_proto_rawDesc), len(file_invoices_proto_rawDesc)))
+	})
+	return file_invoices_proto_rawDescData
+}
 
 var file_invoices_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_invoices_proto_goTypes = []any{
@@ -1039,26 +705,33 @@ var file_invoices_proto_goTypes = []any{
 	(*CreateInvoiceRequest)(nil),                 // 7: fractalengine.rpc.v1.CreateInvoiceRequest
 	(*CreateInvoiceRequestPayload)(nil),          // 8: fractalengine.rpc.v1.CreateInvoiceRequestPayload
 	(*CreateInvoiceResponse)(nil),                // 9: fractalengine.rpc.v1.CreateInvoiceResponse
-	(*wrapperspb.Int32Value)(nil),                // 10: google.protobuf.Int32Value
-	(*wrapperspb.StringValue)(nil),               // 11: google.protobuf.StringValue
-	(*Invoice)(nil),                              // 12: fractalengine.rpc.v1.Invoice
+	(*protocol.Address)(nil),                     // 10: fractalengine.rpc.v1.Address
+	(*wrapperspb.Int32Value)(nil),                // 11: google.protobuf.Int32Value
+	(*protocol.Hash)(nil),                        // 12: fractalengine.rpc.v1.Hash
+	(*Invoice)(nil),                              // 13: fractalengine.rpc.v1.Invoice
 }
 var file_invoices_proto_depIdxs = []int32{
-	10, // 0: fractalengine.rpc.v1.GetInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
-	10, // 1: fractalengine.rpc.v1.GetInvoicesRequest.page:type_name -> google.protobuf.Int32Value
-	11, // 2: fractalengine.rpc.v1.GetInvoicesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	10, // 3: fractalengine.rpc.v1.GetAllInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
-	10, // 4: fractalengine.rpc.v1.GetAllInvoicesRequest.page:type_name -> google.protobuf.Int32Value
-	11, // 5: fractalengine.rpc.v1.GetAllInvoicesRequest.mint_hash:type_name -> google.protobuf.StringValue
-	12, // 6: fractalengine.rpc.v1.GetInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
-	12, // 7: fractalengine.rpc.v1.GetAllInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
-	5,  // 8: fractalengine.rpc.v1.CreateInvoiceSignatureRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload
-	8,  // 9: fractalengine.rpc.v1.CreateInvoiceRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceRequestPayload
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	10, // 0: fractalengine.rpc.v1.GetInvoicesRequest.address:type_name -> fractalengine.rpc.v1.Address
+	11, // 1: fractalengine.rpc.v1.GetInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
+	11, // 2: fractalengine.rpc.v1.GetInvoicesRequest.page:type_name -> google.protobuf.Int32Value
+	12, // 3: fractalengine.rpc.v1.GetInvoicesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	11, // 4: fractalengine.rpc.v1.GetAllInvoicesRequest.limit:type_name -> google.protobuf.Int32Value
+	11, // 5: fractalengine.rpc.v1.GetAllInvoicesRequest.page:type_name -> google.protobuf.Int32Value
+	12, // 6: fractalengine.rpc.v1.GetAllInvoicesRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	13, // 7: fractalengine.rpc.v1.GetInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
+	13, // 8: fractalengine.rpc.v1.GetAllInvoicesResponse.invoices:type_name -> fractalengine.rpc.v1.Invoice
+	5,  // 9: fractalengine.rpc.v1.CreateInvoiceSignatureRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload
+	8,  // 10: fractalengine.rpc.v1.CreateInvoiceRequest.payload:type_name -> fractalengine.rpc.v1.CreateInvoiceRequestPayload
+	10, // 11: fractalengine.rpc.v1.CreateInvoiceRequestPayload.payment_address:type_name -> fractalengine.rpc.v1.Address
+	10, // 12: fractalengine.rpc.v1.CreateInvoiceRequestPayload.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	12, // 13: fractalengine.rpc.v1.CreateInvoiceRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	10, // 14: fractalengine.rpc.v1.CreateInvoiceRequestPayload.seller_address:type_name -> fractalengine.rpc.v1.Address
+	12, // 15: fractalengine.rpc.v1.CreateInvoiceResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_invoices_proto_init() }

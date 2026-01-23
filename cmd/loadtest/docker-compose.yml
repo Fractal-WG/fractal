@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database on custom port
+  postgres:
+    image: postgres:16-alpine
+    container_name: fractal-loadtest-db
+    environment:
+      POSTGRES_USER: fractal
+      POSTGRES_PASSWORD: fractal_test_password
+      POSTGRES_DB: fractalstore
+    ports:
+      - "5433:5432"  # Map to host port 5433 to avoid conflicts with default 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fractal -d fractalstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Loadtest application
+  loadtest:
+    build:
+      context: ../..
+      dockerfile: cmd/loadtest/Dockerfile
+    container_name: fractal-loadtest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://fractal:fractal_test_password@postgres:5432/fractalstore?sslmode=disable"
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        sleep 2 &&
+        echo 'Running loadtest...' &&
+        ./loadtest -mints 1000 -offers 10 -invoices 5 -balances 20 -workers 4
+      "
+    volumes:
+      - ./reports:/app/reports  # Mount for storing test reports
+
+volumes:
+  postgres_data:

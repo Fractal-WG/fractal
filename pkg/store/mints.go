@@ -395,6 +395,9 @@ func (s *TokenisationStore) MatchUnconfirmedMint(onchainTransaction OnChainTrans
 }
 
 func getMintsCount(s *TokenisationStore) (int, error) {
+	if s.backend == "postgres" {
+		return approximateTableCountPostgres(s.DB, "mints")
+	}
 	rows, err := s.DB.Query("SELECT COUNT(*) FROM mints")
 	if err != nil {
 		return 0, err
@@ -415,6 +418,9 @@ func getMintsCount(s *TokenisationStore) (int, error) {
 }
 
 func getUnconfirmedMintsCount(s *TokenisationStore) (int, error) {
+	if s.backend == "postgres" {
+		return approximateTableCountPostgres(s.DB, "unconfirmed_mints")
+	}
 	rows, err := s.DB.Query("SELECT COUNT(*) FROM unconfirmed_mints")
 	if err != nil {
 		return 0, err

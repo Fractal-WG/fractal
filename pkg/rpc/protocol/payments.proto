@@ -5,9 +5,10 @@ package fractalengine.rpc.v1;
 option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 import "buf/validate/validate.proto";
+import "types.proto";
 
 message CreateNewPaymentRequest {
-  string invoice_hash = 1 [(buf.validate.field).string.pattern = "^[a-fA-F0-9]{64}$"];
+  Hash invoice_hash = 1;
 }
 
 message CreateNewPaymentResponse {

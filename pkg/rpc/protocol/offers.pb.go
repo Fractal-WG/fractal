@@ -11,7 +11,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	protocol "pkg/rpc/protocol"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,11 +25,11 @@ const (
 )
 
 type CreateSellOfferResponse struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id   string                 `protobuf:"bytes,1,opt,name=id,proto3"`
-	xxx_hidden_Hash string                 `protobuf:"bytes,2,opt,name=hash,proto3"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Hash          *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateSellOfferResponse) Reset() {
@@ -55,50 +57,31 @@ func (x *CreateSellOfferResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateSellOfferResponse.ProtoReflect.Descriptor instead.
+func (*CreateSellOfferResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{0}
+}
+
 func (x *CreateSellOfferResponse) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
-func (x *CreateSellOfferResponse) GetHash() string {
+func (x *CreateSellOfferResponse) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
-}
-
-func (x *CreateSellOfferResponse) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-func (x *CreateSellOfferResponse) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-type CreateSellOfferResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id   string
-	Hash string
-}
-
-func (b0 CreateSellOfferResponse_builder) Build() *CreateSellOfferResponse {
-	m0 := &CreateSellOfferResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_Hash = b.Hash
-	return m0
+	return nil
 }
 
 type CreateBuyOfferResponse struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id   string                 `protobuf:"bytes,1,opt,name=id,proto3"`
-	xxx_hidden_Hash string                 `protobuf:"bytes,2,opt,name=hash,proto3"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Hash          *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateBuyOfferResponse) Reset() {
@@ -126,52 +109,33 @@ func (x *CreateBuyOfferResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateBuyOfferResponse.ProtoReflect.Descriptor instead.
+func (*CreateBuyOfferResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{1}
+}
+
 func (x *CreateBuyOfferResponse) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
-func (x *CreateBuyOfferResponse) GetHash() string {
+func (x *CreateBuyOfferResponse) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
-}
-
-func (x *CreateBuyOfferResponse) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-func (x *CreateBuyOfferResponse) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-type CreateBuyOfferResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id   string
-	Hash string
-}
-
-func (b0 CreateBuyOfferResponse_builder) Build() *CreateBuyOfferResponse {
-	m0 := &CreateBuyOfferResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_Hash = b.Hash
-	return m0
+	return nil
 }
 
 type GetSellOffersRequest struct {
-	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Limit          *wrapperspb.Int32Value  `protobuf:"bytes,1,opt,name=limit,proto3"`
-	xxx_hidden_Page           *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=page,proto3"`
-	xxx_hidden_MintHash       *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_OffererAddress *wrapperspb.StringValue `protobuf:"bytes,4,opt,name=offerer_address,json=offererAddress,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Limit          *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page           *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *protocol.Address      `protobuf:"bytes,4,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetSellOffersRequest) Reset() {
@@ -199,122 +163,47 @@ func (x *GetSellOffersRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetSellOffersRequest.ProtoReflect.Descriptor instead.
+func (*GetSellOffersRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{2}
+}
+
 func (x *GetSellOffersRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return nil
 }
 
 func (x *GetSellOffersRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return nil
 }
 
-func (x *GetSellOffersRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetSellOffersRequest) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.MintHash
 	}
 	return nil
 }
 
-func (x *GetSellOffersRequest) GetOffererAddress() *wrapperspb.StringValue {
+func (x *GetSellOffersRequest) GetOffererAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_OffererAddress
+		return x.OffererAddress
 	}
 	return nil
-}
-
-func (x *GetSellOffersRequest) SetLimit(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetSellOffersRequest) SetPage(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetSellOffersRequest) SetMintHash(v *wrapperspb.StringValue) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *GetSellOffersRequest) SetOffererAddress(v *wrapperspb.StringValue) {
-	x.xxx_hidden_OffererAddress = v
-}
-
-func (x *GetSellOffersRequest) HasLimit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Limit != nil
-}
-
-func (x *GetSellOffersRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Page != nil
-}
-
-func (x *GetSellOffersRequest) HasMintHash() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MintHash != nil
-}
-
-func (x *GetSellOffersRequest) HasOffererAddress() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OffererAddress != nil
-}
-
-func (x *GetSellOffersRequest) ClearLimit() {
-	x.xxx_hidden_Limit = nil
-}
-
-func (x *GetSellOffersRequest) ClearPage() {
-	x.xxx_hidden_Page = nil
-}
-
-func (x *GetSellOffersRequest) ClearMintHash() {
-	x.xxx_hidden_MintHash = nil
-}
-
-func (x *GetSellOffersRequest) ClearOffererAddress() {
-	x.xxx_hidden_OffererAddress = nil
-}
-
-type GetSellOffersRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Limit          *wrapperspb.Int32Value
-	Page           *wrapperspb.Int32Value
-	MintHash       *wrapperspb.StringValue
-	OffererAddress *wrapperspb.StringValue
-}
-
-func (b0 GetSellOffersRequest_builder) Build() *GetSellOffersRequest {
-	m0 := &GetSellOffersRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_OffererAddress = b.OffererAddress
-	return m0
 }
 
 type GetBuyOffersRequest struct {
-	state                    protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Limit         *wrapperspb.Int32Value  `protobuf:"bytes,1,opt,name=limit,proto3"`
-	xxx_hidden_Page          *wrapperspb.Int32Value  `protobuf:"bytes,2,opt,name=page,proto3"`
-	xxx_hidden_MintHash      *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_SellerAddress *wrapperspb.StringValue `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	SellerAddress *protocol.Address      `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetBuyOffersRequest) Reset() {
@@ -342,122 +231,47 @@ func (x *GetBuyOffersRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetBuyOffersRequest.ProtoReflect.Descriptor instead.
+func (*GetBuyOffersRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{3}
+}
+
 func (x *GetBuyOffersRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return nil
 }
 
 func (x *GetBuyOffersRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return nil
 }
 
-func (x *GetBuyOffersRequest) GetMintHash() *wrapperspb.StringValue {
+func (x *GetBuyOffersRequest) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.MintHash
 	}
 	return nil
 }
 
-func (x *GetBuyOffersRequest) GetSellerAddress() *wrapperspb.StringValue {
+func (x *GetBuyOffersRequest) GetSellerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_SellerAddress
+		return x.SellerAddress
 	}
 	return nil
-}
-
-func (x *GetBuyOffersRequest) SetLimit(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Limit = v
-}
-
-func (x *GetBuyOffersRequest) SetPage(v *wrapperspb.Int32Value) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetBuyOffersRequest) SetMintHash(v *wrapperspb.StringValue) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *GetBuyOffersRequest) SetSellerAddress(v *wrapperspb.StringValue) {
-	x.xxx_hidden_SellerAddress = v
-}
-
-func (x *GetBuyOffersRequest) HasLimit() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Limit != nil
-}
-
-func (x *GetBuyOffersRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Page != nil
-}
-
-func (x *GetBuyOffersRequest) HasMintHash() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MintHash != nil
-}
-
-func (x *GetBuyOffersRequest) HasSellerAddress() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_SellerAddress != nil
-}
-
-func (x *GetBuyOffersRequest) ClearLimit() {
-	x.xxx_hidden_Limit = nil
-}
-
-func (x *GetBuyOffersRequest) ClearPage() {
-	x.xxx_hidden_Page = nil
-}
-
-func (x *GetBuyOffersRequest) ClearMintHash() {
-	x.xxx_hidden_MintHash = nil
-}
-
-func (x *GetBuyOffersRequest) ClearSellerAddress() {
-	x.xxx_hidden_SellerAddress = nil
-}
-
-type GetBuyOffersRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Limit         *wrapperspb.Int32Value
-	Page          *wrapperspb.Int32Value
-	MintHash      *wrapperspb.StringValue
-	SellerAddress *wrapperspb.StringValue
-}
-
-func (b0 GetBuyOffersRequest_builder) Build() *GetBuyOffersRequest {
-	m0 := &GetBuyOffersRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Limit = b.Limit
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_SellerAddress = b.SellerAddress
-	return m0
 }
 
 type GetSellOffersResponse struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Offers *[]*SellOfferWithMint  `protobuf:"bytes,1,rep,name=offers,proto3"`
-	xxx_hidden_Total  int32                  `protobuf:"varint,2,opt,name=total,proto3"`
-	xxx_hidden_Page   int32                  `protobuf:"varint,3,opt,name=page,proto3"`
-	xxx_hidden_Limit  int32                  `protobuf:"varint,4,opt,name=limit,proto3"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offers        []*SellOfferWithMint   `protobuf:"bytes,1,rep,name=offers,proto3" json:"offers,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Limit         int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetSellOffersResponse) Reset() {
@@ -485,80 +299,47 @@ func (x *GetSellOffersResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetSellOffersResponse.ProtoReflect.Descriptor instead.
+func (*GetSellOffersResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{4}
+}
+
 func (x *GetSellOffersResponse) GetOffers() []*SellOfferWithMint {
 	if x != nil {
-		if x.xxx_hidden_Offers != nil {
-			return *x.xxx_hidden_Offers
-		}
+		return x.Offers
 	}
 	return nil
 }
 
 func (x *GetSellOffersResponse) GetTotal() int32 {
 	if x != nil {
-		return x.xxx_hidden_Total
+		return x.Total
 	}
 	return 0
 }
 
 func (x *GetSellOffersResponse) GetPage() int32 {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return 0
 }
 
 func (x *GetSellOffersResponse) GetLimit() int32 {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return 0
 }
 
-func (x *GetSellOffersResponse) SetOffers(v []*SellOfferWithMint) {
-	x.xxx_hidden_Offers = &v
-}
-
-func (x *GetSellOffersResponse) SetTotal(v int32) {
-	x.xxx_hidden_Total = v
-}
-
-func (x *GetSellOffersResponse) SetPage(v int32) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetSellOffersResponse) SetLimit(v int32) {
-	x.xxx_hidden_Limit = v
-}
-
-type GetSellOffersResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Offers []*SellOfferWithMint
-	Total  int32
-	Page   int32
-	Limit  int32
-}
-
-func (b0 GetSellOffersResponse_builder) Build() *GetSellOffersResponse {
-	m0 := &GetSellOffersResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Offers = &b.Offers
-	x.xxx_hidden_Total = b.Total
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_Limit = b.Limit
-	return m0
-}
-
 type GetBuyOffersResponse struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Offers *[]*BuyOfferWithMint   `protobuf:"bytes,1,rep,name=offers,proto3"`
-	xxx_hidden_Total  int32                  `protobuf:"varint,2,opt,name=total,proto3"`
-	xxx_hidden_Page   int32                  `protobuf:"varint,3,opt,name=page,proto3"`
-	xxx_hidden_Limit  int32                  `protobuf:"varint,4,opt,name=limit,proto3"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offers        []*BuyOfferWithMint    `protobuf:"bytes,1,rep,name=offers,proto3" json:"offers,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	Limit         int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetBuyOffersResponse) Reset() {
@@ -586,79 +367,46 @@ func (x *GetBuyOffersResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetBuyOffersResponse.ProtoReflect.Descriptor instead.
+func (*GetBuyOffersResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{5}
+}
+
 func (x *GetBuyOffersResponse) GetOffers() []*BuyOfferWithMint {
 	if x != nil {
-		if x.xxx_hidden_Offers != nil {
-			return *x.xxx_hidden_Offers
-		}
+		return x.Offers
 	}
 	return nil
 }
 
 func (x *GetBuyOffersResponse) GetTotal() int32 {
 	if x != nil {
-		return x.xxx_hidden_Total
+		return x.Total
 	}
 	return 0
 }
 
 func (x *GetBuyOffersResponse) GetPage() int32 {
 	if x != nil {
-		return x.xxx_hidden_Page
+		return x.Page
 	}
 	return 0
 }
 
 func (x *GetBuyOffersResponse) GetLimit() int32 {
 	if x != nil {
-		return x.xxx_hidden_Limit
+		return x.Limit
 	}
 	return 0
 }
 
-func (x *GetBuyOffersResponse) SetOffers(v []*BuyOfferWithMint) {
-	x.xxx_hidden_Offers = &v
-}
-
-func (x *GetBuyOffersResponse) SetTotal(v int32) {
-	x.xxx_hidden_Total = v
-}
-
-func (x *GetBuyOffersResponse) SetPage(v int32) {
-	x.xxx_hidden_Page = v
-}
-
-func (x *GetBuyOffersResponse) SetLimit(v int32) {
-	x.xxx_hidden_Limit = v
-}
-
-type GetBuyOffersResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Offers []*BuyOfferWithMint
-	Total  int32
-	Page   int32
-	Limit  int32
-}
-
-func (b0 GetBuyOffersResponse_builder) Build() *GetBuyOffersResponse {
-	m0 := &GetBuyOffersResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Offers = &b.Offers
-	x.xxx_hidden_Total = b.Total
-	x.xxx_hidden_Page = b.Page
-	x.xxx_hidden_Limit = b.Limit
-	return m0
-}
-
 type CreateSellOfferRequest struct {
-	state                protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *CreateSellOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                         `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                         `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Payload       *CreateSellOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                         `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                         `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateSellOfferRequest) Reset() {
@@ -686,76 +434,40 @@ func (x *CreateSellOfferRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateSellOfferRequest.ProtoReflect.Descriptor instead.
+func (*CreateSellOfferRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{6}
+}
+
 func (x *CreateSellOfferRequest) GetPayload() *CreateSellOfferRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *CreateSellOfferRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *CreateSellOfferRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *CreateSellOfferRequest) SetPayload(v *CreateSellOfferRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *CreateSellOfferRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *CreateSellOfferRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *CreateSellOfferRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *CreateSellOfferRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type CreateSellOfferRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *CreateSellOfferRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 CreateSellOfferRequest_builder) Build() *CreateSellOfferRequest {
-	m0 := &CreateSellOfferRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type CreateSellOfferRequestPayload struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_OffererAddress string                 `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3"`
-	xxx_hidden_MintHash       string                 `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_Quantity       int32                  `protobuf:"varint,3,opt,name=quantity,proto3"`
-	xxx_hidden_Price          int32                  `protobuf:"varint,4,opt,name=price,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	OffererAddress *protocol.Address      `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Quantity       int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Price          int32                  `protobuf:"varint,4,opt,name=price,proto3" json:"price,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateSellOfferRequestPayload) Reset() {
@@ -783,77 +495,46 @@ func (x *CreateSellOfferRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateSellOfferRequestPayload) GetOffererAddress() string {
-	if x != nil {
-		return x.xxx_hidden_OffererAddress
-	}
-	return ""
+// Deprecated: Use CreateSellOfferRequestPayload.ProtoReflect.Descriptor instead.
+func (*CreateSellOfferRequestPayload) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *CreateSellOfferRequestPayload) GetMintHash() string {
+func (x *CreateSellOfferRequestPayload) GetOffererAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.OffererAddress
 	}
-	return ""
+	return nil
+}
+
+func (x *CreateSellOfferRequestPayload) GetMintHash() *protocol.Hash {
+	if x != nil {
+		return x.MintHash
+	}
+	return nil
 }
 
 func (x *CreateSellOfferRequestPayload) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *CreateSellOfferRequestPayload) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
-func (x *CreateSellOfferRequestPayload) SetOffererAddress(v string) {
-	x.xxx_hidden_OffererAddress = v
-}
-
-func (x *CreateSellOfferRequestPayload) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *CreateSellOfferRequestPayload) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *CreateSellOfferRequestPayload) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-type CreateSellOfferRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	OffererAddress string
-	MintHash       string
-	Quantity       int32
-	Price          int32
-}
-
-func (b0 CreateSellOfferRequestPayload_builder) Build() *CreateSellOfferRequestPayload {
-	m0 := &CreateSellOfferRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_OffererAddress = b.OffererAddress
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_Price = b.Price
-	return m0
-}
-
 type CreateBuyOfferRequest struct {
-	state                protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *CreateBuyOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                        `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                        `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Payload       *CreateBuyOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                        `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                        `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateBuyOfferRequest) Reset() {
@@ -881,77 +562,41 @@ func (x *CreateBuyOfferRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use CreateBuyOfferRequest.ProtoReflect.Descriptor instead.
+func (*CreateBuyOfferRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{8}
+}
+
 func (x *CreateBuyOfferRequest) GetPayload() *CreateBuyOfferRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *CreateBuyOfferRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *CreateBuyOfferRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *CreateBuyOfferRequest) SetPayload(v *CreateBuyOfferRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *CreateBuyOfferRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *CreateBuyOfferRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *CreateBuyOfferRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *CreateBuyOfferRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type CreateBuyOfferRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *CreateBuyOfferRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 CreateBuyOfferRequest_builder) Build() *CreateBuyOfferRequest {
-	m0 := &CreateBuyOfferRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type CreateBuyOfferRequestPayload struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_OffererAddress string                 `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3"`
-	xxx_hidden_SellerAddress  string                 `protobuf:"bytes,2,opt,name=seller_address,json=sellerAddress,proto3"`
-	xxx_hidden_MintHash       string                 `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3"`
-	xxx_hidden_Price          int32                  `protobuf:"varint,5,opt,name=price,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	OffererAddress *protocol.Address      `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	SellerAddress  *protocol.Address      `protobuf:"bytes,2,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateBuyOfferRequestPayload) Reset() {
@@ -979,90 +624,53 @@ func (x *CreateBuyOfferRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateBuyOfferRequestPayload) GetOffererAddress() string {
-	if x != nil {
-		return x.xxx_hidden_OffererAddress
-	}
-	return ""
+// Deprecated: Use CreateBuyOfferRequestPayload.ProtoReflect.Descriptor instead.
+func (*CreateBuyOfferRequestPayload) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *CreateBuyOfferRequestPayload) GetSellerAddress() string {
+func (x *CreateBuyOfferRequestPayload) GetOffererAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_SellerAddress
+		return x.OffererAddress
 	}
-	return ""
+	return nil
 }
 
-func (x *CreateBuyOfferRequestPayload) GetMintHash() string {
+func (x *CreateBuyOfferRequestPayload) GetSellerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.SellerAddress
 	}
-	return ""
+	return nil
+}
+
+func (x *CreateBuyOfferRequestPayload) GetMintHash() *protocol.Hash {
+	if x != nil {
+		return x.MintHash
+	}
+	return nil
 }
 
 func (x *CreateBuyOfferRequestPayload) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *CreateBuyOfferRequestPayload) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
-func (x *CreateBuyOfferRequestPayload) SetOffererAddress(v string) {
-	x.xxx_hidden_OffererAddress = v
-}
-
-func (x *CreateBuyOfferRequestPayload) SetSellerAddress(v string) {
-	x.xxx_hidden_SellerAddress = v
-}
-
-func (x *CreateBuyOfferRequestPayload) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *CreateBuyOfferRequestPayload) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *CreateBuyOfferRequestPayload) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-type CreateBuyOfferRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	OffererAddress string
-	SellerAddress  string
-	MintHash       string
-	Quantity       int32
-	Price          int32
-}
-
-func (b0 CreateBuyOfferRequestPayload_builder) Build() *CreateBuyOfferRequestPayload {
-	m0 := &CreateBuyOfferRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_OffererAddress = b.OffererAddress
-	x.xxx_hidden_SellerAddress = b.SellerAddress
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_Price = b.Price
-	return m0
-}
-
 type DeleteSellOfferRequest struct {
-	state                protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *DeleteSellOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                         `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                         `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Payload       *DeleteSellOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                         `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                         `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteSellOfferRequest) Reset() {
@@ -1090,73 +698,37 @@ func (x *DeleteSellOfferRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use DeleteSellOfferRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSellOfferRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{10}
+}
+
 func (x *DeleteSellOfferRequest) GetPayload() *DeleteSellOfferRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *DeleteSellOfferRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *DeleteSellOfferRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *DeleteSellOfferRequest) SetPayload(v *DeleteSellOfferRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *DeleteSellOfferRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *DeleteSellOfferRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *DeleteSellOfferRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *DeleteSellOfferRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type DeleteSellOfferRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *DeleteSellOfferRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 DeleteSellOfferRequest_builder) Build() *DeleteSellOfferRequest {
-	m0 := &DeleteSellOfferRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type DeleteSellOfferResponse struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value string                 `protobuf:"bytes,1,opt,name=value,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteSellOfferResponse) Reset() {
@@ -1184,36 +756,23 @@ func (x *DeleteSellOfferResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use DeleteSellOfferResponse.ProtoReflect.Descriptor instead.
+func (*DeleteSellOfferResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{11}
+}
+
 func (x *DeleteSellOfferResponse) GetValue() string {
 	if x != nil {
-		return x.xxx_hidden_Value
+		return x.Value
 	}
 	return ""
 }
 
-func (x *DeleteSellOfferResponse) SetValue(v string) {
-	x.xxx_hidden_Value = v
-}
-
-type DeleteSellOfferResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Value string
-}
-
-func (b0 DeleteSellOfferResponse_builder) Build() *DeleteSellOfferResponse {
-	m0 := &DeleteSellOfferResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Value = b.Value
-	return m0
-}
-
 type DeleteSellOfferRequestPayload struct {
-	state                protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_OfferHash string                 `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OfferHash     *protocol.Hash         `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteSellOfferRequestPayload) Reset() {
@@ -1241,38 +800,25 @@ func (x *DeleteSellOfferRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *DeleteSellOfferRequestPayload) GetOfferHash() string {
+// Deprecated: Use DeleteSellOfferRequestPayload.ProtoReflect.Descriptor instead.
+func (*DeleteSellOfferRequestPayload) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DeleteSellOfferRequestPayload) GetOfferHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_OfferHash
+		return x.OfferHash
 	}
-	return ""
-}
-
-func (x *DeleteSellOfferRequestPayload) SetOfferHash(v string) {
-	x.xxx_hidden_OfferHash = v
-}
-
-type DeleteSellOfferRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	OfferHash string
-}
-
-func (b0 DeleteSellOfferRequestPayload_builder) Build() *DeleteSellOfferRequestPayload {
-	m0 := &DeleteSellOfferRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_OfferHash = b.OfferHash
-	return m0
+	return nil
 }
 
 type DeleteBuyOfferRequest struct {
-	state                protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Payload   *DeleteBuyOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3"`
-	xxx_hidden_PublicKey string                        `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature string                        `protobuf:"bytes,3,opt,name=signature,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Payload       *DeleteBuyOfferRequestPayload `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	PublicKey     string                        `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature     string                        `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteBuyOfferRequest) Reset() {
@@ -1300,73 +846,37 @@ func (x *DeleteBuyOfferRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use DeleteBuyOfferRequest.ProtoReflect.Descriptor instead.
+func (*DeleteBuyOfferRequest) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{13}
+}
+
 func (x *DeleteBuyOfferRequest) GetPayload() *DeleteBuyOfferRequestPayload {
 	if x != nil {
-		return x.xxx_hidden_Payload
+		return x.Payload
 	}
 	return nil
 }
 
 func (x *DeleteBuyOfferRequest) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *DeleteBuyOfferRequest) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *DeleteBuyOfferRequest) SetPayload(v *DeleteBuyOfferRequestPayload) {
-	x.xxx_hidden_Payload = v
-}
-
-func (x *DeleteBuyOfferRequest) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *DeleteBuyOfferRequest) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *DeleteBuyOfferRequest) HasPayload() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Payload != nil
-}
-
-func (x *DeleteBuyOfferRequest) ClearPayload() {
-	x.xxx_hidden_Payload = nil
-}
-
-type DeleteBuyOfferRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Payload   *DeleteBuyOfferRequestPayload
-	PublicKey string
-	Signature string
-}
-
-func (b0 DeleteBuyOfferRequest_builder) Build() *DeleteBuyOfferRequest {
-	m0 := &DeleteBuyOfferRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Payload = b.Payload
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	return m0
-}
-
 type DeleteBuyOfferResponse struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value string                 `protobuf:"bytes,1,opt,name=value,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteBuyOfferResponse) Reset() {
@@ -1394,36 +904,23 @@ func (x *DeleteBuyOfferResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use DeleteBuyOfferResponse.ProtoReflect.Descriptor instead.
+func (*DeleteBuyOfferResponse) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{14}
+}
+
 func (x *DeleteBuyOfferResponse) GetValue() string {
 	if x != nil {
-		return x.xxx_hidden_Value
+		return x.Value
 	}
 	return ""
 }
 
-func (x *DeleteBuyOfferResponse) SetValue(v string) {
-	x.xxx_hidden_Value = v
-}
-
-type DeleteBuyOfferResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Value string
-}
-
-func (b0 DeleteBuyOfferResponse_builder) Build() *DeleteBuyOfferResponse {
-	m0 := &DeleteBuyOfferResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Value = b.Value
-	return m0
-}
-
 type DeleteBuyOfferRequestPayload struct {
-	state                protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_OfferHash string                 `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OfferHash     *protocol.Hash         `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteBuyOfferRequestPayload) Reset() {
@@ -1451,52 +948,39 @@ func (x *DeleteBuyOfferRequestPayload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *DeleteBuyOfferRequestPayload) GetOfferHash() string {
+// Deprecated: Use DeleteBuyOfferRequestPayload.ProtoReflect.Descriptor instead.
+func (*DeleteBuyOfferRequestPayload) Descriptor() ([]byte, []int) {
+	return file_offers_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DeleteBuyOfferRequestPayload) GetOfferHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_OfferHash
+		return x.OfferHash
 	}
-	return ""
-}
-
-func (x *DeleteBuyOfferRequestPayload) SetOfferHash(v string) {
-	x.xxx_hidden_OfferHash = v
-}
-
-type DeleteBuyOfferRequestPayload_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	OfferHash string
-}
-
-func (b0 DeleteBuyOfferRequestPayload_builder) Build() *DeleteBuyOfferRequestPayload {
-	m0 := &DeleteBuyOfferRequestPayload{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_OfferHash = b.OfferHash
-	return m0
+	return nil
 }
 
 var File_offers_proto protoreflect.FileDescriptor
 
 const file_offers_proto_rawDesc = "" +
 	"\n" +
-	"\foffers.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\"W\n" +
+	"\foffers.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"Y\n" +
 	"\x17CreateSellOfferResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12,\n" +
-	"\x04hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\"V\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"X\n" +
 	"\x16CreateBuyOfferResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12,\n" +
-	"\x04hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\"\xc7\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
+	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"\xfb\x01\n" +
 	"\x14GetSellOffersRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12v\n" +
-	"\x0fofferer_address\x18\x04 \x01(\v2\x1c.google.protobuf.StringValueB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\"\xc4\x02\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12F\n" +
+	"\x0fofferer_address\x18\x04 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0eoffererAddress\"\xf8\x01\n" +
 	"\x13GetBuyOffersRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12S\n" +
-	"\tmint_hash\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12t\n" +
-	"\x0eseller_address\x18\x04 \x01(\v2\x1c.google.protobuf.StringValueB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\"\x98\x01\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12D\n" +
+	"\x0eseller_address\x18\x04 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\rsellerAddress\"\x98\x01\n" +
 	"\x15GetSellOffersResponse\x12?\n" +
 	"\x06offers\x18\x01 \x03(\v2'.fractalengine.rpc.v1.SellOfferWithMintR\x06offers\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
@@ -1511,21 +995,21 @@ const file_offers_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v23.fractalengine.rpc.v1.CreateSellOfferRequestPayloadR\apayload\x12&\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
-	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xf8\x01\n" +
-	"\x1dCreateSellOfferRequestPayload\x12Z\n" +
-	"\x0fofferer_address\x18\x01 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x127\n" +
-	"\tmint_hash\x18\x02 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\bmintHash\x12#\n" +
+	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xf6\x01\n" +
+	"\x1dCreateSellOfferRequestPayload\x12O\n" +
+	"\x0fofferer_address\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\x0eoffererAddress\x12@\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\bmintHash\x12#\n" +
 	"\bquantity\x18\x03 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\bquantity\x12\x1d\n" +
 	"\x05price\x18\x04 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\"\xb4\x01\n" +
 	"\x15CreateBuyOfferRequest\x12L\n" +
 	"\apayload\x18\x01 \x01(\v22.fractalengine.rpc.v1.CreateBuyOfferRequestPayloadR\apayload\x12&\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
-	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xd1\x02\n" +
-	"\x1cCreateBuyOfferRequestPayload\x12Z\n" +
-	"\x0fofferer_address\x18\x01 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x12X\n" +
-	"\x0eseller_address\x18\x02 \x01(\tB1\xbaH.r,\x10\x012(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\x127\n" +
-	"\tmint_hash\x18\x03 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\bmintHash\x12#\n" +
+	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"\xc4\x02\n" +
+	"\x1cCreateBuyOfferRequestPayload\x12O\n" +
+	"\x0fofferer_address\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\x0eoffererAddress\x12M\n" +
+	"\x0eseller_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\a\xbaH\x04r\x02\x10\x01R\rsellerAddress\x12@\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\bmintHash\x12#\n" +
 	"\bquantity\x18\x04 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\bquantity\x12\x1d\n" +
 	"\x05price\x18\x05 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x05price\"\xb6\x01\n" +
 	"\x16DeleteSellOfferRequest\x12M\n" +
@@ -1534,20 +1018,32 @@ const file_offers_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
 	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\"/\n" +
 	"\x17DeleteSellOfferResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\"Z\n" +
-	"\x1dDeleteSellOfferRequestPayload\x129\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\"c\n" +
+	"\x1dDeleteSellOfferRequestPayload\x12B\n" +
 	"\n" +
-	"offer_hash\x18\x01 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\tofferHash\"\xb4\x01\n" +
+	"offer_hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\tofferHash\"\xb4\x01\n" +
 	"\x15DeleteBuyOfferRequest\x12L\n" +
 	"\apayload\x18\x01 \x01(\v22.fractalengine.rpc.v1.DeleteBuyOfferRequestPayloadR\apayload\x12&\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tpublicKey\x12%\n" +
 	"\tsignature\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tsignature\".\n" +
 	"\x16DeleteBuyOfferResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\"Y\n" +
-	"\x1cDeleteBuyOfferRequestPayload\x129\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\"b\n" +
+	"\x1cDeleteBuyOfferRequestPayload\x12B\n" +
 	"\n" +
-	"offer_hash\x18\x01 \x01(\tB\x1a\xbaH\x17r\x15\x10\x012\x11^[a-fA-F0-9]{64}$R\tofferHashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+	"offer_hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashB\a\xbaH\x04r\x02\x10\x01R\tofferHashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+
+var (
+	file_offers_proto_rawDescOnce sync.Once
+	file_offers_proto_rawDescData []byte
+)
+
+func file_offers_proto_rawDescGZIP() []byte {
+	file_offers_proto_rawDescOnce.Do(func() {
+		file_offers_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_offers_proto_rawDesc), len(file_offers_proto_rawDesc)))
+	})
+	return file_offers_proto_rawDescData
+}
 
 var file_offers_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_offers_proto_goTypes = []any{
@@ -1567,31 +1063,41 @@ var file_offers_proto_goTypes = []any{
 	(*DeleteBuyOfferRequest)(nil),         // 13: fractalengine.rpc.v1.DeleteBuyOfferRequest
 	(*DeleteBuyOfferResponse)(nil),        // 14: fractalengine.rpc.v1.DeleteBuyOfferResponse
 	(*DeleteBuyOfferRequestPayload)(nil),  // 15: fractalengine.rpc.v1.DeleteBuyOfferRequestPayload
-	(*wrapperspb.Int32Value)(nil),         // 16: google.protobuf.Int32Value
-	(*wrapperspb.StringValue)(nil),        // 17: google.protobuf.StringValue
-	(*SellOfferWithMint)(nil),             // 18: fractalengine.rpc.v1.SellOfferWithMint
-	(*BuyOfferWithMint)(nil),              // 19: fractalengine.rpc.v1.BuyOfferWithMint
+	(*protocol.Hash)(nil),                 // 16: fractalengine.rpc.v1.Hash
+	(*wrapperspb.Int32Value)(nil),         // 17: google.protobuf.Int32Value
+	(*protocol.Address)(nil),              // 18: fractalengine.rpc.v1.Address
+	(*SellOfferWithMint)(nil),             // 19: fractalengine.rpc.v1.SellOfferWithMint
+	(*BuyOfferWithMint)(nil),              // 20: fractalengine.rpc.v1.BuyOfferWithMint
 }
 var file_offers_proto_depIdxs = []int32{
-	16, // 0: fractalengine.rpc.v1.GetSellOffersRequest.limit:type_name -> google.protobuf.Int32Value
-	16, // 1: fractalengine.rpc.v1.GetSellOffersRequest.page:type_name -> google.protobuf.Int32Value
-	17, // 2: fractalengine.rpc.v1.GetSellOffersRequest.mint_hash:type_name -> google.protobuf.StringValue
-	17, // 3: fractalengine.rpc.v1.GetSellOffersRequest.offerer_address:type_name -> google.protobuf.StringValue
-	16, // 4: fractalengine.rpc.v1.GetBuyOffersRequest.limit:type_name -> google.protobuf.Int32Value
-	16, // 5: fractalengine.rpc.v1.GetBuyOffersRequest.page:type_name -> google.protobuf.Int32Value
-	17, // 6: fractalengine.rpc.v1.GetBuyOffersRequest.mint_hash:type_name -> google.protobuf.StringValue
-	17, // 7: fractalengine.rpc.v1.GetBuyOffersRequest.seller_address:type_name -> google.protobuf.StringValue
-	18, // 8: fractalengine.rpc.v1.GetSellOffersResponse.offers:type_name -> fractalengine.rpc.v1.SellOfferWithMint
-	19, // 9: fractalengine.rpc.v1.GetBuyOffersResponse.offers:type_name -> fractalengine.rpc.v1.BuyOfferWithMint
-	7,  // 10: fractalengine.rpc.v1.CreateSellOfferRequest.payload:type_name -> fractalengine.rpc.v1.CreateSellOfferRequestPayload
-	9,  // 11: fractalengine.rpc.v1.CreateBuyOfferRequest.payload:type_name -> fractalengine.rpc.v1.CreateBuyOfferRequestPayload
-	12, // 12: fractalengine.rpc.v1.DeleteSellOfferRequest.payload:type_name -> fractalengine.rpc.v1.DeleteSellOfferRequestPayload
-	15, // 13: fractalengine.rpc.v1.DeleteBuyOfferRequest.payload:type_name -> fractalengine.rpc.v1.DeleteBuyOfferRequestPayload
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	16, // 0: fractalengine.rpc.v1.CreateSellOfferResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 1: fractalengine.rpc.v1.CreateBuyOfferResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 2: fractalengine.rpc.v1.GetSellOffersRequest.limit:type_name -> google.protobuf.Int32Value
+	17, // 3: fractalengine.rpc.v1.GetSellOffersRequest.page:type_name -> google.protobuf.Int32Value
+	16, // 4: fractalengine.rpc.v1.GetSellOffersRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	18, // 5: fractalengine.rpc.v1.GetSellOffersRequest.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 6: fractalengine.rpc.v1.GetBuyOffersRequest.limit:type_name -> google.protobuf.Int32Value
+	17, // 7: fractalengine.rpc.v1.GetBuyOffersRequest.page:type_name -> google.protobuf.Int32Value
+	16, // 8: fractalengine.rpc.v1.GetBuyOffersRequest.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	18, // 9: fractalengine.rpc.v1.GetBuyOffersRequest.seller_address:type_name -> fractalengine.rpc.v1.Address
+	19, // 10: fractalengine.rpc.v1.GetSellOffersResponse.offers:type_name -> fractalengine.rpc.v1.SellOfferWithMint
+	20, // 11: fractalengine.rpc.v1.GetBuyOffersResponse.offers:type_name -> fractalengine.rpc.v1.BuyOfferWithMint
+	7,  // 12: fractalengine.rpc.v1.CreateSellOfferRequest.payload:type_name -> fractalengine.rpc.v1.CreateSellOfferRequestPayload
+	18, // 13: fractalengine.rpc.v1.CreateSellOfferRequestPayload.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 14: fractalengine.rpc.v1.CreateSellOfferRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	9,  // 15: fractalengine.rpc.v1.CreateBuyOfferRequest.payload:type_name -> fractalengine.rpc.v1.CreateBuyOfferRequestPayload
+	18, // 16: fractalengine.rpc.v1.CreateBuyOfferRequestPayload.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	18, // 17: fractalengine.rpc.v1.CreateBuyOfferRequestPayload.seller_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 18: fractalengine.rpc.v1.CreateBuyOfferRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	12, // 19: fractalengine.rpc.v1.DeleteSellOfferRequest.payload:type_name -> fractalengine.rpc.v1.DeleteSellOfferRequestPayload
+	16, // 20: fractalengine.rpc.v1.DeleteSellOfferRequestPayload.offer_hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 21: fractalengine.rpc.v1.DeleteBuyOfferRequest.payload:type_name -> fractalengine.rpc.v1.DeleteBuyOfferRequestPayload
+	16, // 22: fractalengine.rpc.v1.DeleteBuyOfferRequestPayload.offer_hash:type_name -> fractalengine.rpc.v1.Hash
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_offers_proto_init() }

@@ -1,12 +1,11 @@
 version: v2
 
 plugins:
-  - remote: buf.build/protocolbuffers/go:v1.36.11
+  - local: protoc-gen-go
     out: .
     opt:
       - paths=source_relative
-      - default_api_level=API_OPAQUE
-  - remote: buf.build/connectrpc/go:v1.19.1
+  - local: protoc-gen-connect-go
     out: .
     opt:
       - paths=source_relative

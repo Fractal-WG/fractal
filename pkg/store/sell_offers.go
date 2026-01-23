@@ -48,12 +48,23 @@ func (s *TokenisationStore) CountSellOffers(mintHash string, offererAddress stri
 }
 
 func (s *TokenisationStore) SaveSellOffer(d *SellOfferWithoutID) (string, error) {
+	return s.SaveSellOfferWithTx(d, nil)
+}
+
+func (s *TokenisationStore) SaveSellOfferWithTx(d *SellOfferWithoutID, tx *sql.Tx) (string, error) {
 	id := uuid.New().String()
 
-	_, err := s.DB.Exec(`
+	query := `
 	INSERT INTO sell_offers (id, offerer_address, hash, mint_hash, quantity, price, created_at, public_key, signature)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-	`, id, d.OffererAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	`
+
+	var err error
+	if tx != nil {
+		_, err = tx.Exec(query, id, d.OffererAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	} else {
+		_, err = s.DB.Exec(query, id, d.OffererAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	}
 
 	return id, err
 }

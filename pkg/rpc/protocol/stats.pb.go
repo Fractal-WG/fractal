@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -21,10 +22,10 @@ const (
 )
 
 type GetStatsResponse struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Stats map[string]int32       `protobuf:"bytes,1,rep,name=stats,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Stats         map[string]int32       `protobuf:"bytes,1,rep,name=stats,proto3" json:"stats,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetStatsResponse) Reset() {
@@ -52,33 +53,20 @@ func (x *GetStatsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use GetStatsResponse.ProtoReflect.Descriptor instead.
+func (*GetStatsResponse) Descriptor() ([]byte, []int) {
+	return file_stats_proto_rawDescGZIP(), []int{0}
+}
+
 func (x *GetStatsResponse) GetStats() map[string]int32 {
 	if x != nil {
-		return x.xxx_hidden_Stats
+		return x.Stats
 	}
 	return nil
 }
 
-func (x *GetStatsResponse) SetStats(v map[string]int32) {
-	x.xxx_hidden_Stats = v
-}
-
-type GetStatsResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Stats map[string]int32
-}
-
-func (b0 GetStatsResponse_builder) Build() *GetStatsResponse {
-	m0 := &GetStatsResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Stats = b.Stats
-	return m0
-}
-
 type GetStatsRequest struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -108,16 +96,9 @@ func (x *GetStatsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-type GetStatsRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-}
-
-func (b0 GetStatsRequest_builder) Build() *GetStatsRequest {
-	m0 := &GetStatsRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	return m0
+// Deprecated: Use GetStatsRequest.ProtoReflect.Descriptor instead.
+func (*GetStatsRequest) Descriptor() ([]byte, []int) {
+	return file_stats_proto_rawDescGZIP(), []int{1}
 }
 
 var File_stats_proto protoreflect.FileDescriptor
@@ -132,6 +113,18 @@ const file_stats_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\"\x11\n" +
 	"\x0fGetStatsRequestB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
+
+var (
+	file_stats_proto_rawDescOnce sync.Once
+	file_stats_proto_rawDescData []byte
+)
+
+func file_stats_proto_rawDescGZIP() []byte {
+	file_stats_proto_rawDescOnce.Do(func() {
+		file_stats_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_stats_proto_rawDesc), len(file_stats_proto_rawDesc)))
+	})
+	return file_stats_proto_rawDescData
+}
 
 var file_stats_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_stats_proto_goTypes = []any{

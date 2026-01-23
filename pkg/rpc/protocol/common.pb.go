@@ -11,7 +11,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	protocol "pkg/rpc/protocol"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -72,11 +74,16 @@ func (x SignatureRequirementType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// Deprecated: Use SignatureRequirementType.Descriptor instead.
+func (SignatureRequirementType) EnumDescriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{0}
+}
+
 type StringResponse struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value string                 `protobuf:"bytes,1,opt,name=value,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StringResponse) Reset() {
@@ -104,36 +111,23 @@ func (x *StringResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use StringResponse.ProtoReflect.Descriptor instead.
+func (*StringResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{0}
+}
+
 func (x *StringResponse) GetValue() string {
 	if x != nil {
-		return x.xxx_hidden_Value
+		return x.Value
 	}
 	return ""
 }
 
-func (x *StringResponse) SetValue(v string) {
-	x.xxx_hidden_Value = v
-}
-
-type StringResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Value string
-}
-
-func (b0 StringResponse_builder) Build() *StringResponse {
-	m0 := &StringResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Value = b.Value
-	return m0
-}
-
 type StringMapResponse struct {
-	state             protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Values map[string]string      `protobuf:"bytes,1,rep,name=values,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Values        map[string]string      `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StringMapResponse) Reset() {
@@ -161,37 +155,24 @@ func (x *StringMapResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use StringMapResponse.ProtoReflect.Descriptor instead.
+func (*StringMapResponse) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{1}
+}
+
 func (x *StringMapResponse) GetValues() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_Values
+		return x.Values
 	}
 	return nil
 }
 
-func (x *StringMapResponse) SetValues(v map[string]string) {
-	x.xxx_hidden_Values = v
-}
-
-type StringMapResponse_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Values map[string]string
-}
-
-func (b0 StringMapResponse_builder) Build() *StringMapResponse {
-	m0 := &StringMapResponse{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Values = b.Values
-	return m0
-}
-
 type SqlNullTime struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Time  string                 `protobuf:"bytes,1,opt,name=time,proto3"`
-	xxx_hidden_Valid bool                   `protobuf:"varint,2,opt,name=valid,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Time          string                 `protobuf:"bytes,1,opt,name=time,proto3" json:"time,omitempty"`
+	Valid         bool                   `protobuf:"varint,2,opt,name=valid,proto3" json:"valid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlNullTime) Reset() {
@@ -219,51 +200,32 @@ func (x *SqlNullTime) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use SqlNullTime.ProtoReflect.Descriptor instead.
+func (*SqlNullTime) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{2}
+}
+
 func (x *SqlNullTime) GetTime() string {
 	if x != nil {
-		return x.xxx_hidden_Time
+		return x.Time
 	}
 	return ""
 }
 
 func (x *SqlNullTime) GetValid() bool {
 	if x != nil {
-		return x.xxx_hidden_Valid
+		return x.Valid
 	}
 	return false
 }
 
-func (x *SqlNullTime) SetTime(v string) {
-	x.xxx_hidden_Time = v
-}
-
-func (x *SqlNullTime) SetValid(v bool) {
-	x.xxx_hidden_Valid = v
-}
-
-type SqlNullTime_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Time  string
-	Valid bool
-}
-
-func (b0 SqlNullTime_builder) Build() *SqlNullTime {
-	m0 := &SqlNullTime{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Time = b.Time
-	x.xxx_hidden_Valid = b.Valid
-	return m0
-}
-
 type AssetManager struct {
-	state                protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name      string                 `protobuf:"bytes,1,opt,name=name,proto3"`
-	xxx_hidden_PublicKey string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Url       string                 `protobuf:"bytes,3,opt,name=url,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	PublicKey     string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AssetManager) Reset() {
@@ -291,62 +253,37 @@ func (x *AssetManager) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use AssetManager.ProtoReflect.Descriptor instead.
+func (*AssetManager) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{3}
+}
+
 func (x *AssetManager) GetName() string {
 	if x != nil {
-		return x.xxx_hidden_Name
+		return x.Name
 	}
 	return ""
 }
 
 func (x *AssetManager) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *AssetManager) GetUrl() string {
 	if x != nil {
-		return x.xxx_hidden_Url
+		return x.Url
 	}
 	return ""
 }
 
-func (x *AssetManager) SetName(v string) {
-	x.xxx_hidden_Name = v
-}
-
-func (x *AssetManager) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *AssetManager) SetUrl(v string) {
-	x.xxx_hidden_Url = v
-}
-
-type AssetManager_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Name      string
-	PublicKey string
-	Url       string
-}
-
-func (b0 AssetManager_builder) Build() *AssetManager {
-	m0 := &AssetManager{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Name = b.Name
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Url = b.Url
-	return m0
-}
-
 type StringInterfaceMap struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Value *structpb.Struct       `protobuf:"bytes,1,opt,name=value,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         *structpb.Struct       `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StringInterfaceMap) Reset() {
@@ -374,66 +311,42 @@ func (x *StringInterfaceMap) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use StringInterfaceMap.ProtoReflect.Descriptor instead.
+func (*StringInterfaceMap) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{4}
+}
+
 func (x *StringInterfaceMap) GetValue() *structpb.Struct {
 	if x != nil {
-		return x.xxx_hidden_Value
+		return x.Value
 	}
 	return nil
 }
 
-func (x *StringInterfaceMap) SetValue(v *structpb.Struct) {
-	x.xxx_hidden_Value = v
-}
-
-func (x *StringInterfaceMap) HasValue() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Value != nil
-}
-
-func (x *StringInterfaceMap) ClearValue() {
-	x.xxx_hidden_Value = nil
-}
-
-type StringInterfaceMap_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Value *structpb.Struct
-}
-
-func (b0 StringInterfaceMap_builder) Build() *StringInterfaceMap {
-	m0 := &StringInterfaceMap{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Value = b.Value
-	return m0
-}
-
 type Mint struct {
-	state                               protoimpl.MessageState   `protogen:"opaque.v1"`
-	xxx_hidden_AssetManagers            *[]*AssetManager         `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers,proto3"`
-	xxx_hidden_BlockHeight              int32                    `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3"`
-	xxx_hidden_ContractOfSale           string                   `protobuf:"bytes,3,opt,name=contract_of_sale,json=contractOfSale,proto3"`
-	xxx_hidden_CreatedAt                string                   `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3"`
-	xxx_hidden_Description              string                   `protobuf:"bytes,5,opt,name=description,proto3"`
-	xxx_hidden_FeedUrl                  string                   `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl,proto3"`
-	xxx_hidden_FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount,proto3"`
-	xxx_hidden_Hash                     string                   `protobuf:"bytes,8,opt,name=hash,proto3"`
-	xxx_hidden_Id                       string                   `protobuf:"bytes,9,opt,name=id,proto3"`
-	xxx_hidden_LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions,proto3"`
-	xxx_hidden_Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata,proto3"`
-	xxx_hidden_MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures,proto3"`
-	xxx_hidden_OwnerAddress             string                   `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3"`
-	xxx_hidden_PublicKey                string                   `protobuf:"bytes,14,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements,proto3"`
-	xxx_hidden_Signature                string                   `protobuf:"bytes,16,opt,name=signature,proto3"`
-	xxx_hidden_SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType"`
-	xxx_hidden_Tags                     []string                 `protobuf:"bytes,18,rep,name=tags,proto3"`
-	xxx_hidden_Title                    string                   `protobuf:"bytes,19,opt,name=title,proto3"`
-	xxx_hidden_TransactionHash          string                   `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3"`
-	unknownFields                       protoimpl.UnknownFields
-	sizeCache                           protoimpl.SizeCache
+	state                    protoimpl.MessageState   `protogen:"open.v1"`
+	AssetManagers            []*AssetManager          `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers,proto3" json:"asset_managers,omitempty"`
+	BlockHeight              int32                    `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	ContractOfSale           string                   `protobuf:"bytes,3,opt,name=contract_of_sale,json=contractOfSale,proto3" json:"contract_of_sale,omitempty"`
+	CreatedAt                string                   `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Description              string                   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	FeedUrl                  string                   `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl,proto3" json:"feed_url,omitempty"`
+	FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount,proto3" json:"fraction_count,omitempty"`
+	Hash                     *protocol.Hash           `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
+	Id                       string                   `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
+	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
+	Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
+	OwnerAddress             *protocol.Address        `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	PublicKey                string                   `protobuf:"bytes,14,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements,proto3" json:"requirements,omitempty"`
+	Signature                string                   `protobuf:"bytes,16,opt,name=signature,proto3" json:"signature,omitempty"`
+	SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
+	Tags                     []string                 `protobuf:"bytes,18,rep,name=tags,proto3" json:"tags,omitempty"`
+	Title                    string                   `protobuf:"bytes,19,opt,name=title,proto3" json:"title,omitempty"`
+	TransactionHash          *protocol.Hash           `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *Mint) Reset() {
@@ -461,332 +374,170 @@ func (x *Mint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use Mint.ProtoReflect.Descriptor instead.
+func (*Mint) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{5}
+}
+
 func (x *Mint) GetAssetManagers() []*AssetManager {
 	if x != nil {
-		if x.xxx_hidden_AssetManagers != nil {
-			return *x.xxx_hidden_AssetManagers
-		}
+		return x.AssetManagers
 	}
 	return nil
 }
 
 func (x *Mint) GetBlockHeight() int32 {
 	if x != nil {
-		return x.xxx_hidden_BlockHeight
+		return x.BlockHeight
 	}
 	return 0
 }
 
 func (x *Mint) GetContractOfSale() string {
 	if x != nil {
-		return x.xxx_hidden_ContractOfSale
+		return x.ContractOfSale
 	}
 	return ""
 }
 
 func (x *Mint) GetCreatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_CreatedAt
+		return x.CreatedAt
 	}
 	return ""
 }
 
 func (x *Mint) GetDescription() string {
 	if x != nil {
-		return x.xxx_hidden_Description
+		return x.Description
 	}
 	return ""
 }
 
 func (x *Mint) GetFeedUrl() string {
 	if x != nil {
-		return x.xxx_hidden_FeedUrl
+		return x.FeedUrl
 	}
 	return ""
 }
 
 func (x *Mint) GetFractionCount() int32 {
 	if x != nil {
-		return x.xxx_hidden_FractionCount
+		return x.FractionCount
 	}
 	return 0
 }
 
-func (x *Mint) GetHash() string {
+func (x *Mint) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_Hash
+		return x.Hash
 	}
-	return ""
+	return nil
 }
 
 func (x *Mint) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
 func (x *Mint) GetLockupOptions() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_LockupOptions
+		return x.LockupOptions
 	}
 	return nil
 }
 
 func (x *Mint) GetMetadata() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_Metadata
+		return x.Metadata
 	}
 	return nil
 }
 
 func (x *Mint) GetMinSignatures() int32 {
 	if x != nil {
-		return x.xxx_hidden_MinSignatures
+		return x.MinSignatures
 	}
 	return 0
 }
 
-func (x *Mint) GetOwnerAddress() string {
+func (x *Mint) GetOwnerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_OwnerAddress
+		return x.OwnerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Mint) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *Mint) GetRequirements() *StringInterfaceMap {
 	if x != nil {
-		return x.xxx_hidden_Requirements
+		return x.Requirements
 	}
 	return nil
 }
 
 func (x *Mint) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
 func (x *Mint) GetSignatureRequirementType() SignatureRequirementType {
 	if x != nil {
-		return x.xxx_hidden_SignatureRequirementType
+		return x.SignatureRequirementType
 	}
 	return SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED
 }
 
 func (x *Mint) GetTags() []string {
 	if x != nil {
-		return x.xxx_hidden_Tags
+		return x.Tags
 	}
 	return nil
 }
 
 func (x *Mint) GetTitle() string {
 	if x != nil {
-		return x.xxx_hidden_Title
+		return x.Title
 	}
 	return ""
 }
 
-func (x *Mint) GetTransactionHash() string {
+func (x *Mint) GetTransactionHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_TransactionHash
+		return x.TransactionHash
 	}
-	return ""
-}
-
-func (x *Mint) SetAssetManagers(v []*AssetManager) {
-	x.xxx_hidden_AssetManagers = &v
-}
-
-func (x *Mint) SetBlockHeight(v int32) {
-	x.xxx_hidden_BlockHeight = v
-}
-
-func (x *Mint) SetContractOfSale(v string) {
-	x.xxx_hidden_ContractOfSale = v
-}
-
-func (x *Mint) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = v
-}
-
-func (x *Mint) SetDescription(v string) {
-	x.xxx_hidden_Description = v
-}
-
-func (x *Mint) SetFeedUrl(v string) {
-	x.xxx_hidden_FeedUrl = v
-}
-
-func (x *Mint) SetFractionCount(v int32) {
-	x.xxx_hidden_FractionCount = v
-}
-
-func (x *Mint) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-func (x *Mint) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-func (x *Mint) SetLockupOptions(v *StringInterfaceMap) {
-	x.xxx_hidden_LockupOptions = v
-}
-
-func (x *Mint) SetMetadata(v *StringInterfaceMap) {
-	x.xxx_hidden_Metadata = v
-}
-
-func (x *Mint) SetMinSignatures(v int32) {
-	x.xxx_hidden_MinSignatures = v
-}
-
-func (x *Mint) SetOwnerAddress(v string) {
-	x.xxx_hidden_OwnerAddress = v
-}
-
-func (x *Mint) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *Mint) SetRequirements(v *StringInterfaceMap) {
-	x.xxx_hidden_Requirements = v
-}
-
-func (x *Mint) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *Mint) SetSignatureRequirementType(v SignatureRequirementType) {
-	x.xxx_hidden_SignatureRequirementType = v
-}
-
-func (x *Mint) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
-}
-
-func (x *Mint) SetTitle(v string) {
-	x.xxx_hidden_Title = v
-}
-
-func (x *Mint) SetTransactionHash(v string) {
-	x.xxx_hidden_TransactionHash = v
-}
-
-func (x *Mint) HasLockupOptions() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_LockupOptions != nil
-}
-
-func (x *Mint) HasMetadata() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Metadata != nil
-}
-
-func (x *Mint) HasRequirements() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Requirements != nil
-}
-
-func (x *Mint) ClearLockupOptions() {
-	x.xxx_hidden_LockupOptions = nil
-}
-
-func (x *Mint) ClearMetadata() {
-	x.xxx_hidden_Metadata = nil
-}
-
-func (x *Mint) ClearRequirements() {
-	x.xxx_hidden_Requirements = nil
-}
-
-type Mint_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	AssetManagers            []*AssetManager
-	BlockHeight              int32
-	ContractOfSale           string
-	CreatedAt                string
-	Description              string
-	FeedUrl                  string
-	FractionCount            int32
-	Hash                     string
-	Id                       string
-	LockupOptions            *StringInterfaceMap
-	Metadata                 *StringInterfaceMap
-	MinSignatures            int32
-	OwnerAddress             string
-	PublicKey                string
-	Requirements             *StringInterfaceMap
-	Signature                string
-	SignatureRequirementType SignatureRequirementType
-	Tags                     []string
-	Title                    string
-	TransactionHash          string
-}
-
-func (b0 Mint_builder) Build() *Mint {
-	m0 := &Mint{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_AssetManagers = &b.AssetManagers
-	x.xxx_hidden_BlockHeight = b.BlockHeight
-	x.xxx_hidden_ContractOfSale = b.ContractOfSale
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_Description = b.Description
-	x.xxx_hidden_FeedUrl = b.FeedUrl
-	x.xxx_hidden_FractionCount = b.FractionCount
-	x.xxx_hidden_Hash = b.Hash
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_LockupOptions = b.LockupOptions
-	x.xxx_hidden_Metadata = b.Metadata
-	x.xxx_hidden_MinSignatures = b.MinSignatures
-	x.xxx_hidden_OwnerAddress = b.OwnerAddress
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Requirements = b.Requirements
-	x.xxx_hidden_Signature = b.Signature
-	x.xxx_hidden_SignatureRequirementType = b.SignatureRequirementType
-	x.xxx_hidden_Tags = b.Tags
-	x.xxx_hidden_Title = b.Title
-	x.xxx_hidden_TransactionHash = b.TransactionHash
-	return m0
+	return nil
 }
 
 type Invoice struct {
-	state                            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight,proto3"`
-	xxx_hidden_BuyerAddress          string                 `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3"`
-	xxx_hidden_CreatedAt             string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3"`
-	xxx_hidden_Hash                  string                 `protobuf:"bytes,4,opt,name=hash,proto3"`
-	xxx_hidden_Id                    string                 `protobuf:"bytes,5,opt,name=id,proto3"`
-	xxx_hidden_MintHash              string                 `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt,proto3"`
-	xxx_hidden_PaymentAddress        string                 `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3"`
-	xxx_hidden_PendingTokenBalanceId string                 `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId,proto3"`
-	xxx_hidden_Price                 int32                  `protobuf:"varint,10,opt,name=price,proto3"`
-	xxx_hidden_PublicKey             string                 `protobuf:"bytes,11,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Quantity              int32                  `protobuf:"varint,12,opt,name=quantity,proto3"`
-	xxx_hidden_SellerAddress         string                 `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3"`
-	xxx_hidden_Signature             string                 `protobuf:"bytes,14,opt,name=signature,proto3"`
-	xxx_hidden_TransactionHash       string                 `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3"`
-	unknownFields                    protoimpl.UnknownFields
-	sizeCache                        protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
+	BuyerAddress          *protocol.Address      `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	CreatedAt             string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Hash                  *protocol.Hash         `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
+	Id                    string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
+	MintHash              *protocol.Hash         `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt,proto3" json:"paid_at,omitempty"`
+	PaymentAddress        *protocol.Address      `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	PendingTokenBalanceId string                 `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId,proto3" json:"pending_token_balance_id,omitempty"`
+	Price                 int32                  `protobuf:"varint,10,opt,name=price,proto3" json:"price,omitempty"`
+	PublicKey             string                 `protobuf:"bytes,11,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Quantity              int32                  `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	SellerAddress         *protocol.Address      `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	Signature             string                 `protobuf:"bytes,14,opt,name=signature,proto3" json:"signature,omitempty"`
+	TransactionHash       *protocol.Hash         `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *Invoice) Reset() {
@@ -814,233 +565,125 @@ func (x *Invoice) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use Invoice.ProtoReflect.Descriptor instead.
+func (*Invoice) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{6}
+}
+
 func (x *Invoice) GetBlockHeight() int32 {
 	if x != nil {
-		return x.xxx_hidden_BlockHeight
+		return x.BlockHeight
 	}
 	return 0
 }
 
-func (x *Invoice) GetBuyerAddress() string {
+func (x *Invoice) GetBuyerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_BuyerAddress
-	}
-	return ""
-}
-
-func (x *Invoice) GetCreatedAt() string {
-	if x != nil {
-		return x.xxx_hidden_CreatedAt
-	}
-	return ""
-}
-
-func (x *Invoice) GetHash() string {
-	if x != nil {
-		return x.xxx_hidden_Hash
-	}
-	return ""
-}
-
-func (x *Invoice) GetId() string {
-	if x != nil {
-		return x.xxx_hidden_Id
-	}
-	return ""
-}
-
-func (x *Invoice) GetMintHash() string {
-	if x != nil {
-		return x.xxx_hidden_MintHash
-	}
-	return ""
-}
-
-func (x *Invoice) GetPaidAt() *SqlNullTime {
-	if x != nil {
-		return x.xxx_hidden_PaidAt
+		return x.BuyerAddress
 	}
 	return nil
 }
 
-func (x *Invoice) GetPaymentAddress() string {
+func (x *Invoice) GetCreatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_PaymentAddress
+		return x.CreatedAt
 	}
 	return ""
 }
 
+func (x *Invoice) GetHash() *protocol.Hash {
+	if x != nil {
+		return x.Hash
+	}
+	return nil
+}
+
+func (x *Invoice) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Invoice) GetMintHash() *protocol.Hash {
+	if x != nil {
+		return x.MintHash
+	}
+	return nil
+}
+
+func (x *Invoice) GetPaidAt() *SqlNullTime {
+	if x != nil {
+		return x.PaidAt
+	}
+	return nil
+}
+
+func (x *Invoice) GetPaymentAddress() *protocol.Address {
+	if x != nil {
+		return x.PaymentAddress
+	}
+	return nil
+}
+
 func (x *Invoice) GetPendingTokenBalanceId() string {
 	if x != nil {
-		return x.xxx_hidden_PendingTokenBalanceId
+		return x.PendingTokenBalanceId
 	}
 	return ""
 }
 
 func (x *Invoice) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
 func (x *Invoice) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *Invoice) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
-func (x *Invoice) GetSellerAddress() string {
+func (x *Invoice) GetSellerAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_SellerAddress
+		return x.SellerAddress
 	}
-	return ""
+	return nil
 }
 
 func (x *Invoice) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
-func (x *Invoice) GetTransactionHash() string {
+func (x *Invoice) GetTransactionHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_TransactionHash
+		return x.TransactionHash
 	}
-	return ""
-}
-
-func (x *Invoice) SetBlockHeight(v int32) {
-	x.xxx_hidden_BlockHeight = v
-}
-
-func (x *Invoice) SetBuyerAddress(v string) {
-	x.xxx_hidden_BuyerAddress = v
-}
-
-func (x *Invoice) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = v
-}
-
-func (x *Invoice) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-func (x *Invoice) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-func (x *Invoice) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *Invoice) SetPaidAt(v *SqlNullTime) {
-	x.xxx_hidden_PaidAt = v
-}
-
-func (x *Invoice) SetPaymentAddress(v string) {
-	x.xxx_hidden_PaymentAddress = v
-}
-
-func (x *Invoice) SetPendingTokenBalanceId(v string) {
-	x.xxx_hidden_PendingTokenBalanceId = v
-}
-
-func (x *Invoice) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-func (x *Invoice) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *Invoice) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *Invoice) SetSellerAddress(v string) {
-	x.xxx_hidden_SellerAddress = v
-}
-
-func (x *Invoice) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *Invoice) SetTransactionHash(v string) {
-	x.xxx_hidden_TransactionHash = v
-}
-
-func (x *Invoice) HasPaidAt() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_PaidAt != nil
-}
-
-func (x *Invoice) ClearPaidAt() {
-	x.xxx_hidden_PaidAt = nil
-}
-
-type Invoice_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	BlockHeight           int32
-	BuyerAddress          string
-	CreatedAt             string
-	Hash                  string
-	Id                    string
-	MintHash              string
-	PaidAt                *SqlNullTime
-	PaymentAddress        string
-	PendingTokenBalanceId string
-	Price                 int32
-	PublicKey             string
-	Quantity              int32
-	SellerAddress         string
-	Signature             string
-	TransactionHash       string
-}
-
-func (b0 Invoice_builder) Build() *Invoice {
-	m0 := &Invoice{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_BlockHeight = b.BlockHeight
-	x.xxx_hidden_BuyerAddress = b.BuyerAddress
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_Hash = b.Hash
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_PaidAt = b.PaidAt
-	x.xxx_hidden_PaymentAddress = b.PaymentAddress
-	x.xxx_hidden_PendingTokenBalanceId = b.PendingTokenBalanceId
-	x.xxx_hidden_Price = b.Price
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_SellerAddress = b.SellerAddress
-	x.xxx_hidden_Signature = b.Signature
-	x.xxx_hidden_TransactionHash = b.TransactionHash
-	return m0
+	return nil
 }
 
 type TokenBalance struct {
-	state                protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Address   string                 `protobuf:"bytes,1,opt,name=address,proto3"`
-	xxx_hidden_CreatedAt string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3"`
-	xxx_hidden_MintHash  string                 `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_Quantity  int32                  `protobuf:"varint,4,opt,name=quantity,proto3"`
-	xxx_hidden_UpdatedAt string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Quantity      int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *TokenBalance) Reset() {
@@ -1068,97 +711,60 @@ func (x *TokenBalance) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *TokenBalance) GetAddress() string {
+// Deprecated: Use TokenBalance.ProtoReflect.Descriptor instead.
+func (*TokenBalance) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TokenBalance) GetAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_Address
+		return x.Address
 	}
-	return ""
+	return nil
 }
 
 func (x *TokenBalance) GetCreatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_CreatedAt
+		return x.CreatedAt
 	}
 	return ""
 }
 
-func (x *TokenBalance) GetMintHash() string {
+func (x *TokenBalance) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
 func (x *TokenBalance) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *TokenBalance) GetUpdatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_UpdatedAt
+		return x.UpdatedAt
 	}
 	return ""
 }
 
-func (x *TokenBalance) SetAddress(v string) {
-	x.xxx_hidden_Address = v
-}
-
-func (x *TokenBalance) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = v
-}
-
-func (x *TokenBalance) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *TokenBalance) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *TokenBalance) SetUpdatedAt(v string) {
-	x.xxx_hidden_UpdatedAt = v
-}
-
-type TokenBalance_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Address   string
-	CreatedAt string
-	MintHash  string
-	Quantity  int32
-	UpdatedAt string
-}
-
-func (b0 TokenBalance_builder) Build() *TokenBalance {
-	m0 := &TokenBalance{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Address = b.Address
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_UpdatedAt = b.UpdatedAt
-	return m0
-}
-
 type BuyOffer struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Hash           string                 `protobuf:"bytes,1,opt,name=hash,proto3"`
-	xxx_hidden_MintHash       string                 `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_OffererAddress string                 `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3"`
-	xxx_hidden_SellerAddress  string                 `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3"`
-	xxx_hidden_Quantity       int32                  `protobuf:"varint,5,opt,name=quantity,proto3"`
-	xxx_hidden_Price          int32                  `protobuf:"varint,6,opt,name=price,proto3"`
-	xxx_hidden_CreatedAt      string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3"`
-	xxx_hidden_PublicKey      string                 `protobuf:"bytes,8,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature      string                 `protobuf:"bytes,9,opt,name=signature,proto3"`
-	xxx_hidden_Id             string                 `protobuf:"bytes,10,opt,name=id,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Hash           *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *protocol.Address      `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	SellerAddress  *protocol.Address      `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	Quantity       int32                  `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
+	CreatedAt      string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PublicKey      string                 `protobuf:"bytes,8,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature      string                 `protobuf:"bytes,9,opt,name=signature,proto3" json:"signature,omitempty"`
+	Id             string                 `protobuf:"bytes,10,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *BuyOffer) Reset() {
@@ -1186,161 +792,94 @@ func (x *BuyOffer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *BuyOffer) GetHash() string {
-	if x != nil {
-		return x.xxx_hidden_Hash
-	}
-	return ""
+// Deprecated: Use BuyOffer.ProtoReflect.Descriptor instead.
+func (*BuyOffer) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BuyOffer) GetMintHash() string {
+func (x *BuyOffer) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.Hash
 	}
-	return ""
+	return nil
 }
 
-func (x *BuyOffer) GetOffererAddress() string {
+func (x *BuyOffer) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_OffererAddress
+		return x.MintHash
 	}
-	return ""
+	return nil
 }
 
-func (x *BuyOffer) GetSellerAddress() string {
+func (x *BuyOffer) GetOffererAddress() *protocol.Address {
 	if x != nil {
-		return x.xxx_hidden_SellerAddress
+		return x.OffererAddress
 	}
-	return ""
+	return nil
+}
+
+func (x *BuyOffer) GetSellerAddress() *protocol.Address {
+	if x != nil {
+		return x.SellerAddress
+	}
+	return nil
 }
 
 func (x *BuyOffer) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *BuyOffer) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
 func (x *BuyOffer) GetCreatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_CreatedAt
+		return x.CreatedAt
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
-func (x *BuyOffer) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-func (x *BuyOffer) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *BuyOffer) SetOffererAddress(v string) {
-	x.xxx_hidden_OffererAddress = v
-}
-
-func (x *BuyOffer) SetSellerAddress(v string) {
-	x.xxx_hidden_SellerAddress = v
-}
-
-func (x *BuyOffer) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *BuyOffer) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-func (x *BuyOffer) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = v
-}
-
-func (x *BuyOffer) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *BuyOffer) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *BuyOffer) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-type BuyOffer_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Hash           string
-	MintHash       string
-	OffererAddress string
-	SellerAddress  string
-	Quantity       int32
-	Price          int32
-	CreatedAt      string
-	PublicKey      string
-	Signature      string
-	Id             string
-}
-
-func (b0 BuyOffer_builder) Build() *BuyOffer {
-	m0 := &BuyOffer{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Hash = b.Hash
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_OffererAddress = b.OffererAddress
-	x.xxx_hidden_SellerAddress = b.SellerAddress
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_Price = b.Price
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	x.xxx_hidden_Id = b.Id
-	return m0
-}
-
 type SellOffer struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Hash           string                 `protobuf:"bytes,1,opt,name=hash,proto3"`
-	xxx_hidden_MintHash       string                 `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3"`
-	xxx_hidden_OffererAddress string                 `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3"`
-	xxx_hidden_Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3"`
-	xxx_hidden_Price          int32                  `protobuf:"varint,5,opt,name=price,proto3"`
-	xxx_hidden_CreatedAt      string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3"`
-	xxx_hidden_PublicKey      string                 `protobuf:"bytes,7,opt,name=public_key,json=publicKey,proto3"`
-	xxx_hidden_Signature      string                 `protobuf:"bytes,8,opt,name=signature,proto3"`
-	xxx_hidden_Id             string                 `protobuf:"bytes,9,opt,name=id,proto3"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Hash           *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *protocol.Address      `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
+	CreatedAt      string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	PublicKey      string                 `protobuf:"bytes,7,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	Signature      string                 `protobuf:"bytes,8,opt,name=signature,proto3" json:"signature,omitempty"`
+	Id             string                 `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *SellOffer) Reset() {
@@ -1368,141 +907,80 @@ func (x *SellOffer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *SellOffer) GetHash() string {
-	if x != nil {
-		return x.xxx_hidden_Hash
-	}
-	return ""
+// Deprecated: Use SellOffer.ProtoReflect.Descriptor instead.
+func (*SellOffer) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *SellOffer) GetMintHash() string {
+func (x *SellOffer) GetHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_MintHash
+		return x.Hash
 	}
-	return ""
+	return nil
 }
 
-func (x *SellOffer) GetOffererAddress() string {
+func (x *SellOffer) GetMintHash() *protocol.Hash {
 	if x != nil {
-		return x.xxx_hidden_OffererAddress
+		return x.MintHash
 	}
-	return ""
+	return nil
+}
+
+func (x *SellOffer) GetOffererAddress() *protocol.Address {
+	if x != nil {
+		return x.OffererAddress
+	}
+	return nil
 }
 
 func (x *SellOffer) GetQuantity() int32 {
 	if x != nil {
-		return x.xxx_hidden_Quantity
+		return x.Quantity
 	}
 	return 0
 }
 
 func (x *SellOffer) GetPrice() int32 {
 	if x != nil {
-		return x.xxx_hidden_Price
+		return x.Price
 	}
 	return 0
 }
 
 func (x *SellOffer) GetCreatedAt() string {
 	if x != nil {
-		return x.xxx_hidden_CreatedAt
+		return x.CreatedAt
 	}
 	return ""
 }
 
 func (x *SellOffer) GetPublicKey() string {
 	if x != nil {
-		return x.xxx_hidden_PublicKey
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *SellOffer) GetSignature() string {
 	if x != nil {
-		return x.xxx_hidden_Signature
+		return x.Signature
 	}
 	return ""
 }
 
 func (x *SellOffer) GetId() string {
 	if x != nil {
-		return x.xxx_hidden_Id
+		return x.Id
 	}
 	return ""
 }
 
-func (x *SellOffer) SetHash(v string) {
-	x.xxx_hidden_Hash = v
-}
-
-func (x *SellOffer) SetMintHash(v string) {
-	x.xxx_hidden_MintHash = v
-}
-
-func (x *SellOffer) SetOffererAddress(v string) {
-	x.xxx_hidden_OffererAddress = v
-}
-
-func (x *SellOffer) SetQuantity(v int32) {
-	x.xxx_hidden_Quantity = v
-}
-
-func (x *SellOffer) SetPrice(v int32) {
-	x.xxx_hidden_Price = v
-}
-
-func (x *SellOffer) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = v
-}
-
-func (x *SellOffer) SetPublicKey(v string) {
-	x.xxx_hidden_PublicKey = v
-}
-
-func (x *SellOffer) SetSignature(v string) {
-	x.xxx_hidden_Signature = v
-}
-
-func (x *SellOffer) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-type SellOffer_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Hash           string
-	MintHash       string
-	OffererAddress string
-	Quantity       int32
-	Price          int32
-	CreatedAt      string
-	PublicKey      string
-	Signature      string
-	Id             string
-}
-
-func (b0 SellOffer_builder) Build() *SellOffer {
-	m0 := &SellOffer{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Hash = b.Hash
-	x.xxx_hidden_MintHash = b.MintHash
-	x.xxx_hidden_OffererAddress = b.OffererAddress
-	x.xxx_hidden_Quantity = b.Quantity
-	x.xxx_hidden_Price = b.Price
-	x.xxx_hidden_CreatedAt = b.CreatedAt
-	x.xxx_hidden_PublicKey = b.PublicKey
-	x.xxx_hidden_Signature = b.Signature
-	x.xxx_hidden_Id = b.Id
-	return m0
-}
-
 type BuyOfferWithMint struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Offer *BuyOffer              `protobuf:"bytes,1,opt,name=offer,proto3"`
-	xxx_hidden_Mint  *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offer         *BuyOffer              `protobuf:"bytes,1,opt,name=offer,proto3" json:"offer,omitempty"`
+	Mint          *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3" json:"mint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BuyOfferWithMint) Reset() {
@@ -1530,72 +1008,31 @@ func (x *BuyOfferWithMint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use BuyOfferWithMint.ProtoReflect.Descriptor instead.
+func (*BuyOfferWithMint) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{10}
+}
+
 func (x *BuyOfferWithMint) GetOffer() *BuyOffer {
 	if x != nil {
-		return x.xxx_hidden_Offer
+		return x.Offer
 	}
 	return nil
 }
 
 func (x *BuyOfferWithMint) GetMint() *Mint {
 	if x != nil {
-		return x.xxx_hidden_Mint
+		return x.Mint
 	}
 	return nil
 }
 
-func (x *BuyOfferWithMint) SetOffer(v *BuyOffer) {
-	x.xxx_hidden_Offer = v
-}
-
-func (x *BuyOfferWithMint) SetMint(v *Mint) {
-	x.xxx_hidden_Mint = v
-}
-
-func (x *BuyOfferWithMint) HasOffer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Offer != nil
-}
-
-func (x *BuyOfferWithMint) HasMint() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Mint != nil
-}
-
-func (x *BuyOfferWithMint) ClearOffer() {
-	x.xxx_hidden_Offer = nil
-}
-
-func (x *BuyOfferWithMint) ClearMint() {
-	x.xxx_hidden_Mint = nil
-}
-
-type BuyOfferWithMint_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Offer *BuyOffer
-	Mint  *Mint
-}
-
-func (b0 BuyOfferWithMint_builder) Build() *BuyOfferWithMint {
-	m0 := &BuyOfferWithMint{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Offer = b.Offer
-	x.xxx_hidden_Mint = b.Mint
-	return m0
-}
-
 type SellOfferWithMint struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Offer *SellOffer             `protobuf:"bytes,1,opt,name=offer,proto3"`
-	xxx_hidden_Mint  *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offer         *SellOffer             `protobuf:"bytes,1,opt,name=offer,proto3" json:"offer,omitempty"`
+	Mint          *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3" json:"mint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SellOfferWithMint) Reset() {
@@ -1623,71 +1060,30 @@ func (x *SellOfferWithMint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+// Deprecated: Use SellOfferWithMint.ProtoReflect.Descriptor instead.
+func (*SellOfferWithMint) Descriptor() ([]byte, []int) {
+	return file_common_proto_rawDescGZIP(), []int{11}
+}
+
 func (x *SellOfferWithMint) GetOffer() *SellOffer {
 	if x != nil {
-		return x.xxx_hidden_Offer
+		return x.Offer
 	}
 	return nil
 }
 
 func (x *SellOfferWithMint) GetMint() *Mint {
 	if x != nil {
-		return x.xxx_hidden_Mint
+		return x.Mint
 	}
 	return nil
-}
-
-func (x *SellOfferWithMint) SetOffer(v *SellOffer) {
-	x.xxx_hidden_Offer = v
-}
-
-func (x *SellOfferWithMint) SetMint(v *Mint) {
-	x.xxx_hidden_Mint = v
-}
-
-func (x *SellOfferWithMint) HasOffer() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Offer != nil
-}
-
-func (x *SellOfferWithMint) HasMint() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_Mint != nil
-}
-
-func (x *SellOfferWithMint) ClearOffer() {
-	x.xxx_hidden_Offer = nil
-}
-
-func (x *SellOfferWithMint) ClearMint() {
-	x.xxx_hidden_Mint = nil
-}
-
-type SellOfferWithMint_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Offer *SellOffer
-	Mint  *Mint
-}
-
-func (b0 SellOfferWithMint_builder) Build() *SellOfferWithMint {
-	m0 := &SellOfferWithMint{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Offer = b.Offer
-	x.xxx_hidden_Mint = b.Mint
-	return m0
 }
 
 var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\"&\n" +
+	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\"&\n" +
 	"\x0eStringResponse\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x9b\x01\n" +
 	"\x11StringMapResponse\x12K\n" +
@@ -1704,7 +1100,7 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\"C\n" +
 	"\x12StringInterfaceMap\x12-\n" +
-	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xdb\a\n" +
+	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xcd\a\n" +
 	"\x04Mint\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12!\n" +
 	"\fblock_height\x18\x02 \x01(\x05R\vblockHeight\x12(\n" +
@@ -1713,54 +1109,54 @@ const file_common_proto_rawDesc = "" +
 	"created_at\x18\x04 \x01(\tR\tcreatedAt\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x19\n" +
 	"\bfeed_url\x18\x06 \x01(\tR\afeedUrl\x12%\n" +
-	"\x0efraction_count\x18\a \x01(\x05R\rfractionCount\x12,\n" +
-	"\x04hash\x18\b \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x12\x0e\n" +
+	"\x0efraction_count\x18\a \x01(\x05R\rfractionCount\x12.\n" +
+	"\x04hash\x18\b \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x12\x0e\n" +
 	"\x02id\x18\t \x01(\tR\x02id\x12O\n" +
 	"\x0elockup_options\x18\n" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\rlockupOptions\x12D\n" +
 	"\bmetadata\x18\v \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\bmetadata\x12%\n" +
-	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12T\n" +
-	"\rowner_address\x18\r \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fownerAddress\x12\x1d\n" +
+	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12B\n" +
+	"\rowner_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x0e \x01(\tR\tpublicKey\x12L\n" +
 	"\frequirements\x18\x0f \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12\x1c\n" +
 	"\tsignature\x18\x10 \x01(\tR\tsignature\x12l\n" +
 	"\x1asignature_requirement_type\x18\x11 \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x14\n" +
-	"\x05title\x18\x13 \x01(\tR\x05title\x12C\n" +
-	"\x10transaction_hash\x18\x14 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x0ftransactionHash\"\xf1\x05\n" +
+	"\x05title\x18\x13 \x01(\tR\x05title\x12E\n" +
+	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xc1\x05\n" +
 	"\aInvoice\x12!\n" +
-	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12T\n" +
-	"\rbuyer_address\x18\x02 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\fbuyerAddress\x12\x1d\n" +
+	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12B\n" +
+	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fbuyerAddress\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12,\n" +
-	"\x04hash\x18\x04 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x12\x0e\n" +
-	"\x02id\x18\x05 \x01(\tR\x02id\x125\n" +
-	"\tmint_hash\x18\x06 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12:\n" +
-	"\apaid_at\x18\a \x01(\v2!.fractalengine.rpc.v1.SqlNullTimeR\x06paidAt\x12X\n" +
-	"\x0fpayment_address\x18\b \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0epaymentAddress\x127\n" +
+	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12.\n" +
+	"\x04hash\x18\x04 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x12\x0e\n" +
+	"\x02id\x18\x05 \x01(\tR\x02id\x127\n" +
+	"\tmint_hash\x18\x06 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12:\n" +
+	"\apaid_at\x18\a \x01(\v2!.fractalengine.rpc.v1.SqlNullTimeR\x06paidAt\x12F\n" +
+	"\x0fpayment_address\x18\b \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0epaymentAddress\x127\n" +
 	"\x18pending_token_balance_id\x18\t \x01(\tR\x15pendingTokenBalanceId\x12\x14\n" +
 	"\x05price\x18\n" +
 	" \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\v \x01(\tR\tpublicKey\x12\x1a\n" +
-	"\bquantity\x18\f \x01(\x05R\bquantity\x12V\n" +
-	"\x0eseller_address\x18\r \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\x12\x1c\n" +
-	"\tsignature\x18\x0e \x01(\tR\tsignature\x12C\n" +
-	"\x10transaction_hash\x18\x0f \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x0ftransactionHash\"\xea\x01\n" +
-	"\fTokenBalance\x12I\n" +
-	"\aaddress\x18\x01 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\aaddress\x12\x1d\n" +
+	"\bquantity\x18\f \x01(\x05R\bquantity\x12D\n" +
+	"\x0eseller_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\rsellerAddress\x12\x1c\n" +
+	"\tsignature\x18\x0e \x01(\tR\tsignature\x12E\n" +
+	"\x10transaction_hash\x18\x0f \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xda\x01\n" +
+	"\fTokenBalance\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x02 \x01(\tR\tcreatedAt\x125\n" +
-	"\tmint_hash\x18\x03 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12\x1a\n" +
+	"created_at\x18\x02 \x01(\tR\tcreatedAt\x127\n" +
+	"\tmint_hash\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\tR\tupdatedAt\"\xbf\x03\n" +
-	"\bBuyOffer\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x125\n" +
-	"\tmint_hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12X\n" +
-	"\x0fofferer_address\x18\x03 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x12V\n" +
-	"\x0eseller_address\x18\x04 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\rsellerAddress\x12\x1a\n" +
+	"updated_at\x18\x05 \x01(\tR\tupdatedAt\"\x9f\x03\n" +
+	"\bBuyOffer\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12F\n" +
+	"\x0fofferer_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0eoffererAddress\x12D\n" +
+	"\x0eseller_address\x18\x04 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\rsellerAddress\x12\x1a\n" +
 	"\bquantity\x18\x05 \x01(\x05R\bquantity\x12\x14\n" +
 	"\x05price\x18\x06 \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
@@ -1769,11 +1165,11 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\b \x01(\tR\tpublicKey\x12\x1c\n" +
 	"\tsignature\x18\t \x01(\tR\tsignature\x12\x0e\n" +
 	"\x02id\x18\n" +
-	" \x01(\tR\x02id\"\xe8\x02\n" +
-	"\tSellOffer\x12,\n" +
-	"\x04hash\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x04hash\x125\n" +
-	"\tmint_hash\x18\x02 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\bmintHash\x12X\n" +
-	"\x0fofferer_address\x18\x03 \x01(\tB/\xbaH,r*2(^(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x0eoffererAddress\x12\x1a\n" +
+	" \x01(\tR\x02id\"\xda\x02\n" +
+	"\tSellOffer\x12.\n" +
+	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x127\n" +
+	"\tmint_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x12F\n" +
+	"\x0fofferer_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\x0eoffererAddress\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x14\n" +
 	"\x05price\x18\x05 \x01(\x05R\x05price\x12\x1d\n" +
 	"\n" +
@@ -1795,6 +1191,18 @@ const file_common_proto_rawDesc = "" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES\x10\x03\x12#\n" +
 	"\x1fSIGNATURE_REQUIREMENT_TYPE_NONE\x10\x04B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
 
+var (
+	file_common_proto_rawDescOnce sync.Once
+	file_common_proto_rawDescData []byte
+)
+
+func file_common_proto_rawDescGZIP() []byte {
+	file_common_proto_rawDescOnce.Do(func() {
+		file_common_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)))
+	})
+	return file_common_proto_rawDescData
+}
+
 var file_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_common_proto_goTypes = []any{
@@ -1813,25 +1221,45 @@ var file_common_proto_goTypes = []any{
 	(*SellOfferWithMint)(nil),     // 12: fractalengine.rpc.v1.SellOfferWithMint
 	nil,                           // 13: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
 	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
+	(*protocol.Hash)(nil),         // 15: fractalengine.rpc.v1.Hash
+	(*protocol.Address)(nil),      // 16: fractalengine.rpc.v1.Address
 }
 var file_common_proto_depIdxs = []int32{
 	13, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
 	14, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
 	4,  // 2: fractalengine.rpc.v1.Mint.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	5,  // 3: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	5,  // 4: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	5,  // 5: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	0,  // 6: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	3,  // 7: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
-	9,  // 8: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
-	6,  // 9: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	10, // 10: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
-	6,  // 11: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	15, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
+	5,  // 4: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	5,  // 5: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	16, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
+	5,  // 7: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	0,  // 8: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	15, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 10: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 11: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 12: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	3,  // 13: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
+	16, // 14: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 15: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 16: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 17: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
+	15, // 18: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 19: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 20: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 21: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 22: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 23: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 24: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 25: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	9,  // 26: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
+	6,  // 27: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	10, // 28: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
+	6,  // 29: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	30, // [30:30] is the sub-list for method output_type
+	30, // [30:30] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_init() }
