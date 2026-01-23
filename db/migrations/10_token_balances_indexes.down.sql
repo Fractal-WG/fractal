@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS token_balances_mint_hash_quantity_idx;

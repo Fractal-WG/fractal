@@ -8,14 +8,24 @@ import (
 )
 
 func (s *TokenisationStore) SaveBuyOffer(d *BuyOfferWithoutID) (string, error) {
+	log.Println("SaveBuyOffer", d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	return s.SaveBuyOfferWithTx(d, nil)
+}
+
+func (s *TokenisationStore) SaveBuyOfferWithTx(d *BuyOfferWithoutID, tx *sql.Tx) (string, error) {
 	id := uuid.New().String()
 
-	log.Println("SaveBuyOffer", d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
-
-	_, err := s.DB.Exec(`
+	query := `
 	INSERT INTO buy_offers (id, offerer_address, seller_address, hash, mint_hash, quantity, price, created_at, public_key, signature)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	`, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	`
+
+	var err error
+	if tx != nil {
+		_, err = tx.Exec(query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	} else {
+		_, err = s.DB.Exec(query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+	}
 
 	return id, err
 }
