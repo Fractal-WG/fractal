@@ -26,7 +26,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/shopspring/decimal v1.4.0
-	github.com/swaggo/swag v1.16.4
+	github.com/swaggo/swag v1.16.6
 	github.com/testcontainers/testcontainers-go v0.38.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.38.0
 	github.com/urfave/cli/v3 v3.3.8
@@ -126,6 +126,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
+	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
