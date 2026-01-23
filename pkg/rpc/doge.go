@@ -16,7 +16,7 @@ func (s *ConnectRpcService) DogeConfirm(_ context.Context, _ *connect.Request[pr
 	}
 
 	resp := &protocol.DogeConfirmResponse{}
-	resp.SetValues(map[string]string{})
+	resp.Values = map[string]string{}
 	return connect.NewResponse(resp), nil
 }
 
@@ -32,13 +32,13 @@ func (s *ConnectRpcService) DogeSend(_ context.Context, req *connect.Request[pro
 	}
 
 	resp := &protocol.DogeSendResponse{}
-	resp.SetTransactionId(txid)
+	resp.TransactionId = txid
 	return connect.NewResponse(resp), nil
 }
 
 func (s *ConnectRpcService) DogeTopUp(_ context.Context, req *connect.Request[protocol.DogeTopUpRequest]) (*connect.Response[protocol.DogeTopUpResponse], error) {
 	address := req.Msg.GetAddress()
-	if address == "" {
+	if address == nil || address.GetValue() == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
 	}
 
@@ -46,7 +46,7 @@ func (s *ConnectRpcService) DogeTopUp(_ context.Context, req *connect.Request[pr
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	if _, err := s.dogeClient.SendToAddress(address, 1000); err != nil {
+	if _, err := s.dogeClient.SendToAddress(address.GetValue(), 1000); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -55,6 +55,6 @@ func (s *ConnectRpcService) DogeTopUp(_ context.Context, req *connect.Request[pr
 	}
 
 	resp := &protocol.DogeTopUpResponse{}
-	resp.SetValue(address)
+	resp.Value = address.GetValue()
 	return connect.NewResponse(resp), nil
 }

@@ -20,8 +20,10 @@ func TestGetTokenBalance(t *testing.T) {
 	}
 
 	request := &protocol.GetTokenBalancesRequest{}
-	request.SetAddress("address1")
-	request.SetMintHash(wrapperspb.String("mint1"))
+	addressStr := "address1"
+	mintStr := "mint1"
+	request.Address = &protocol.Address{Value: &addressStr}
+	request.MintHash = &protocol.Hash{Value: &mintStr}
 
 	response, err := feClient.GetTokenBalances(context.Background(), connect.NewRequest(request))
 	if err != nil {
@@ -59,8 +61,9 @@ func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 	}
 
 	request := &protocol.GetTokenBalancesRequest{}
-	request.SetAddress("address1")
-	request.SetIncludeMintDetails(wrapperspb.Bool(true))
+	addressStr := "address1"
+	request.Address = &protocol.Address{Value: &addressStr}
+	request.IncludeMintDetails = wrapperspb.Bool(true)
 
 	response, err := feClient.GetTokenBalances(context.Background(), connect.NewRequest(request))
 	if err != nil {

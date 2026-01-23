@@ -12,7 +12,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -27,8 +26,8 @@ const (
 
 type GetPendingTokenBalancesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash      *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,14 +62,14 @@ func (*GetPendingTokenBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_tokens_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetPendingTokenBalancesRequest) GetAddress() *protocol.Address {
+func (x *GetPendingTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
 	return nil
 }
 
-func (x *GetPendingTokenBalancesRequest) GetMintHash() *protocol.Hash {
+func (x *GetPendingTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -123,8 +122,8 @@ func (x *GetPendingTokenBalancesResponse) GetBalances() []*TokenBalance {
 
 type GetTokenBalancesRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Address            *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash           *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	Address            *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	MintHash           *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	IncludeMintDetails *wrapperspb.BoolValue  `protobuf:"bytes,3,opt,name=include_mint_details,json=includeMintDetails,proto3" json:"include_mint_details,omitempty"`
 	Limit              *wrapperspb.Int32Value `protobuf:"bytes,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page               *wrapperspb.Int32Value `protobuf:"bytes,5,opt,name=page,proto3" json:"page,omitempty"`
@@ -162,14 +161,14 @@ func (*GetTokenBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_tokens_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetTokenBalancesRequest) GetAddress() *protocol.Address {
+func (x *GetTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
 	return nil
 }
 
-func (x *GetTokenBalancesRequest) GetMintHash() *protocol.Hash {
+func (x *GetTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -278,8 +277,8 @@ var file_tokens_proto_goTypes = []any{
 	(*GetPendingTokenBalancesResponse)(nil), // 1: fractalengine.rpc.v1.GetPendingTokenBalancesResponse
 	(*GetTokenBalancesRequest)(nil),         // 2: fractalengine.rpc.v1.GetTokenBalancesRequest
 	(*GetTokenBalancesResponse)(nil),        // 3: fractalengine.rpc.v1.GetTokenBalancesResponse
-	(*protocol.Address)(nil),                // 4: fractalengine.rpc.v1.Address
-	(*protocol.Hash)(nil),                   // 5: fractalengine.rpc.v1.Hash
+	(*Address)(nil),                         // 4: fractalengine.rpc.v1.Address
+	(*Hash)(nil),                            // 5: fractalengine.rpc.v1.Hash
 	(*TokenBalance)(nil),                    // 6: fractalengine.rpc.v1.TokenBalance
 	(*wrapperspb.BoolValue)(nil),            // 7: google.protobuf.BoolValue
 	(*wrapperspb.Int32Value)(nil),           // 8: google.protobuf.Int32Value
@@ -308,6 +307,7 @@ func file_tokens_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

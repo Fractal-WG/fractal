@@ -26,12 +26,12 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 
 	mintHash := ""
 	if req.Msg.GetMintHash() != nil {
-		mintHash = req.Msg.GetMintHash().Value
+		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
 	offererAddress := ""
 	if req.Msg.GetOffererAddress() != nil {
-		offererAddress = req.Msg.GetOffererAddress().Value
+		offererAddress = req.Msg.GetOffererAddress().GetValue()
 	}
 
 	offers, err := s.store.GetSellOffers(start, end, mintHash, offererAddress)
@@ -61,10 +61,10 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 	}
 
 	resp := &protocol.GetSellOffersResponse{}
-	resp.SetOffers(offersWithMints[start:end])
-	resp.SetTotal(int32(len(offers)))
-	resp.SetPage(page)
-	resp.SetLimit(limit)
+	resp.Offers = offersWithMints[start:end]
+	resp.Total = int32(len(offers))
+	resp.Page = page
+	resp.Limit = limit
 	return connect.NewResponse(resp), nil
 }
 
@@ -116,8 +116,8 @@ func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Requ
 	}
 
 	resp := &protocol.CreateSellOfferResponse{}
-	resp.SetId(id)
-	resp.SetHash(newOfferWithoutId.Hash)
+	resp.Id = id
+	resp.Hash = &protocol.Hash{Value: &newOfferWithoutId.Hash}
 	return connect.NewResponse(resp), nil
 }
 
@@ -140,7 +140,7 @@ func (s *ConnectRpcService) DeleteSellOffer(_ context.Context, req *connect.Requ
 	}
 
 	resp := &protocol.DeleteSellOfferResponse{}
-	resp.SetValue("Sell offer deleted")
+	resp.Value = "Sell offer deleted"
 	return connect.NewResponse(resp), nil
 }
 
@@ -160,12 +160,12 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 
 	mintHash := ""
 	if req.Msg.GetMintHash() != nil {
-		mintHash = req.Msg.GetMintHash().Value
+		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
 	sellerAddress := ""
 	if req.Msg.GetSellerAddress() != nil {
-		sellerAddress = req.Msg.GetSellerAddress().Value
+		sellerAddress = req.Msg.GetSellerAddress().GetValue()
 	}
 
 	offers, err := s.store.GetBuyOffersByMintAndSellerAddress(start, end, mintHash, sellerAddress)
@@ -195,10 +195,10 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 	}
 
 	resp := &protocol.GetBuyOffersResponse{}
-	resp.SetOffers(offersWithMints[start:end])
-	resp.SetTotal(int32(len(offers)))
-	resp.SetPage(page)
-	resp.SetLimit(limit)
+	resp.Offers = offersWithMints[start:end]
+	resp.Total = int32(len(offers))
+	resp.Page = page
+	resp.Limit = limit
 	return connect.NewResponse(resp), nil
 }
 
@@ -250,8 +250,8 @@ func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Reque
 	}
 
 	resp := &protocol.CreateBuyOfferResponse{}
-	resp.SetId(id)
-	resp.SetHash(newOfferWithoutId.Hash)
+	resp.Id = id
+	resp.Hash = &protocol.Hash{Value: &newOfferWithoutId.Hash}
 	return connect.NewResponse(resp), nil
 }
 
@@ -274,6 +274,6 @@ func (s *ConnectRpcService) DeleteBuyOffer(_ context.Context, req *connect.Reque
 	}
 
 	resp := &protocol.DeleteBuyOfferResponse{}
-	resp.SetValue("Buy offer deleted")
+	resp.Value = "Buy offer deleted"
 	return connect.NewResponse(resp), nil
 }

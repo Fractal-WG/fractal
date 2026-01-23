@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -78,7 +77,7 @@ func (x *GetMintsRequest) GetPage() *wrapperspb.Int32Value {
 
 type GetMintRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Hash          *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash          *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -113,7 +112,7 @@ func (*GetMintRequest) Descriptor() ([]byte, []int) {
 	return file_mints_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetMintRequest) GetHash() *protocol.Hash {
+func (x *GetMintRequest) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -302,7 +301,7 @@ type CreateMintRequestPayload struct {
 	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,6,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
 	Metadata                 *StringInterfaceMap      `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	MinSignatures            int32                    `protobuf:"varint,8,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
-	OwnerAddress             *protocol.Address        `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	OwnerAddress             *Address                 `protobuf:"bytes,9,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
 	Requirements             *StringInterfaceMap      `protobuf:"bytes,10,opt,name=requirements,proto3" json:"requirements,omitempty"`
 	SignatureRequirementType SignatureRequirementType `protobuf:"varint,11,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
 	Tags                     []string                 `protobuf:"bytes,12,rep,name=tags,proto3" json:"tags,omitempty"`
@@ -397,7 +396,7 @@ func (x *CreateMintRequestPayload) GetMinSignatures() int32 {
 	return 0
 }
 
-func (x *CreateMintRequestPayload) GetOwnerAddress() *protocol.Address {
+func (x *CreateMintRequestPayload) GetOwnerAddress() *Address {
 	if x != nil {
 		return x.OwnerAddress
 	}
@@ -435,7 +434,7 @@ func (x *CreateMintRequestPayload) GetTitle() string {
 type CreateMintResponse struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
 	EncodedTransactionBody string                 `protobuf:"bytes,1,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
-	Hash                   *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                   *Hash                  `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -477,7 +476,7 @@ func (x *CreateMintResponse) GetEncodedTransactionBody() string {
 	return ""
 }
 
-func (x *CreateMintResponse) GetHash() *protocol.Hash {
+func (x *CreateMintResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -547,11 +546,11 @@ var file_mints_proto_goTypes = []any{
 	(*CreateMintRequestPayload)(nil), // 5: fractalengine.rpc.v1.CreateMintRequestPayload
 	(*CreateMintResponse)(nil),       // 6: fractalengine.rpc.v1.CreateMintResponse
 	(*wrapperspb.Int32Value)(nil),    // 7: google.protobuf.Int32Value
-	(*protocol.Hash)(nil),            // 8: fractalengine.rpc.v1.Hash
+	(*Hash)(nil),                     // 8: fractalengine.rpc.v1.Hash
 	(*Mint)(nil),                     // 9: fractalengine.rpc.v1.Mint
 	(*AssetManager)(nil),             // 10: fractalengine.rpc.v1.AssetManager
 	(*StringInterfaceMap)(nil),       // 11: fractalengine.rpc.v1.StringInterfaceMap
-	(*protocol.Address)(nil),         // 12: fractalengine.rpc.v1.Address
+	(*Address)(nil),                  // 12: fractalengine.rpc.v1.Address
 	(SignatureRequirementType)(0),    // 13: fractalengine.rpc.v1.SignatureRequirementType
 }
 var file_mints_proto_depIdxs = []int32{
@@ -581,6 +580,7 @@ func file_mints_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

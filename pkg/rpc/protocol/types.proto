@@ -4,7 +4,7 @@ package fractalengine.rpc.v1;
 
 import "buf/validate/validate.proto";
 
-option go_package = "pkg/rpc/protocol";
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 message Hash {
   string value = 1 [

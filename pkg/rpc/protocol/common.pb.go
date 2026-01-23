@@ -7,11 +7,9 @@
 package protocol
 
 import (
-	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -332,19 +330,19 @@ type Mint struct {
 	Description              string                   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	FeedUrl                  string                   `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl,proto3" json:"feed_url,omitempty"`
 	FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount,proto3" json:"fraction_count,omitempty"`
-	Hash                     *protocol.Hash           `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                     *Hash                    `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
 	Id                       string                   `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
 	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
 	Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
-	OwnerAddress             *protocol.Address        `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	OwnerAddress             *Address                 `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
 	PublicKey                string                   `protobuf:"bytes,14,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
 	Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements,proto3" json:"requirements,omitempty"`
 	Signature                string                   `protobuf:"bytes,16,opt,name=signature,proto3" json:"signature,omitempty"`
 	SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
 	Tags                     []string                 `protobuf:"bytes,18,rep,name=tags,proto3" json:"tags,omitempty"`
 	Title                    string                   `protobuf:"bytes,19,opt,name=title,proto3" json:"title,omitempty"`
-	TransactionHash          *protocol.Hash           `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -428,7 +426,7 @@ func (x *Mint) GetFractionCount() int32 {
 	return 0
 }
 
-func (x *Mint) GetHash() *protocol.Hash {
+func (x *Mint) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -463,7 +461,7 @@ func (x *Mint) GetMinSignatures() int32 {
 	return 0
 }
 
-func (x *Mint) GetOwnerAddress() *protocol.Address {
+func (x *Mint) GetOwnerAddress() *Address {
 	if x != nil {
 		return x.OwnerAddress
 	}
@@ -512,7 +510,7 @@ func (x *Mint) GetTitle() string {
 	return ""
 }
 
-func (x *Mint) GetTransactionHash() *protocol.Hash {
+func (x *Mint) GetTransactionHash() *Hash {
 	if x != nil {
 		return x.TransactionHash
 	}
@@ -522,20 +520,20 @@ func (x *Mint) GetTransactionHash() *protocol.Hash {
 type Invoice struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
-	BuyerAddress          *protocol.Address      `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	BuyerAddress          *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
 	CreatedAt             string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Hash                  *protocol.Hash         `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                  *Hash                  `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
 	Id                    string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	MintHash              *protocol.Hash         `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash              *Hash                  `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt,proto3" json:"paid_at,omitempty"`
-	PaymentAddress        *protocol.Address      `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	PaymentAddress        *Address               `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
 	PendingTokenBalanceId string                 `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId,proto3" json:"pending_token_balance_id,omitempty"`
 	Price                 int32                  `protobuf:"varint,10,opt,name=price,proto3" json:"price,omitempty"`
 	PublicKey             string                 `protobuf:"bytes,11,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
 	Quantity              int32                  `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	SellerAddress         *protocol.Address      `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	SellerAddress         *Address               `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	Signature             string                 `protobuf:"bytes,14,opt,name=signature,proto3" json:"signature,omitempty"`
-	TransactionHash       *protocol.Hash         `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	TransactionHash       *Hash                  `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -577,7 +575,7 @@ func (x *Invoice) GetBlockHeight() int32 {
 	return 0
 }
 
-func (x *Invoice) GetBuyerAddress() *protocol.Address {
+func (x *Invoice) GetBuyerAddress() *Address {
 	if x != nil {
 		return x.BuyerAddress
 	}
@@ -591,7 +589,7 @@ func (x *Invoice) GetCreatedAt() string {
 	return ""
 }
 
-func (x *Invoice) GetHash() *protocol.Hash {
+func (x *Invoice) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -605,7 +603,7 @@ func (x *Invoice) GetId() string {
 	return ""
 }
 
-func (x *Invoice) GetMintHash() *protocol.Hash {
+func (x *Invoice) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -619,7 +617,7 @@ func (x *Invoice) GetPaidAt() *SqlNullTime {
 	return nil
 }
 
-func (x *Invoice) GetPaymentAddress() *protocol.Address {
+func (x *Invoice) GetPaymentAddress() *Address {
 	if x != nil {
 		return x.PaymentAddress
 	}
@@ -654,7 +652,7 @@ func (x *Invoice) GetQuantity() int32 {
 	return 0
 }
 
-func (x *Invoice) GetSellerAddress() *protocol.Address {
+func (x *Invoice) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
@@ -668,7 +666,7 @@ func (x *Invoice) GetSignature() string {
 	return ""
 }
 
-func (x *Invoice) GetTransactionHash() *protocol.Hash {
+func (x *Invoice) GetTransactionHash() *Hash {
 	if x != nil {
 		return x.TransactionHash
 	}
@@ -677,9 +675,9 @@ func (x *Invoice) GetTransactionHash() *protocol.Hash {
 
 type TokenBalance struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity      int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -716,7 +714,7 @@ func (*TokenBalance) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *TokenBalance) GetAddress() *protocol.Address {
+func (x *TokenBalance) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
@@ -730,7 +728,7 @@ func (x *TokenBalance) GetCreatedAt() string {
 	return ""
 }
 
-func (x *TokenBalance) GetMintHash() *protocol.Hash {
+func (x *TokenBalance) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -753,10 +751,10 @@ func (x *TokenBalance) GetUpdatedAt() string {
 
 type BuyOffer struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress *protocol.Address      `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	SellerAddress  *protocol.Address      `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	SellerAddress  *Address               `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	Quantity       int32                  `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
 	CreatedAt      string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -797,28 +795,28 @@ func (*BuyOffer) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BuyOffer) GetHash() *protocol.Hash {
+func (x *BuyOffer) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
 	return nil
 }
 
-func (x *BuyOffer) GetMintHash() *protocol.Hash {
+func (x *BuyOffer) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
 	return nil
 }
 
-func (x *BuyOffer) GetOffererAddress() *protocol.Address {
+func (x *BuyOffer) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
 	return nil
 }
 
-func (x *BuyOffer) GetSellerAddress() *protocol.Address {
+func (x *BuyOffer) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
@@ -869,9 +867,9 @@ func (x *BuyOffer) GetId() string {
 
 type SellOffer struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress *protocol.Address      `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
 	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
 	CreatedAt      string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -912,21 +910,21 @@ func (*SellOffer) Descriptor() ([]byte, []int) {
 	return file_common_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *SellOffer) GetHash() *protocol.Hash {
+func (x *SellOffer) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
 	return nil
 }
 
-func (x *SellOffer) GetMintHash() *protocol.Hash {
+func (x *SellOffer) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
 	return nil
 }
 
-func (x *SellOffer) GetOffererAddress() *protocol.Address {
+func (x *SellOffer) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
@@ -1083,7 +1081,7 @@ var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\"&\n" +
+	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\"&\n" +
 	"\x0eStringResponse\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x9b\x01\n" +
 	"\x11StringMapResponse\x12K\n" +
@@ -1221,8 +1219,8 @@ var file_common_proto_goTypes = []any{
 	(*SellOfferWithMint)(nil),     // 12: fractalengine.rpc.v1.SellOfferWithMint
 	nil,                           // 13: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
 	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
-	(*protocol.Hash)(nil),         // 15: fractalengine.rpc.v1.Hash
-	(*protocol.Address)(nil),      // 16: fractalengine.rpc.v1.Address
+	(*Hash)(nil),                  // 15: fractalengine.rpc.v1.Hash
+	(*Address)(nil),               // 16: fractalengine.rpc.v1.Address
 }
 var file_common_proto_depIdxs = []int32{
 	13, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
@@ -1267,6 +1265,7 @@ func file_common_proto_init() {
 	if File_common_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

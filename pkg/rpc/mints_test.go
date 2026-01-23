@@ -47,27 +47,27 @@ func TestMints(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoMetadata := &protocol.StringInterfaceMap{}
-	protoMetadata.SetValue(metadataStruct)
+	protoMetadata.Value = metadataStruct
 	protoRequirements := &protocol.StringInterfaceMap{}
-	protoRequirements.SetValue(emptyStruct)
+	protoRequirements.Value = emptyStruct
 	protoLockupOptions := &protocol.StringInterfaceMap{}
-	protoLockupOptions.SetValue(emptyStruct)
+	protoLockupOptions.Value = emptyStruct
 
 	protoPayload := &protocol.CreateMintRequestPayload{}
-	protoPayload.SetTitle(payload.Title)
-	protoPayload.SetDescription(payload.Description)
-	protoPayload.SetFractionCount(int32(payload.FractionCount))
-	protoPayload.SetTags(payload.Tags)
-	protoPayload.SetMetadata(protoMetadata)
-	protoPayload.SetRequirements(protoRequirements)
-	protoPayload.SetLockupOptions(protoLockupOptions)
-	protoPayload.SetFeedUrl(payload.FeedURL)
-	protoPayload.SetOwnerAddress(payload.OwnerAddress)
+	protoPayload.Title = payload.Title
+	protoPayload.Description = payload.Description
+	protoPayload.FractionCount = int32(payload.FractionCount)
+	protoPayload.Tags = payload.Tags
+	protoPayload.Metadata = protoMetadata
+	protoPayload.Requirements = protoRequirements
+	protoPayload.LockupOptions = protoLockupOptions
+	protoPayload.FeedUrl = payload.FeedURL
+	protoPayload.OwnerAddress = &protocol.Address{Value: &payload.OwnerAddress}
 
 	protoRequest := &protocol.CreateMintRequest{}
-	protoRequest.SetPayload(protoPayload)
-	protoRequest.SetPublicKey(pubHex)
-	protoRequest.SetSignature(signature)
+	protoRequest.Payload = protoPayload
+	protoRequest.PublicKey = pubHex
+	protoRequest.Signature = signature
 
 	mintResponse, err := feClient.CreateMint(context.Background(), connect.NewRequest(protoRequest))
 	if err != nil {
@@ -80,7 +80,7 @@ func TestMints(t *testing.T) {
 	}
 
 	assert.Equal(t, len(mints), 1)
-	assert.Equal(t, mints[0].Hash, mintResponse.Msg.GetHash())
+	assert.Equal(t, mints[0].Hash, mintResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, mints[0].Title, payload.Title)
 	assert.Equal(t, mints[0].FractionCount, payload.FractionCount)
 	assert.Equal(t, mints[0].Description, payload.Description)
@@ -89,7 +89,7 @@ func TestMints(t *testing.T) {
 	assert.Equal(t, mints[0].FeedURL, payload.FeedURL)
 
 	assert.Equal(t, len(dogenetClient.mints), 1)
-	assert.Equal(t, dogenetClient.mints[0].Hash, mintResponse.Msg.GetHash())
+	assert.Equal(t, dogenetClient.mints[0].Hash, mintResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, dogenetClient.mints[0].Title, payload.Title)
 	assert.Equal(t, dogenetClient.mints[0].FractionCount, payload.FractionCount)
 	assert.Equal(t, dogenetClient.mints[0].Description, payload.Description)

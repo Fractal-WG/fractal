@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -26,10 +25,10 @@ const (
 
 type GetInvoicesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Limit         *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page          *wrapperspb.Int32Value `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash      *protocol.Hash         `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,4,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -64,7 +63,7 @@ func (*GetInvoicesRequest) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetInvoicesRequest) GetAddress() *protocol.Address {
+func (x *GetInvoicesRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
@@ -85,7 +84,7 @@ func (x *GetInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetInvoicesRequest) GetMintHash() *protocol.Hash {
+func (x *GetInvoicesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -96,7 +95,7 @@ type GetAllInvoicesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -145,7 +144,7 @@ func (x *GetAllInvoicesRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetAllInvoicesRequest) GetMintHash() *protocol.Hash {
+func (x *GetAllInvoicesRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -498,12 +497,12 @@ func (x *CreateInvoiceRequest) GetSignature() string {
 
 type CreateInvoiceRequestPayload struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	PaymentAddress *protocol.Address      `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
-	BuyerAddress   *protocol.Address      `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	PaymentAddress *Address               `protobuf:"bytes,1,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
+	BuyerAddress   *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
-	SellerAddress  *protocol.Address      `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	SellerAddress  *Address               `protobuf:"bytes,6,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -538,21 +537,21 @@ func (*CreateInvoiceRequestPayload) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CreateInvoiceRequestPayload) GetPaymentAddress() *protocol.Address {
+func (x *CreateInvoiceRequestPayload) GetPaymentAddress() *Address {
 	if x != nil {
 		return x.PaymentAddress
 	}
 	return nil
 }
 
-func (x *CreateInvoiceRequestPayload) GetBuyerAddress() *protocol.Address {
+func (x *CreateInvoiceRequestPayload) GetBuyerAddress() *Address {
 	if x != nil {
 		return x.BuyerAddress
 	}
 	return nil
 }
 
-func (x *CreateInvoiceRequestPayload) GetMintHash() *protocol.Hash {
+func (x *CreateInvoiceRequestPayload) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -573,7 +572,7 @@ func (x *CreateInvoiceRequestPayload) GetPrice() int32 {
 	return 0
 }
 
-func (x *CreateInvoiceRequestPayload) GetSellerAddress() *protocol.Address {
+func (x *CreateInvoiceRequestPayload) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
@@ -582,7 +581,7 @@ func (x *CreateInvoiceRequestPayload) GetSellerAddress() *protocol.Address {
 
 type CreateInvoiceResponse struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	Hash                   *protocol.Hash         `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                   *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	EncodedTransactionBody string                 `protobuf:"bytes,2,opt,name=encoded_transaction_body,json=encodedTransactionBody,proto3" json:"encoded_transaction_body,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
@@ -618,7 +617,7 @@ func (*CreateInvoiceResponse) Descriptor() ([]byte, []int) {
 	return file_invoices_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *CreateInvoiceResponse) GetHash() *protocol.Hash {
+func (x *CreateInvoiceResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -705,9 +704,9 @@ var file_invoices_proto_goTypes = []any{
 	(*CreateInvoiceRequest)(nil),                 // 7: fractalengine.rpc.v1.CreateInvoiceRequest
 	(*CreateInvoiceRequestPayload)(nil),          // 8: fractalengine.rpc.v1.CreateInvoiceRequestPayload
 	(*CreateInvoiceResponse)(nil),                // 9: fractalengine.rpc.v1.CreateInvoiceResponse
-	(*protocol.Address)(nil),                     // 10: fractalengine.rpc.v1.Address
+	(*Address)(nil),                              // 10: fractalengine.rpc.v1.Address
 	(*wrapperspb.Int32Value)(nil),                // 11: google.protobuf.Int32Value
-	(*protocol.Hash)(nil),                        // 12: fractalengine.rpc.v1.Hash
+	(*Hash)(nil),                                 // 12: fractalengine.rpc.v1.Hash
 	(*Invoice)(nil),                              // 13: fractalengine.rpc.v1.Invoice
 }
 var file_invoices_proto_depIdxs = []int32{
@@ -740,6 +739,7 @@ func file_invoices_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

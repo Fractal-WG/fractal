@@ -20,6 +20,6 @@ func (s *ConnectRpcService) GetStats(_ context.Context, _ *connect.Request[proto
 	}
 
 	resp := &protocol.GetStatsResponse{}
-	resp.SetStats(responseStats)
+	resp.Stats = responseStats
 	return connect.NewResponse(resp), nil
 }

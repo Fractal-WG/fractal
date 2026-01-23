@@ -46,17 +46,17 @@ func TestInvoices(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
-	protoPayload.SetPaymentAddress(paymentAddress)
-	protoPayload.SetBuyerAddress(buyerAddress)
-	protoPayload.SetMintHash(mintHash)
-	protoPayload.SetQuantity(10)
-	protoPayload.SetPrice(100)
-	protoPayload.SetSellerAddress(sellOfferAddress)
+	protoPayload.PaymentAddress = &protocol.Address{Value: &paymentAddress}
+	protoPayload.BuyerAddress = &protocol.Address{Value: &buyerAddress}
+	protoPayload.MintHash = &protocol.Hash{Value: &mintHash}
+	protoPayload.Quantity = 10
+	protoPayload.Price = 100
+	protoPayload.SellerAddress = &protocol.Address{Value: &sellOfferAddress}
 
 	invoice := &protocol.CreateInvoiceRequest{}
-	invoice.SetPayload(protoPayload)
-	invoice.SetPublicKey(pubHex)
-	invoice.SetSignature(signature)
+	invoice.Payload = protoPayload
+	invoice.PublicKey = pubHex
+	invoice.Signature = signature
 
 	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(invoice))
 	if err != nil {
@@ -69,7 +69,7 @@ func TestInvoices(t *testing.T) {
 	}
 
 	assert.Equal(t, len(invoices), 1)
-	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, invoices[0].PaymentAddress, invoicePayload.PaymentAddress)
 	assert.Equal(t, invoices[0].BuyerAddress, invoicePayload.BuyerAddress)
 	assert.Equal(t, invoices[0].MintHash, invoicePayload.MintHash)
@@ -79,7 +79,7 @@ func TestInvoices(t *testing.T) {
 	assert.Equal(t, invoices[0].Status, "draft")
 
 	assert.Equal(t, len(dogenetClient.invoices), 1)
-	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, dogenetClient.invoices[0].PaymentAddress, invoicePayload.PaymentAddress)
 	assert.Equal(t, dogenetClient.invoices[0].BuyerAddress, invoicePayload.BuyerAddress)
 	assert.Equal(t, dogenetClient.invoices[0].MintHash, invoicePayload.MintHash)
@@ -141,17 +141,17 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
-	protoPayload.SetPaymentAddress(paymentAddress)
-	protoPayload.SetBuyerAddress(buyerAddress)
-	protoPayload.SetMintHash(confirmedMint.Hash)
-	protoPayload.SetQuantity(10)
-	protoPayload.SetPrice(100)
-	protoPayload.SetSellerAddress(sellOfferAddress)
+	protoPayload.PaymentAddress = &protocol.Address{Value: &paymentAddress}
+	protoPayload.BuyerAddress = &protocol.Address{Value: &buyerAddress}
+	protoPayload.MintHash = &protocol.Hash{Value: &confirmedMint.Hash}
+	protoPayload.Quantity = 10
+	protoPayload.Price = 100
+	protoPayload.SellerAddress = &protocol.Address{Value: &sellOfferAddress}
 
 	protoInvoice := &protocol.CreateInvoiceRequest{}
-	protoInvoice.SetPayload(protoPayload)
-	protoInvoice.SetPublicKey(pubHex)
-	protoInvoice.SetSignature(signature)
+	protoInvoice.Payload = protoPayload
+	protoInvoice.PublicKey = pubHex
+	protoInvoice.Signature = signature
 
 	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(protoInvoice))
 	if err != nil {
@@ -164,7 +164,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	}
 
 	assert.Equal(t, len(invoices), 1)
-	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, invoices[0].Hash, invoiceResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
 	assert.Equal(t, invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
 	assert.Equal(t, invoices[0].MintHash, invoice.Payload.MintHash)
@@ -174,7 +174,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	assert.Equal(t, invoices[0].Status, "pending_signatures")
 
 	assert.Equal(t, len(dogenetClient.invoices), 1)
-	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash())
+	assert.Equal(t, dogenetClient.invoices[0].Hash, invoiceResponse.Msg.GetHash().GetValue())
 	assert.Equal(t, dogenetClient.invoices[0].PaymentAddress, invoice.Payload.PaymentAddress)
 	assert.Equal(t, dogenetClient.invoices[0].BuyerAddress, invoice.Payload.BuyerAddress)
 	assert.Equal(t, dogenetClient.invoices[0].MintHash, invoice.Payload.MintHash)
@@ -256,12 +256,12 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoPayload := &protocol.CreateInvoiceSignatureRequestPayload{}
-	protoPayload.SetInvoiceHash(invoice.Hash)
-	protoPayload.SetSignature(signature)
-	protoPayload.SetPublicKey(assetManagerPubKey)
+	protoPayload.InvoiceHash = invoice.Hash
+	protoPayload.Signature = signature
+	protoPayload.PublicKey = assetManagerPubKey
 
 	protoRequest := &protocol.CreateInvoiceSignatureRequest{}
-	protoRequest.SetPayload(protoPayload)
+	protoRequest.Payload = protoPayload
 
 	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(context.Background(), connect.NewRequest(protoRequest))
 	if err != nil {

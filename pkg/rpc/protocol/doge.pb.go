@@ -10,7 +10,6 @@ import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -25,7 +24,7 @@ const (
 
 type DogeTopUpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *protocol.Address      `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -60,7 +59,7 @@ func (*DogeTopUpRequest) Descriptor() ([]byte, []int) {
 	return file_doge_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DogeTopUpRequest) GetAddress() *protocol.Address {
+func (x *DogeTopUpRequest) GetAddress() *Address {
 	if x != nil {
 		return x.Address
 	}
@@ -321,7 +320,7 @@ var file_doge_proto_goTypes = []any{
 	(*DogeSendRequest)(nil),     // 4: fractalengine.rpc.v1.DogeSendRequest
 	(*DogeSendResponse)(nil),    // 5: fractalengine.rpc.v1.DogeSendResponse
 	nil,                         // 6: fractalengine.rpc.v1.DogeConfirmResponse.ValuesEntry
-	(*protocol.Address)(nil),    // 7: fractalengine.rpc.v1.Address
+	(*Address)(nil),             // 7: fractalengine.rpc.v1.Address
 }
 var file_doge_proto_depIdxs = []int32{
 	7, // 0: fractalengine.rpc.v1.DogeTopUpRequest.address:type_name -> fractalengine.rpc.v1.Address
@@ -338,6 +337,7 @@ func file_doge_proto_init() {
 	if File_doge_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

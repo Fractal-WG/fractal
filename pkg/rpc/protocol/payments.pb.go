@@ -10,7 +10,6 @@ import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -25,7 +24,7 @@ const (
 
 type CreateNewPaymentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	InvoiceHash   *protocol.Hash         `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
+	InvoiceHash   *Hash                  `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -60,7 +59,7 @@ func (*CreateNewPaymentRequest) Descriptor() ([]byte, []int) {
 	return file_payments_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateNewPaymentRequest) GetInvoiceHash() *protocol.Hash {
+func (x *CreateNewPaymentRequest) GetInvoiceHash() *Hash {
 	if x != nil {
 		return x.InvoiceHash
 	}
@@ -141,7 +140,7 @@ var file_payments_proto_goTypes = []any{
 	(*CreateNewPaymentRequest)(nil),  // 0: fractalengine.rpc.v1.CreateNewPaymentRequest
 	(*CreateNewPaymentResponse)(nil), // 1: fractalengine.rpc.v1.CreateNewPaymentResponse
 	nil,                              // 2: fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntry
-	(*protocol.Hash)(nil),            // 3: fractalengine.rpc.v1.Hash
+	(*Hash)(nil),                     // 3: fractalengine.rpc.v1.Hash
 }
 var file_payments_proto_depIdxs = []int32{
 	3, // 0: fractalengine.rpc.v1.CreateNewPaymentRequest.invoice_hash:type_name -> fractalengine.rpc.v1.Hash
@@ -158,6 +157,7 @@ func file_payments_proto_init() {
 	if File_payments_proto != nil {
 		return
 	}
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

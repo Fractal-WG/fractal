@@ -118,7 +118,7 @@ const file_types_proto_rawDesc = "" +
 	"\x04Hash\x12.\n" +
 	"\x05value\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x05value\"O\n" +
 	"\aAddress\x12D\n" +
-	"\x05value\x18\x01 \x01(\tB.\xbaH+r)2'(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x05valueB\x12Z\x10pkg/rpc/protocolb\beditionsp\xe8\a"
+	"\x05value\x18\x01 \x01(\tB.\xbaH+r)2'(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x05valueB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var (
 	file_types_proto_rawDescOnce sync.Once

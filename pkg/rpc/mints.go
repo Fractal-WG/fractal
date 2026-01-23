@@ -12,7 +12,6 @@ import (
 	"dogecoin.org/fractal-engine/pkg/validation"
 )
 
-
 func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[protocol.GetMintsRequest]) (*connect.Response[protocol.GetMintsResponse], error) {
 	limit := int32(100)
 	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
@@ -46,20 +45,20 @@ func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[pro
 	}
 
 	resp := &protocol.GetMintsResponse{}
-	resp.SetMints(responseMints)
-	resp.SetTotal(int32(len(mints)))
-	resp.SetPage(page)
-	resp.SetLimit(limit)
+	resp.Mints = responseMints
+	resp.Total = int32(len(mints))
+	resp.Page = page
+	resp.Limit = limit
 	return connect.NewResponse(resp), nil
 }
 
 func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error) {
 	hash := req.Msg.GetHash()
-	if err := validation.ValidateHash(hash); err != nil {
+	if err := validation.ValidateHash(hash.GetValue()); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	mint, err := s.store.GetMintByHash(hash)
+	mint, err := s.store.GetMintByHash(hash.GetValue())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
 	}
@@ -70,7 +69,7 @@ func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[prot
 	}
 
 	resp := &protocol.GetMintResponse{}
-	resp.SetMint(protoMint)
+	resp.Mint = protoMint
 	return connect.NewResponse(resp), nil
 }
 
@@ -126,7 +125,7 @@ func (s *ConnectRpcService) CreateMint(_ context.Context, req *connect.Request[p
 	encodedTransactionBody := envelope.Serialize()
 
 	resp := &protocol.CreateMintResponse{}
-	resp.SetHash(newMintWithoutId.Hash)
-	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
+	resp.Hash = &protocol.Hash{Value: &newMintWithoutId.Hash}
+	resp.EncodedTransactionBody = hex.EncodeToString(encodedTransactionBody)
 	return connect.NewResponse(resp), nil
 }

@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	protocol "pkg/rpc/protocol"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -27,7 +26,7 @@ const (
 type CreateSellOfferResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Hash          *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash          *Hash                  `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -69,7 +68,7 @@ func (x *CreateSellOfferResponse) GetId() string {
 	return ""
 }
 
-func (x *CreateSellOfferResponse) GetHash() *protocol.Hash {
+func (x *CreateSellOfferResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -79,7 +78,7 @@ func (x *CreateSellOfferResponse) GetHash() *protocol.Hash {
 type CreateBuyOfferResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Hash          *protocol.Hash         `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash          *Hash                  `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -121,7 +120,7 @@ func (x *CreateBuyOfferResponse) GetId() string {
 	return ""
 }
 
-func (x *CreateBuyOfferResponse) GetHash() *protocol.Hash {
+func (x *CreateBuyOfferResponse) GetHash() *Hash {
 	if x != nil {
 		return x.Hash
 	}
@@ -132,8 +131,8 @@ type GetSellOffersRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Limit          *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page           *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress *protocol.Address      `protobuf:"bytes,4,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,4,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -182,14 +181,14 @@ func (x *GetSellOffersRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetSellOffersRequest) GetMintHash() *protocol.Hash {
+func (x *GetSellOffersRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
 	return nil
 }
 
-func (x *GetSellOffersRequest) GetOffererAddress() *protocol.Address {
+func (x *GetSellOffersRequest) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
@@ -200,8 +199,8 @@ type GetBuyOffersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Limit         *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Page          *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
-	MintHash      *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	SellerAddress *protocol.Address      `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	SellerAddress *Address               `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -250,14 +249,14 @@ func (x *GetBuyOffersRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
-func (x *GetBuyOffersRequest) GetMintHash() *protocol.Hash {
+func (x *GetBuyOffersRequest) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
 	return nil
 }
 
-func (x *GetBuyOffersRequest) GetSellerAddress() *protocol.Address {
+func (x *GetBuyOffersRequest) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
@@ -462,8 +461,8 @@ func (x *CreateSellOfferRequest) GetSignature() string {
 
 type CreateSellOfferRequestPayload struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	OffererAddress *protocol.Address      `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity       int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,4,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields  protoimpl.UnknownFields
@@ -500,14 +499,14 @@ func (*CreateSellOfferRequestPayload) Descriptor() ([]byte, []int) {
 	return file_offers_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *CreateSellOfferRequestPayload) GetOffererAddress() *protocol.Address {
+func (x *CreateSellOfferRequestPayload) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
 	return nil
 }
 
-func (x *CreateSellOfferRequestPayload) GetMintHash() *protocol.Hash {
+func (x *CreateSellOfferRequestPayload) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -590,9 +589,9 @@ func (x *CreateBuyOfferRequest) GetSignature() string {
 
 type CreateBuyOfferRequestPayload struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	OffererAddress *protocol.Address      `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	SellerAddress  *protocol.Address      `protobuf:"bytes,2,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
-	MintHash       *protocol.Hash         `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
+	OffererAddress *Address               `protobuf:"bytes,1,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
+	SellerAddress  *Address               `protobuf:"bytes,2,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
+	MintHash       *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
 	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields  protoimpl.UnknownFields
@@ -629,21 +628,21 @@ func (*CreateBuyOfferRequestPayload) Descriptor() ([]byte, []int) {
 	return file_offers_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *CreateBuyOfferRequestPayload) GetOffererAddress() *protocol.Address {
+func (x *CreateBuyOfferRequestPayload) GetOffererAddress() *Address {
 	if x != nil {
 		return x.OffererAddress
 	}
 	return nil
 }
 
-func (x *CreateBuyOfferRequestPayload) GetSellerAddress() *protocol.Address {
+func (x *CreateBuyOfferRequestPayload) GetSellerAddress() *Address {
 	if x != nil {
 		return x.SellerAddress
 	}
 	return nil
 }
 
-func (x *CreateBuyOfferRequestPayload) GetMintHash() *protocol.Hash {
+func (x *CreateBuyOfferRequestPayload) GetMintHash() *Hash {
 	if x != nil {
 		return x.MintHash
 	}
@@ -770,7 +769,7 @@ func (x *DeleteSellOfferResponse) GetValue() string {
 
 type DeleteSellOfferRequestPayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OfferHash     *protocol.Hash         `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
+	OfferHash     *Hash                  `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -805,7 +804,7 @@ func (*DeleteSellOfferRequestPayload) Descriptor() ([]byte, []int) {
 	return file_offers_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *DeleteSellOfferRequestPayload) GetOfferHash() *protocol.Hash {
+func (x *DeleteSellOfferRequestPayload) GetOfferHash() *Hash {
 	if x != nil {
 		return x.OfferHash
 	}
@@ -918,7 +917,7 @@ func (x *DeleteBuyOfferResponse) GetValue() string {
 
 type DeleteBuyOfferRequestPayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OfferHash     *protocol.Hash         `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
+	OfferHash     *Hash                  `protobuf:"bytes,1,opt,name=offer_hash,json=offerHash,proto3" json:"offer_hash,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -953,7 +952,7 @@ func (*DeleteBuyOfferRequestPayload) Descriptor() ([]byte, []int) {
 	return file_offers_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *DeleteBuyOfferRequestPayload) GetOfferHash() *protocol.Hash {
+func (x *DeleteBuyOfferRequestPayload) GetOfferHash() *Hash {
 	if x != nil {
 		return x.OfferHash
 	}
@@ -1063,9 +1062,9 @@ var file_offers_proto_goTypes = []any{
 	(*DeleteBuyOfferRequest)(nil),         // 13: fractalengine.rpc.v1.DeleteBuyOfferRequest
 	(*DeleteBuyOfferResponse)(nil),        // 14: fractalengine.rpc.v1.DeleteBuyOfferResponse
 	(*DeleteBuyOfferRequestPayload)(nil),  // 15: fractalengine.rpc.v1.DeleteBuyOfferRequestPayload
-	(*protocol.Hash)(nil),                 // 16: fractalengine.rpc.v1.Hash
+	(*Hash)(nil),                          // 16: fractalengine.rpc.v1.Hash
 	(*wrapperspb.Int32Value)(nil),         // 17: google.protobuf.Int32Value
-	(*protocol.Address)(nil),              // 18: fractalengine.rpc.v1.Address
+	(*Address)(nil),                       // 18: fractalengine.rpc.v1.Address
 	(*SellOfferWithMint)(nil),             // 19: fractalengine.rpc.v1.SellOfferWithMint
 	(*BuyOfferWithMint)(nil),              // 20: fractalengine.rpc.v1.BuyOfferWithMint
 }
@@ -1106,6 +1105,7 @@ func file_offers_proto_init() {
 		return
 	}
 	file_common_proto_init()
+	file_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
