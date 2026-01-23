@@ -12,7 +12,7 @@ import (
 )
 
 func (s *TokenisationStore) ChooseInvoice(ctx context.Context) (Invoice, error) {
-	row := s.DB.QueryRow("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash IN (SELECT hash FROM invoices ORDER BY RANDOM() LIMIT 1)")
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash IN (SELECT hash FROM invoices ORDER BY RANDOM() LIMIT 1)")
 	var invoice Invoice
 	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
 		return Invoice{}, err
@@ -21,7 +21,7 @@ func (s *TokenisationStore) ChooseInvoice(ctx context.Context) (Invoice, error) 
 }
 
 func (s *TokenisationStore) ChooseInvoiceSignature(ctx context.Context) (InvoiceSignature, error) {
-	row := s.DB.QueryRow("SELECT id, invoice_hash, signature, public_key, created_at FROM invoice_signatures WHERE id IN (SELECT id FROM invoice_signatures ORDER BY RANDOM() LIMIT 1)")
+	row := s.DB.QueryRowContext(ctx, "SELECT id, invoice_hash, signature, public_key, created_at FROM invoice_signatures WHERE id IN (SELECT id FROM invoice_signatures ORDER BY RANDOM() LIMIT 1)")
 	var invoice InvoiceSignature
 	if err := row.Scan(&invoice.Id, &invoice.InvoiceHash, &invoice.Signature, &invoice.PublicKey, &invoice.CreatedAt); err != nil {
 		return InvoiceSignature{}, err
@@ -30,7 +30,7 @@ func (s *TokenisationStore) ChooseInvoiceSignature(ctx context.Context) (Invoice
 }
 
 func (s *TokenisationStore) GetInvoiceByHash(ctx context.Context, hash string) (Invoice, error) {
-	row := s.DB.QueryRow("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash = $1", hash)
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash = $1", hash)
 	var invoice Invoice
 	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
 		return Invoice{}, err
@@ -39,7 +39,7 @@ func (s *TokenisationStore) GetInvoiceByHash(ctx context.Context, hash string) (
 }
 
 func (s *TokenisationStore) GetUnconfirmedInvoiceByHash(ctx context.Context, hash string) (UnconfirmedInvoice, error) {
-	row := s.DB.QueryRow("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature FROM unconfirmed_invoices WHERE hash = $1", hash)
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature FROM unconfirmed_invoices WHERE hash = $1", hash)
 	var invoice UnconfirmedInvoice
 	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature); err != nil {
 		return UnconfirmedInvoice{}, err
@@ -48,7 +48,7 @@ func (s *TokenisationStore) GetUnconfirmedInvoiceByHash(ctx context.Context, has
 }
 
 func (s *TokenisationStore) GetInvoicesForMe(ctx context.Context, offset int, limit int, myAddress string) ([]Invoice, error) {
-	rows, err := s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE (buyer_address = $1 OR seller_address = $1) LIMIT $2 OFFSET $3", myAddress, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE (buyer_address = $1 OR seller_address = $1) LIMIT $2 OFFSET $3", myAddress, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *TokenisationStore) GetInvoicesForMe(ctx context.Context, offset int, li
 }
 
 func (s *TokenisationStore) GetInvoices(ctx context.Context, offset int, limit int, mintHash string, offererAddress string) ([]Invoice, error) {
-	rows, err := s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 AND (buyer_address = $2 OR seller_address = $2) LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 AND (buyer_address = $2 OR seller_address = $2) LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +102,9 @@ func (s *TokenisationStore) GetAllInvoices(ctx context.Context, offset int, limi
 	var err error
 
 	if mintHash == "" {
-		rows, err = s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices LIMIT $1 OFFSET $2", limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices LIMIT $1 OFFSET $2", limit, offset)
 	} else {
-		rows, err = s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
 	}
 	if err != nil {
 		return nil, err
@@ -128,14 +128,14 @@ func (s *TokenisationStore) GetAllInvoices(ctx context.Context, offset int, limi
 }
 
 func (s *TokenisationStore) CountUnconfirmedInvoices(ctx context.Context, mintHash string, offererAddress string) (int, error) {
-	row := s.DB.QueryRow("SELECT COUNT(*) FROM unconfirmed_invoices WHERE mint_hash = $1 AND buyer_address = $2", mintHash, offererAddress)
+	row := s.DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM unconfirmed_invoices WHERE mint_hash = $1 AND buyer_address = $2", mintHash, offererAddress)
 	var count int
 	err := row.Scan(&count)
 	return count, err
 }
 
 func (s *TokenisationStore) GetUnconfirmedInvoices(ctx context.Context, offset int, limit int, mintHash string, offererAddress string) ([]UnconfirmedInvoice, error) {
-	rows, err := s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, status FROM unconfirmed_invoices WHERE mint_hash = $1 AND buyer_address = $2 LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, status FROM unconfirmed_invoices WHERE mint_hash = $1 AND buyer_address = $2 LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (s *TokenisationStore) GetUnconfirmedInvoices(ctx context.Context, offset i
 func (s *TokenisationStore) SaveUnconfirmedInvoice(ctx context.Context, invoice *UnconfirmedInvoice) (string, error) {
 	id := uuid.New().String()
 
-	_, err := s.DB.Exec(`
+	_, err := s.DB.ExecContext(ctx, `
 	INSERT INTO unconfirmed_invoices (id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, status)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`, id, invoice.Hash, invoice.PaymentAddress, invoice.BuyerAddress, invoice.MintHash, invoice.Quantity, invoice.Price, invoice.CreatedAt, invoice.SellerAddress, invoice.PublicKey, invoice.Signature, invoice.Status)
@@ -184,9 +184,9 @@ func (s *TokenisationStore) SaveInvoiceWithTx(ctx context.Context, invoice *Invo
 
 	var err error
 	if tx != nil {
-		_, err = tx.Exec(query, id, invoice.Hash, invoice.PaymentAddress, invoice.BuyerAddress, invoice.MintHash, invoice.Quantity, invoice.Price, invoice.CreatedAt, invoice.SellerAddress, invoice.BlockHeight, invoice.TransactionHash, invoice.PublicKey, invoice.Signature)
+		_, err = tx.ExecContext(ctx, query, id, invoice.Hash, invoice.PaymentAddress, invoice.BuyerAddress, invoice.MintHash, invoice.Quantity, invoice.Price, invoice.CreatedAt, invoice.SellerAddress, invoice.BlockHeight, invoice.TransactionHash, invoice.PublicKey, invoice.Signature)
 	} else {
-		_, err = s.DB.Exec(query, id, invoice.Hash, invoice.PaymentAddress, invoice.BuyerAddress, invoice.MintHash, invoice.Quantity, invoice.Price, invoice.CreatedAt, invoice.SellerAddress, invoice.BlockHeight, invoice.TransactionHash, invoice.PublicKey, invoice.Signature)
+		_, err = s.DB.ExecContext(ctx, query, id, invoice.Hash, invoice.PaymentAddress, invoice.BuyerAddress, invoice.MintHash, invoice.Quantity, invoice.Price, invoice.CreatedAt, invoice.SellerAddress, invoice.BlockHeight, invoice.TransactionHash, invoice.PublicKey, invoice.Signature)
 	}
 
 	return id, err
@@ -203,7 +203,7 @@ func (s *TokenisationStore) MatchInvoice(ctx context.Context, onchainTransaction
 		return false
 	}
 
-	rows, err := s.DB.Query("SELECT hash, transaction_hash FROM invoices WHERE transaction_hash = $1 and block_height = $2 and hash = $3", onchainTransaction.TxHash, onchainTransaction.Height, hex.EncodeToString(onchainMessage.InvoiceHash))
+	rows, err := s.DB.QueryContext(ctx, "SELECT hash, transaction_hash FROM invoices WHERE transaction_hash = $1 and block_height = $2 and hash = $3", onchainTransaction.TxHash, onchainTransaction.Height, hex.EncodeToString(onchainMessage.InvoiceHash))
 	if err != nil {
 		return false
 	}
@@ -212,7 +212,7 @@ func (s *TokenisationStore) MatchInvoice(ctx context.Context, onchainTransaction
 	exists := rows.Next()
 
 	if exists {
-		_, err = s.DB.Exec("DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
+		_, err = s.DB.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
 		if err != nil {
 			return false
 		}
@@ -233,13 +233,13 @@ func (s *TokenisationStore) MatchUnconfirmedInvoice(ctx context.Context, onchain
 	}
 
 	// Start transaction for atomic operations
-	tx, err := s.DB.Begin()
+	tx, err := s.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	rows, err := tx.Query("SELECT id, hash, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, status FROM unconfirmed_invoices WHERE hash = $1", hex.EncodeToString(onchainMessage.InvoiceHash))
+	rows, err := tx.QueryContext(ctx, "SELECT id, hash, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, status FROM unconfirmed_invoices WHERE hash = $1", hex.EncodeToString(onchainMessage.InvoiceHash))
 	if err != nil {
 		return err
 	}
@@ -288,12 +288,12 @@ func (s *TokenisationStore) MatchUnconfirmedInvoice(ctx context.Context, onchain
 
 	fmt.Println("Saved invoice:", id)
 
-	_, err = tx.Exec("DELETE FROM unconfirmed_invoices WHERE id = $1", unconfirmedInvoice.Id)
+	_, err = tx.ExecContext(ctx, "DELETE FROM unconfirmed_invoices WHERE id = $1", unconfirmedInvoice.Id)
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec("DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
+	_, err = tx.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
 	if err != nil {
 		return err
 	}
@@ -310,12 +310,12 @@ func (s *TokenisationStore) MatchUnconfirmedInvoice(ctx context.Context, onchain
 func (s *TokenisationStore) SaveApprovedInvoiceSignature(ctx context.Context, signature *InvoiceSignature) (string, error) {
 	id := uuid.New().String()
 
-	_, err := s.DB.Exec("INSERT INTO invoice_signatures (id, invoice_hash, signature, public_key, created_at) VALUES ($1, $2, $3, $4, $5)", id, signature.InvoiceHash, signature.Signature, signature.PublicKey, signature.CreatedAt)
+	_, err := s.DB.ExecContext(ctx, "INSERT INTO invoice_signatures (id, invoice_hash, signature, public_key, created_at) VALUES ($1, $2, $3, $4, $5)", id, signature.InvoiceHash, signature.Signature, signature.PublicKey, signature.CreatedAt)
 	return id, err
 }
 
 func (s *TokenisationStore) GetApprovedInvoiceSignatures(ctx context.Context, invoiceHash string) ([]InvoiceSignature, error) {
-	rows, err := s.DB.Query("SELECT id, invoice_hash, signature, public_key, created_at FROM invoice_signatures WHERE invoice_hash = $1", invoiceHash)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, invoice_hash, signature, public_key, created_at FROM invoice_signatures WHERE invoice_hash = $1", invoiceHash)
 	if err != nil {
 		return []InvoiceSignature{}, err
 	}

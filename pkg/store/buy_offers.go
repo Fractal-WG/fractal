@@ -23,23 +23,23 @@ func (s *TokenisationStore) SaveBuyOfferWithTx(ctx context.Context, d *BuyOfferW
 
 	var err error
 	if tx != nil {
-		_, err = tx.Exec(query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+		_, err = tx.ExecContext(ctx, query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
 	} else {
-		_, err = s.DB.Exec(query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
+		_, err = s.DB.ExecContext(ctx, query, id, d.OffererAddress, d.SellerAddress, d.Hash, d.MintHash, d.Quantity, d.Price, d.CreatedAt, d.PublicKey, d.Signature)
 	}
 
 	return id, err
 }
 
 func (s *TokenisationStore) CountBuyOffers(ctx context.Context, mintHash string, offererAddress string, sellerAddress string) (int, error) {
-	row := s.DB.QueryRow("SELECT COUNT(*) FROM buy_offers WHERE mint_hash = $1 AND offerer_address = $2 AND seller_address = $3", mintHash, offererAddress, sellerAddress)
+	row := s.DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM buy_offers WHERE mint_hash = $1 AND offerer_address = $2 AND seller_address = $3", mintHash, offererAddress, sellerAddress)
 	var count int
 	err := row.Scan(&count)
 	return count, err
 }
 
 func (s *TokenisationStore) DeleteBuyOffer(ctx context.Context, hash string, publicKey string) error {
-	_, err := s.DB.Exec("DELETE FROM buy_offers WHERE hash = $1 AND public_key = $2", hash, publicKey)
+	_, err := s.DB.ExecContext(ctx, "DELETE FROM buy_offers WHERE hash = $1 AND public_key = $2", hash, publicKey)
 	return err
 }
 
@@ -50,9 +50,9 @@ func (s *TokenisationStore) GetBuyOffersByMintAndSellerAddress(ctx context.Conte
 	log.Println("GetBuyOffersByMintAndSellerAddress", mintHash, sellerAddress)
 
 	if sellerAddress == "" {
-		rows, err = s.DB.Query("SELECT id, created_at, offerer_address, seller_address, hash, mint_hash, quantity, price, public_key, signature FROM buy_offers WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, offerer_address, seller_address, hash, mint_hash, quantity, price, public_key, signature FROM buy_offers WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
 	} else {
-		rows, err = s.DB.Query("SELECT id, created_at, offerer_address, seller_address, hash, mint_hash, quantity, price, public_key, signature FROM buy_offers WHERE mint_hash = $1 AND seller_address = $2 LIMIT $3 OFFSET $4", mintHash, sellerAddress, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, offerer_address, seller_address, hash, mint_hash, quantity, price, public_key, signature FROM buy_offers WHERE mint_hash = $1 AND seller_address = $2 LIMIT $3 OFFSET $4", mintHash, sellerAddress, limit, offset)
 	}
 
 	if err != nil {

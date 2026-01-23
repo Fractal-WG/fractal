@@ -10,7 +10,7 @@ func (s *TokenisationStore) GetChainPosition(ctx context.Context) (int64, string
 	var blockHash string
 	var waitingForNextHash bool
 
-	err := s.DB.QueryRow("SELECT block_height, block_hash, waiting_for_next_hash FROM chain_position").Scan(&blockHeight, &blockHash, &waitingForNextHash)
+	err := s.DB.QueryRowContext(ctx, "SELECT block_height, block_hash, waiting_for_next_hash FROM chain_position").Scan(&blockHeight, &blockHash, &waitingForNextHash)
 	if err == sql.ErrNoRows {
 		return 0, "", false, nil
 	}
@@ -24,7 +24,7 @@ func (s *TokenisationStore) GetChainPosition(ctx context.Context) (int64, string
 
 func (s *TokenisationStore) UpsertChainPosition(ctx context.Context, blockHeight int64, blockHash string, waitingForNextHash bool) error {
 
-	_, err := s.DB.Exec(`
+	_, err := s.DB.ExecContext(ctx, `
 	INSERT INTO chain_position (id, block_height, block_hash, waiting_for_next_hash)
 	VALUES (1, $1, $2, $3)
 	ON CONFLICT (id)

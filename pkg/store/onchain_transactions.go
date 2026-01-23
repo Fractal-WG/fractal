@@ -10,9 +10,9 @@ import (
 
 func getOnChainTransactionsCount(ctx context.Context, s *TokenisationStore) (int, error) {
 	if s.backend == "postgres" {
-		return approximateTableCountPostgres(s.DB, "onchain_transactions")
+		return approximateTableCountPostgres(ctx, s.DB, "onchain_transactions")
 	}
-	rows, err := s.DB.Query("SELECT COUNT(*) FROM onchain_transactions")
+	rows, err := s.DB.QueryContext(ctx, "SELECT COUNT(*) FROM onchain_transactions")
 	if err != nil {
 		return 0, err
 	}
@@ -38,7 +38,7 @@ func (s *TokenisationStore) SaveOnChainTransaction(ctx context.Context, tx_hash 
 	if err != nil {
 		return "", err
 	}
-	_, err = s.DB.Exec(`
+	_, err = s.DB.ExecContext(ctx, `
 	INSERT INTO onchain_transactions (id, tx_hash, block_height, block_hash, transaction_number, action_type, action_version, action_data, address, "values")
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`, id, tx_hash, height, blockHash, transaction_number, action_type, action_version, action_data, address, jsonValues)
@@ -46,7 +46,7 @@ func (s *TokenisationStore) SaveOnChainTransaction(ctx context.Context, tx_hash 
 }
 
 func (s *TokenisationStore) GetOldOnchainTransactions(ctx context.Context, blockHeight int) ([]OnChainTransaction, error) {
-	rows, err := s.DB.Query(`SELECT id, tx_hash, block_height, block_hash, transaction_number, action_type, action_version, action_data, address, "values" FROM onchain_transactions WHERE block_height < $1`, blockHeight)
+	rows, err := s.DB.QueryContext(ctx, `SELECT id, tx_hash, block_height, block_hash, transaction_number, action_type, action_version, action_data, address, "values" FROM onchain_transactions WHERE block_height < $1`, blockHeight)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (s *TokenisationStore) GetOldOnchainTransactions(ctx context.Context, block
 
 func (s *TokenisationStore) TrimOldOnChainTransactions(ctx context.Context, blockHeightToKeep int) error {
 	sqlQuery := fmt.Sprintf("DELETE FROM onchain_transactions WHERE block_height < %d", blockHeightToKeep)
-	_, err := s.DB.Exec(sqlQuery)
+	_, err := s.DB.ExecContext(ctx, sqlQuery)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (s *TokenisationStore) TrimOldOnChainTransactions(ctx context.Context, bloc
 }
 
 func (s *TokenisationStore) RemoveOnChainTransaction(ctx context.Context, id string) error {
-	_, err := s.DB.Exec("DELETE FROM onchain_transactions WHERE id = $1", id)
+	_, err := s.DB.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", id)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func (s *TokenisationStore) RemoveOnChainTransaction(ctx context.Context, id str
 
 func (s *TokenisationStore) CountOnChainTransactions(ctx context.Context, blockHeight int64) (int, error) {
 	var count int
-	err := s.DB.QueryRow("SELECT COUNT(*) FROM onchain_transactions WHERE block_height = $1", blockHeight).Scan(&count)
+	err := s.DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM onchain_transactions WHERE block_height = $1", blockHeight).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -96,7 +96,7 @@ func (s *TokenisationStore) CountOnChainTransactions(ctx context.Context, blockH
 }
 
 func (s *TokenisationStore) GetOnChainTransactions(ctx context.Context, offset int, limit int) ([]OnChainTransaction, error) {
-	rows, err := s.DB.Query(`SELECT id, tx_hash, block_height, block_hash, transaction_number, action_type, action_version, action_data, address, "values" FROM onchain_transactions ORDER BY block_height ASC, transaction_number ASC LIMIT $1 OFFSET $2`, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, `SELECT id, tx_hash, block_height, block_hash, transaction_number, action_type, action_version, action_data, address, "values" FROM onchain_transactions ORDER BY block_height ASC, transaction_number ASC LIMIT $1 OFFSET $2`, limit, offset)
 	if err != nil {
 		return nil, err
 	}

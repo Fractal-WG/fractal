@@ -10,7 +10,7 @@ import (
 
 func (s *TokenisationStore) DebugPrintStore(ctx context.Context) {
 	// Get table names
-	rows, err := s.DB.Query(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`)
+	rows, err := s.DB.QueryContext(ctx, `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func (s *TokenisationStore) DebugPrintStore(ctx context.Context) {
 		fmt.Printf("### TABLE: %s ###\n", table)
 
 		// Query all data
-		dataRows, err := s.DB.Query("SELECT * FROM " + table)
+		dataRows, err := s.DB.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			log.Printf("Failed to query table %s: %v\n", table, err)
 			continue

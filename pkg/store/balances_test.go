@@ -205,7 +205,7 @@ func TestUpsertTokenBalanceWithTransaction(t *testing.T) {
 	db := support.SetupTestDB()
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 	defer tx.Rollback()
 
@@ -240,7 +240,7 @@ func TestMovePendingToTokenBalance(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 
 	// Move pending to token balance
@@ -280,7 +280,7 @@ func TestGetPendingTokenBalanceWithTransaction(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 	defer tx.Rollback()
 
@@ -356,7 +356,7 @@ func TestTransactionRollback(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Begin transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 
 	// Perform operations within transaction

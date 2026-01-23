@@ -11,20 +11,20 @@ import (
 )
 
 func (s *TokenisationStore) ProcessPayment(ctx context.Context, onchainTransaction OnChainTransaction, invoice Invoice) error {
-	tx, err := s.DB.Begin()
+	tx, err := s.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
 	defer tx.Rollback()
 
-	_, err = tx.Exec("UPDATE invoices SET paid_at = $1 WHERE id = $2", time.Now().UTC(), invoice.Id)
+	_, err = tx.ExecContext(ctx, "UPDATE invoices SET paid_at = $1 WHERE id = $2", time.Now().UTC(), invoice.Id)
 	if err != nil {
 		log.Println("Error updating invoice:", err)
 		return err
 	}
 
-	_, err = tx.Exec("DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
+	_, err = tx.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
 	if err != nil {
 		log.Println("Error deleting onchain transaction:", err)
 		return err
@@ -61,7 +61,7 @@ func (s *TokenisationStore) MatchPayment(ctx context.Context, onchainTransaction
 		return Invoice{}, err
 	}
 
-	rows, err := s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address FROM invoices WHERE hash = $1", onchainMessage.Hash)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address FROM invoices WHERE hash = $1", onchainMessage.Hash)
 	if err != nil {
 		log.Println("Error querying invoices:", err)
 		return Invoice{}, err

@@ -131,7 +131,7 @@ func TestMatchPaymentSuccess(t *testing.T) {
 	err = tokenStore.ProcessPayment(ctx, *paymentTx, invoice)
 	assert.NilError(t, err)
 
-	row := tokenStore.DB.QueryRow("SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash)
+	row := tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash)
 	var paidAt sql.NullTime
 	if err := row.Scan(&paidAt); err != nil {
 		fmt.Println(err)
@@ -142,7 +142,7 @@ func TestMatchPaymentSuccess(t *testing.T) {
 
 	// Check payment transaction was deleted
 	var count int
-	err = tokenStore.DB.QueryRow("SELECT COUNT(*) FROM onchain_transactions WHERE id = $1", paymentTx.Id).Scan(&count)
+	err = tokenStore.DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM onchain_transactions WHERE id = $1", paymentTx.Id).Scan(&count)
 	assert.NilError(t, err)
 	assert.Equal(t, 0, count, "Payment transaction should be deleted")
 
@@ -358,7 +358,7 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 	assert.Assert(t, err != nil, "Should fail without pending balance")
 
 	var paidAt sql.NullTime
-	err = tokenStore.DB.QueryRow("SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
+err = tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
 	fmt.Println(paidAt)
 	assert.NilError(t, err)
 	assert.Assert(t, !paidAt.Valid, "Invoice should NOT be paid due to rollback")

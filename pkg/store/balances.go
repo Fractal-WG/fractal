@@ -12,7 +12,7 @@ import (
 func (s *TokenisationStore) UpsertTokenBalance(ctx context.Context, address, mintHash string, quantity int) error {
 	log.Println("Upserting token balance:", address, mintHash, quantity)
 
-	_, err := s.DB.Exec(`
+	_, err := s.DB.ExecContext(ctx, `
 	INSERT INTO token_balances (address, mint_hash, quantity, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	`, address, mintHash, quantity, time.Now(), time.Now())
@@ -40,16 +40,16 @@ func (s *TokenisationStore) UpsertPendingTokenBalanceWithTx(ctx context.Context,
 
 	var err error
 	if tx != nil {
-		_, err = tx.Exec(query, invoiceHash, mintHash, quantity, onchainTransactionId, time.Now(), ownerAddress)
+		_, err = tx.ExecContext(ctx, query, invoiceHash, mintHash, quantity, onchainTransactionId, time.Now(), ownerAddress)
 	} else {
-		_, err = s.DB.Exec(query, invoiceHash, mintHash, quantity, onchainTransactionId, time.Now(), ownerAddress)
+		_, err = s.DB.ExecContext(ctx, query, invoiceHash, mintHash, quantity, onchainTransactionId, time.Now(), ownerAddress)
 	}
 
 	return err
 }
 
 func (s *TokenisationStore) HasPendingTokenBalance(ctx context.Context, invoiceHash, mintHash string, onChainTransactionId string) (bool, error) {
-	rows, err := s.DB.Query(`
+	rows, err := s.DB.QueryContext(ctx, `
 		SELECT COUNT(*) FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2 AND onchain_transaction_id = $3
 	`, invoiceHash, mintHash, onChainTransactionId)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *TokenisationStore) HasPendingTokenBalance(ctx context.Context, invoiceH
 }
 
 func (s *TokenisationStore) RemovePendingTokenBalance(ctx context.Context, invoiceHash, mintHash string) error {
-	_, err := s.DB.Exec(`
+	_, err := s.DB.ExecContext(ctx, `
 		DELETE FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2
 	`, invoiceHash, mintHash)
 	return err
@@ -82,11 +82,11 @@ func (s *TokenisationStore) GetPendingTokenBalance(ctx context.Context, invoiceH
 	var err error
 
 	if tx == nil {
-		rows, err = s.DB.Query(`
+		rows, err = s.DB.QueryContext(ctx, `
 		SELECT quantity, invoice_hash, mint_hash, owner_address FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2
 	`, invoiceHash, mintHash)
 	} else {
-		rows, err = tx.Query(`
+		rows, err = tx.QueryContext(ctx, `
 			SELECT quantity, invoice_hash, mint_hash, owner_address FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2
 		`, invoiceHash, mintHash)
 	}
@@ -117,11 +117,11 @@ func (s *TokenisationStore) GetPendingTokenBalanceForQuantity(ctx context.Contex
 	fmt.Println("Getting token balance", invoiceHash, mintHash, quantity)
 
 	if tx == nil {
-		rows, err = s.DB.Query(`
+		rows, err = s.DB.QueryContext(ctx, `
 		SELECT quantity, invoice_hash, mint_hash, owner_address FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2 and quantity = $3
 	`, invoiceHash, mintHash, quantity)
 	} else {
-		rows, err = tx.Query(`
+		rows, err = tx.QueryContext(ctx, `
 			SELECT quantity, invoice_hash, mint_hash, owner_address FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2 and quantity = $3
 		`, invoiceHash, mintHash, quantity)
 	}
@@ -146,7 +146,7 @@ func (s *TokenisationStore) GetPendingTokenBalanceForQuantity(ctx context.Contex
 }
 
 func (s *TokenisationStore) GetPendingTokenBalanceTotalForMintAndOwner(ctx context.Context, mintHash string, ownerAddress string) (int, error) {
-	rows, err := s.DB.Query(`
+	rows, err := s.DB.QueryContext(ctx, `
 		SELECT COALESCE(SUM(quantity), 0) FROM pending_token_balances WHERE mint_hash = $1 AND owner_address = $2
 	`, mintHash, ownerAddress)
 	if err != nil {
@@ -167,7 +167,7 @@ func (s *TokenisationStore) GetPendingTokenBalanceTotalForMintAndOwner(ctx conte
 }
 
 func (s *TokenisationStore) GetMyMintTokenBalances(ctx context.Context, address string, offset int, limit int) ([]TokenBalanceWithMint, error) {
-	rows, err := s.DB.Query(`
+	rows, err := s.DB.QueryContext(ctx, `
 		SELECT
   m.id,
   m.created_at,
@@ -241,7 +241,7 @@ LIMIT $2 OFFSET $3
 }
 
 func (s *TokenisationStore) GetTokenBalances(ctx context.Context, address string, mintHash string) ([]TokenBalance, error) {
-	rows, err := s.DB.Query(`
+	rows, err := s.DB.QueryContext(ctx, `
 		SELECT quantity FROM token_balances WHERE address = $1 AND mint_hash = $2
 	`, address, mintHash)
 
@@ -273,7 +273,7 @@ func (s *TokenisationStore) GetTokenBalances(ctx context.Context, address string
 func (s *TokenisationStore) GetPendingTokenBalances(ctx context.Context, address string, mintHash string) ([]TokenBalance, error) {
 	log.Println("Getting token balance: ADDRESS", address, "MINT HASH", mintHash)
 
-	rows, err := s.DB.Query(`
+	rows, err := s.DB.QueryContext(ctx, `
 		SELECT quantity FROM pending_token_balances WHERE owner_address = $1 AND mint_hash = $2
 	`, address, mintHash)
 
@@ -305,7 +305,7 @@ func (s *TokenisationStore) GetPendingTokenBalances(ctx context.Context, address
 func (s *TokenisationStore) UpsertTokenBalanceWithTransaction(ctx context.Context, address, mintHash string, quantity int, tx *sql.Tx) error {
 	log.Println("Upserting token balance with transaction:", address, mintHash, quantity)
 
-	_, err := tx.Exec(`
+	_, err := tx.ExecContext(ctx, `
 	INSERT INTO token_balances (address, mint_hash, quantity, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	`, address, mintHash, quantity, time.Now(), time.Now())
@@ -314,7 +314,7 @@ func (s *TokenisationStore) UpsertTokenBalanceWithTransaction(ctx context.Contex
 }
 
 func (s *TokenisationStore) MovePendingToTokenBalance(ctx context.Context, pendingTokenBalance PendingTokenBalance, buyerAddress string, tx *sql.Tx) error {
-	_, err := tx.Exec(`
+	_, err := tx.ExecContext(ctx, `
 	INSERT INTO token_balances (address, mint_hash, quantity, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	`, buyerAddress, pendingTokenBalance.MintHash, pendingTokenBalance.Quantity, time.Now(), time.Now())
@@ -328,7 +328,7 @@ func (s *TokenisationStore) MovePendingToTokenBalance(ctx context.Context, pendi
 		return err
 	}
 
-	_, err = tx.Exec(`
+	_, err = tx.ExecContext(ctx, `
 	DELETE FROM pending_token_balances WHERE invoice_hash = $1 AND mint_hash = $2
 	`, pendingTokenBalance.InvoiceHash, pendingTokenBalance.MintHash)
 	if err != nil {
