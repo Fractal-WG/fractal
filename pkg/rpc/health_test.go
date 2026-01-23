@@ -1,7 +1,6 @@
 package rpc_test
 
 import (
-	"context"
 	"testing"
 
 	connect "connectrpc.com/connect"
@@ -12,12 +11,12 @@ import (
 func TestGetHealth(t *testing.T) {
 	tokenisationStore, _, feClient := SetupRpcTest(t)
 
-	_, err := feClient.GetHealth(context.Background(), connect.NewRequest(&protocol.GetHealthRequest{}))
+	_, err := feClient.GetHealth(t.Context(), connect.NewRequest(&protocol.GetHealthRequest{}))
 	assert.Equal(t, connect.CodeOf(err), connect.CodeNotFound)
 
 	tokenisationStore.UpsertHealth(100, 200, "test", true)
 
-	healthResponse, err := feClient.GetHealth(context.Background(), connect.NewRequest(&protocol.GetHealthRequest{}))
+	healthResponse, err := feClient.GetHealth(t.Context(), connect.NewRequest(&protocol.GetHealthRequest{}))
 	assert.NilError(t, err)
 	assert.Equal(t, healthResponse.Msg.GetCurrentBlockHeight(), int32(100))
 	assert.Equal(t, healthResponse.Msg.GetLatestBlockHeight(), int32(200))

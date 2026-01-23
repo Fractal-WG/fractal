@@ -8,7 +8,7 @@ lint:
   except:
     - PACKAGE_DIRECTORY_MATCH
 deps:
-  - buf.build/bufbuild/protovalidate
+  - buf.build/bufbuild/protovalidate:v1.1.0
 
 breaking:
   use:

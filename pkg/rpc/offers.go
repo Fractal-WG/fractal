@@ -61,10 +61,10 @@ func (s *ConnectRpcService) GetSellOffers(_ context.Context, req *connect.Reques
 	}
 
 	resp := &protocol.GetSellOffersResponse{}
-	resp.Offers = offersWithMints[start:end]
-	resp.Total = int32(len(offers))
-	resp.Page = page
-	resp.Limit = limit
+	resp.SetOffers(offersWithMints[start:end])
+	resp.SetTotal(int32(len(offers)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
 	return connect.NewResponse(resp), nil
 }
 
@@ -116,8 +116,8 @@ func (s *ConnectRpcService) CreateSellOffer(_ context.Context, req *connect.Requ
 	}
 
 	resp := &protocol.CreateSellOfferResponse{}
-	resp.Id = id
-	resp.Hash = &protocol.Hash{Value: &newOfferWithoutId.Hash}
+	resp.SetId(id)
+	resp.SetHash(toProtoHash(newOfferWithoutId.Hash))
 	return connect.NewResponse(resp), nil
 }
 
@@ -140,7 +140,7 @@ func (s *ConnectRpcService) DeleteSellOffer(_ context.Context, req *connect.Requ
 	}
 
 	resp := &protocol.DeleteSellOfferResponse{}
-	resp.Value = "Sell offer deleted"
+	resp.SetValue("Sell offer deleted")
 	return connect.NewResponse(resp), nil
 }
 
@@ -195,10 +195,10 @@ func (s *ConnectRpcService) GetBuyOffers(_ context.Context, req *connect.Request
 	}
 
 	resp := &protocol.GetBuyOffersResponse{}
-	resp.Offers = offersWithMints[start:end]
-	resp.Total = int32(len(offers))
-	resp.Page = page
-	resp.Limit = limit
+	resp.SetOffers(offersWithMints[start:end])
+	resp.SetTotal(int32(len(offers)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
 	return connect.NewResponse(resp), nil
 }
 
@@ -250,8 +250,8 @@ func (s *ConnectRpcService) CreateBuyOffer(_ context.Context, req *connect.Reque
 	}
 
 	resp := &protocol.CreateBuyOfferResponse{}
-	resp.Id = id
-	resp.Hash = &protocol.Hash{Value: &newOfferWithoutId.Hash}
+	resp.SetId(id)
+	resp.SetHash(toProtoHash(newOfferWithoutId.Hash))
 	return connect.NewResponse(resp), nil
 }
 
@@ -274,6 +274,6 @@ func (s *ConnectRpcService) DeleteBuyOffer(_ context.Context, req *connect.Reque
 	}
 
 	resp := &protocol.DeleteBuyOfferResponse{}
-	resp.Value = "Buy offer deleted"
+	resp.SetValue("Buy offer deleted")
 	return connect.NewResponse(resp), nil
 }

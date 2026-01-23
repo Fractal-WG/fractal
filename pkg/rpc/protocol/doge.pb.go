@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,10 +22,10 @@ const (
 )
 
 type DogeTopUpRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address *Address               `protobuf:"bytes,1,opt,name=address"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *DogeTopUpRequest) Reset() {
@@ -54,23 +53,49 @@ func (x *DogeTopUpRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeTopUpRequest.ProtoReflect.Descriptor instead.
-func (*DogeTopUpRequest) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *DogeTopUpRequest) GetAddress() *Address {
 	if x != nil {
-		return x.Address
+		return x.xxx_hidden_Address
 	}
 	return nil
 }
 
+func (x *DogeTopUpRequest) SetAddress(v *Address) {
+	x.xxx_hidden_Address = v
+}
+
+func (x *DogeTopUpRequest) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Address != nil
+}
+
+func (x *DogeTopUpRequest) ClearAddress() {
+	x.xxx_hidden_Address = nil
+}
+
+type DogeTopUpRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Address *Address
+}
+
+func (b0 DogeTopUpRequest_builder) Build() *DogeTopUpRequest {
+	m0 := &DogeTopUpRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Address = b.Address
+	return m0
+}
+
 type DogeTopUpResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Value       *string                `protobuf:"bytes,1,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *DogeTopUpResponse) Reset() {
@@ -98,20 +123,52 @@ func (x *DogeTopUpResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeTopUpResponse.ProtoReflect.Descriptor instead.
-func (*DogeTopUpResponse) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *DogeTopUpResponse) GetValue() string {
 	if x != nil {
-		return x.Value
+		if x.xxx_hidden_Value != nil {
+			return *x.xxx_hidden_Value
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *DogeTopUpResponse) SetValue(v string) {
+	x.xxx_hidden_Value = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *DogeTopUpResponse) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DogeTopUpResponse) ClearValue() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Value = nil
+}
+
+type DogeTopUpResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Value *string
+}
+
+func (b0 DogeTopUpResponse_builder) Build() *DogeTopUpResponse {
+	m0 := &DogeTopUpResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Value != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Value = b.Value
+	}
+	return m0
+}
+
 type DogeConfirmRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -141,16 +198,23 @@ func (x *DogeConfirmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeConfirmRequest.ProtoReflect.Descriptor instead.
-func (*DogeConfirmRequest) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{2}
+type DogeConfirmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 DogeConfirmRequest_builder) Build() *DogeConfirmRequest {
+	m0 := &DogeConfirmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
 }
 
 type DogeConfirmResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Values        map[string]string      `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Values map[string]string      `protobuf:"bytes,1,rep,name=values" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *DogeConfirmResponse) Reset() {
@@ -178,23 +242,38 @@ func (x *DogeConfirmResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeConfirmResponse.ProtoReflect.Descriptor instead.
-func (*DogeConfirmResponse) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *DogeConfirmResponse) GetValues() map[string]string {
 	if x != nil {
-		return x.Values
+		return x.xxx_hidden_Values
 	}
 	return nil
 }
 
+func (x *DogeConfirmResponse) SetValues(v map[string]string) {
+	x.xxx_hidden_Values = v
+}
+
+type DogeConfirmResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Values map[string]string
+}
+
+func (b0 DogeConfirmResponse_builder) Build() *DogeConfirmResponse {
+	m0 := &DogeConfirmResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Values = b.Values
+	return m0
+}
+
 type DogeSendRequest struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	EncodedTransactionHex string                 `protobuf:"bytes,1,opt,name=encoded_transaction_hex,json=encodedTransactionHex,proto3" json:"encoded_transaction_hex,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_EncodedTransactionHex *string                `protobuf:"bytes,1,opt,name=encoded_transaction_hex,json=encodedTransactionHex"`
+	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
+	XXX_presence                     [1]uint32
+	unknownFields                    protoimpl.UnknownFields
+	sizeCache                        protoimpl.SizeCache
 }
 
 func (x *DogeSendRequest) Reset() {
@@ -222,23 +301,57 @@ func (x *DogeSendRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeSendRequest.ProtoReflect.Descriptor instead.
-func (*DogeSendRequest) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *DogeSendRequest) GetEncodedTransactionHex() string {
 	if x != nil {
-		return x.EncodedTransactionHex
+		if x.xxx_hidden_EncodedTransactionHex != nil {
+			return *x.xxx_hidden_EncodedTransactionHex
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *DogeSendRequest) SetEncodedTransactionHex(v string) {
+	x.xxx_hidden_EncodedTransactionHex = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *DogeSendRequest) HasEncodedTransactionHex() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DogeSendRequest) ClearEncodedTransactionHex() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_EncodedTransactionHex = nil
+}
+
+type DogeSendRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	EncodedTransactionHex *string
+}
+
+func (b0 DogeSendRequest_builder) Build() *DogeSendRequest {
+	m0 := &DogeSendRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.EncodedTransactionHex != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_EncodedTransactionHex = b.EncodedTransactionHex
+	}
+	return m0
+}
+
 type DogeSendResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TransactionId string                 `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_TransactionId *string                `protobuf:"bytes,1,opt,name=transaction_id,json=transactionId"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *DogeSendResponse) Reset() {
@@ -266,16 +379,48 @@ func (x *DogeSendResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DogeSendResponse.ProtoReflect.Descriptor instead.
-func (*DogeSendResponse) Descriptor() ([]byte, []int) {
-	return file_doge_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *DogeSendResponse) GetTransactionId() string {
 	if x != nil {
-		return x.TransactionId
+		if x.xxx_hidden_TransactionId != nil {
+			return *x.xxx_hidden_TransactionId
+		}
+		return ""
 	}
 	return ""
+}
+
+func (x *DogeSendResponse) SetTransactionId(v string) {
+	x.xxx_hidden_TransactionId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *DogeSendResponse) HasTransactionId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DogeSendResponse) ClearTransactionId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_TransactionId = nil
+}
+
+type DogeSendResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	TransactionId *string
+}
+
+func (b0 DogeSendResponse_builder) Build() *DogeSendResponse {
+	m0 := &DogeSendResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.TransactionId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_TransactionId = b.TransactionId
+	}
+	return m0
 }
 
 var File_doge_proto protoreflect.FileDescriptor
@@ -297,19 +442,7 @@ const file_doge_proto_rawDesc = "" +
 	"\x0fDogeSendRequest\x126\n" +
 	"\x17encoded_transaction_hex\x18\x01 \x01(\tR\x15encodedTransactionHex\"9\n" +
 	"\x10DogeSendResponse\x12%\n" +
-	"\x0etransaction_id\x18\x01 \x01(\tR\rtransactionIdB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
-
-var (
-	file_doge_proto_rawDescOnce sync.Once
-	file_doge_proto_rawDescData []byte
-)
-
-func file_doge_proto_rawDescGZIP() []byte {
-	file_doge_proto_rawDescOnce.Do(func() {
-		file_doge_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_doge_proto_rawDesc), len(file_doge_proto_rawDesc)))
-	})
-	return file_doge_proto_rawDescData
-}
+	"\x0etransaction_id\x18\x01 \x01(\tR\rtransactionIdB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_doge_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_doge_proto_goTypes = []any{

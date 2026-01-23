@@ -14,8 +14,8 @@ func (s *ConnectRpcService) CreateNewPayment(_ context.Context, req *connect.Req
 	encodedTransactionBody := envelope.Serialize()
 
 	resp := &protocol.CreateNewPaymentResponse{}
-	resp.Values = map[string]string{
+	resp.SetValues(map[string]string{
 		"encoded_transaction_body": hex.EncodeToString(encodedTransactionBody),
-	}
+	})
 	return connect.NewResponse(resp), nil
 }

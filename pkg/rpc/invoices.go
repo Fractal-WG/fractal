@@ -79,10 +79,9 @@ func (s *ConnectRpcService) GetInvoices(_ context.Context, req *connect.Request[
 	}
 
 	resp := &protocol.GetInvoicesResponse{}
-	resp.Invoices = responseInvoices
-	resp.Total = int32(len(invoices))
-	resp.Page = page
-	resp.Limit = limit
+	resp.SetInvoices(responseInvoices)
+	resp.SetTotal(int32(len(invoices)))
+	resp.SetLimit(limit)
 	return connect.NewResponse(resp), nil
 }
 
@@ -124,10 +123,10 @@ func (s *ConnectRpcService) GetAllInvoices(_ context.Context, req *connect.Reque
 	}
 
 	resp := &protocol.GetAllInvoicesResponse{}
-	resp.Invoices = responseInvoices
-	resp.Total = int32(len(invoices))
-	resp.Page = page
-	resp.Limit = limit
+	resp.SetInvoices(responseInvoices)
+	resp.SetTotal(int32(len(invoices)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
 	return connect.NewResponse(resp), nil
 }
 
@@ -193,8 +192,8 @@ func (s *ConnectRpcService) CreateInvoice(_ context.Context, req *connect.Reques
 	encodedTransactionBody := envelope.Serialize()
 
 	resp := &protocol.CreateInvoiceResponse{}
-	resp.Hash = &protocol.Hash{Value: &newInvoiceWithoutId.Hash}
-	resp.EncodedTransactionBody = hex.EncodeToString(encodedTransactionBody)
+	resp.SetHash(toProtoHash(newInvoiceWithoutId.Hash))
+	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
 	return connect.NewResponse(resp), nil
 }
 
@@ -235,6 +234,6 @@ func (s *ConnectRpcService) CreateInvoiceSignature(_ context.Context, req *conne
 	}
 
 	resp := &protocol.CreateInvoiceSignatureResponse{}
-	resp.Id = id
+	resp.SetId(id)
 	return connect.NewResponse(resp), nil
 }

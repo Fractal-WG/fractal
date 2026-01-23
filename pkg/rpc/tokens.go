@@ -30,7 +30,7 @@ func (s *ConnectRpcService) GetPendingTokenBalances(_ context.Context, req *conn
 	}
 
 	resp := &protocol.GetPendingTokenBalancesResponse{}
-	resp.Balances = responseBalances
+	resp.SetBalances(responseBalances)
 	return connect.NewResponse(resp), nil
 }
 
@@ -90,7 +90,7 @@ func (s *ConnectRpcService) GetTokenBalances(_ context.Context, req *connect.Req
 		}
 
 		resp := &protocol.GetTokenBalancesResponse{}
-		resp.Data = data
+		resp.SetData(data)
 		return connect.NewResponse(resp), nil
 	}
 
@@ -105,6 +105,6 @@ func (s *ConnectRpcService) GetTokenBalances(_ context.Context, req *connect.Req
 	}
 
 	resp := &protocol.GetTokenBalancesResponse{}
-	resp.Data = data
+	resp.SetData(data)
 	return connect.NewResponse(resp), nil
 }

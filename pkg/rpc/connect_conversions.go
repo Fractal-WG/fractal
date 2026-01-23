@@ -194,9 +194,9 @@ func toProtoAssetManagers(assetManagers []store.AssetManager) []*protocol.AssetM
 	result := make([]*protocol.AssetManager, 0, len(assetManagers))
 	for _, assetManager := range assetManagers {
 		protoManager := &protocol.AssetManager{}
-		protoManager.Name = assetManager.Name
-		protoManager.PublicKey = assetManager.PublicKey
-		protoManager.Url = assetManager.URL
+		protoManager.SetName(assetManager.Name)
+		protoManager.SetPublicKey(assetManager.PublicKey)
+		protoManager.SetUrl(assetManager.URL)
 		result = append(result, protoManager)
 	}
 
@@ -222,8 +222,20 @@ func toProtoStringInterfaceMap(value store.StringInterfaceMap) (*protocol.String
 	}
 
 	protoValue := &protocol.StringInterfaceMap{}
-	protoValue.Value = payload
+	protoValue.SetValue(payload)
 	return protoValue, nil
+}
+
+func toProtoAddress(value string) *protocol.Address {
+	address := &protocol.Address{}
+	address.SetValue(value)
+	return address
+}
+
+func toProtoHash(value string) *protocol.Hash {
+	hash := &protocol.Hash{}
+	hash.SetValue(value)
+	return hash
 }
 
 func toProtoMint(mint store.Mint) (*protocol.Mint, error) {
@@ -243,26 +255,26 @@ func toProtoMint(mint store.Mint) (*protocol.Mint, error) {
 	}
 
 	protoMint := &protocol.Mint{}
-	protoMint.AssetManagers = toProtoAssetManagers(mint.AssetManagers)
-	protoMint.BlockHeight = int32(mint.BlockHeight)
-	protoMint.ContractOfSale = mint.ContractOfSale
-	protoMint.CreatedAt = mint.CreatedAt.Format(time.RFC3339Nano)
-	protoMint.Description = mint.Description
-	protoMint.FeedUrl = mint.FeedURL
-	protoMint.FractionCount = int32(mint.FractionCount)
-	protoMint.Hash = &protocol.Hash{Value: &mint.Hash}
-	protoMint.Id = mint.Id
-	protoMint.LockupOptions = lockupOptions
-	protoMint.Metadata = metadata
-	protoMint.MinSignatures = int32(mint.MinSignatures)
-	protoMint.OwnerAddress = &protocol.Address{Value: &mint.OwnerAddress}
-	protoMint.PublicKey = mint.PublicKey
-	protoMint.Requirements = requirements
-	protoMint.Signature = mint.Signature
-	protoMint.SignatureRequirementType = toProtoSignatureRequirementType(mint.SignatureRequirementType)
-	protoMint.Tags = []string(mint.Tags)
-	protoMint.Title = mint.Title
-	protoMint.TransactionHash = &protocol.Hash{Value: &mint.TransactionHash}
+	protoMint.SetAssetManagers(toProtoAssetManagers(mint.AssetManagers))
+	protoMint.SetBlockHeight(int32(mint.BlockHeight))
+	protoMint.SetContractOfSale(mint.ContractOfSale)
+	protoMint.SetCreatedAt(mint.CreatedAt.Format(time.RFC3339Nano))
+	protoMint.SetDescription(mint.Description)
+	protoMint.SetFeedUrl(mint.FeedURL)
+	protoMint.SetFractionCount(int32(mint.FractionCount))
+	protoMint.SetHash(toProtoHash(mint.Hash))
+	protoMint.SetId(mint.Id)
+	protoMint.SetLockupOptions(lockupOptions)
+	protoMint.SetMetadata(metadata)
+	protoMint.SetMinSignatures(int32(mint.MinSignatures))
+	protoMint.SetOwnerAddress(toProtoAddress(mint.OwnerAddress))
+	protoMint.SetPublicKey(mint.PublicKey)
+	protoMint.SetRequirements(requirements)
+	protoMint.SetSignature(mint.Signature)
+	protoMint.SetSignatureRequirementType(toProtoSignatureRequirementType(mint.SignatureRequirementType))
+	protoMint.SetTags([]string(mint.Tags))
+	protoMint.SetTitle(mint.Title)
+	protoMint.SetTransactionHash(toProtoHash(mint.TransactionHash))
 
 	return protoMint, nil
 }
@@ -281,28 +293,28 @@ func toProtoMints(mints []store.Mint) ([]*protocol.Mint, error) {
 
 func toProtoInvoice(invoice store.Invoice) *protocol.Invoice {
 	paidAt := &protocol.SqlNullTime{}
-	paidAt.Time = ""
-	paidAt.Valid = invoice.PaidAt.Valid
+	paidAt.SetTime("")
+	paidAt.SetValid(invoice.PaidAt.Valid)
 	if invoice.PaidAt.Valid {
-		paidAt.Time = invoice.PaidAt.Time.Format(time.RFC3339Nano)
+		paidAt.SetTime(invoice.PaidAt.Time.Format(time.RFC3339Nano))
 	}
 
 	protoInvoice := &protocol.Invoice{}
-	protoInvoice.BlockHeight = int32(invoice.BlockHeight)
-	protoInvoice.BuyerAddress = &protocol.Address{Value: &invoice.BuyerAddress}
-	protoInvoice.CreatedAt = invoice.CreatedAt.Format(time.RFC3339Nano)
-	protoInvoice.Hash = &protocol.Hash{Value: &invoice.Hash}
-	protoInvoice.Id = invoice.Id
-	protoInvoice.MintHash = &protocol.Hash{Value: &invoice.MintHash}
-	protoInvoice.PaidAt = paidAt
-	protoInvoice.PaymentAddress = &protocol.Address{Value: &invoice.PaymentAddress}
-	protoInvoice.PendingTokenBalanceId = invoice.PendingTokenBalanceId
-	protoInvoice.Price = int32(invoice.Price)
-	protoInvoice.PublicKey = invoice.PublicKey
-	protoInvoice.Quantity = int32(invoice.Quantity)
-	protoInvoice.SellerAddress = &protocol.Address{Value: &invoice.SellerAddress}
-	protoInvoice.Signature = invoice.Signature
-	protoInvoice.TransactionHash = &protocol.Hash{Value: &invoice.TransactionHash}
+	protoInvoice.SetBlockHeight(int32(invoice.BlockHeight))
+	protoInvoice.SetBuyerAddress(toProtoAddress(invoice.BuyerAddress))
+	protoInvoice.SetCreatedAt(invoice.CreatedAt.Format(time.RFC3339Nano))
+	protoInvoice.SetHash(toProtoHash(invoice.Hash))
+	protoInvoice.SetId(invoice.Id)
+	protoInvoice.SetMintHash(toProtoHash(invoice.MintHash))
+	protoInvoice.SetPaidAt(paidAt)
+	protoInvoice.SetPaymentAddress(toProtoAddress(invoice.PaymentAddress))
+	protoInvoice.SetPendingTokenBalanceId(invoice.PendingTokenBalanceId)
+	protoInvoice.SetPrice(int32(invoice.Price))
+	protoInvoice.SetPublicKey(invoice.PublicKey)
+	protoInvoice.SetQuantity(int32(invoice.Quantity))
+	protoInvoice.SetSellerAddress(toProtoAddress(invoice.SellerAddress))
+	protoInvoice.SetSignature(invoice.Signature)
+	protoInvoice.SetTransactionHash(toProtoHash(invoice.TransactionHash))
 	return protoInvoice
 }
 
@@ -325,11 +337,11 @@ func toProtoTokenBalance(balance store.TokenBalance) *protocol.TokenBalance {
 	}
 
 	protoBalance := &protocol.TokenBalance{}
-	protoBalance.Address = &protocol.Address{Value: &balance.Address}
-	protoBalance.CreatedAt = createdAt
-	protoBalance.MintHash = &protocol.Hash{Value: &balance.MintHash}
-	protoBalance.Quantity = int32(balance.Quantity)
-	protoBalance.UpdatedAt = updatedAt
+	protoBalance.SetAddress(toProtoAddress(balance.Address))
+	protoBalance.SetCreatedAt(createdAt)
+	protoBalance.SetMintHash(toProtoHash(balance.MintHash))
+	protoBalance.SetQuantity(int32(balance.Quantity))
+	protoBalance.SetUpdatedAt(updatedAt)
 	return protoBalance
 }
 
@@ -340,16 +352,16 @@ func toProtoBuyOffer(offer store.BuyOffer) *protocol.BuyOffer {
 	}
 
 	protoOffer := &protocol.BuyOffer{}
-	protoOffer.Hash = &protocol.Hash{Value: &offer.Hash}
-	protoOffer.MintHash = &protocol.Hash{Value: &offer.MintHash}
-	protoOffer.OffererAddress = &protocol.Address{Value: &offer.OffererAddress}
-	protoOffer.SellerAddress = &protocol.Address{Value: &offer.SellerAddress}
-	protoOffer.Quantity = int32(offer.Quantity)
-	protoOffer.Price = int32(offer.Price)
-	protoOffer.CreatedAt = createdAt
-	protoOffer.PublicKey = offer.PublicKey
-	protoOffer.Signature = offer.Signature
-	protoOffer.Id = offer.Id
+	protoOffer.SetHash(toProtoHash(offer.Hash))
+	protoOffer.SetMintHash(toProtoHash(offer.MintHash))
+	protoOffer.SetOffererAddress(toProtoAddress(offer.OffererAddress))
+	protoOffer.SetSellerAddress(toProtoAddress(offer.SellerAddress))
+	protoOffer.SetQuantity(int32(offer.Quantity))
+	protoOffer.SetPrice(int32(offer.Price))
+	protoOffer.SetCreatedAt(createdAt)
+	protoOffer.SetPublicKey(offer.PublicKey)
+	protoOffer.SetSignature(offer.Signature)
+	protoOffer.SetId(offer.Id)
 	return protoOffer
 }
 
@@ -360,15 +372,15 @@ func toProtoSellOffer(offer store.SellOffer) *protocol.SellOffer {
 	}
 
 	protoOffer := &protocol.SellOffer{}
-	protoOffer.Hash = &protocol.Hash{Value: &offer.Hash}
-	protoOffer.MintHash = &protocol.Hash{Value: &offer.MintHash}
-	protoOffer.OffererAddress = &protocol.Address{Value: &offer.OffererAddress}
-	protoOffer.Quantity = int32(offer.Quantity)
-	protoOffer.Price = int32(offer.Price)
-	protoOffer.CreatedAt = createdAt
-	protoOffer.PublicKey = offer.PublicKey
-	protoOffer.Signature = offer.Signature
-	protoOffer.Id = offer.Id
+	protoOffer.SetHash(toProtoHash(offer.Hash))
+	protoOffer.SetMintHash(toProtoHash(offer.MintHash))
+	protoOffer.SetOffererAddress(toProtoAddress(offer.OffererAddress))
+	protoOffer.SetQuantity(int32(offer.Quantity))
+	protoOffer.SetPrice(int32(offer.Price))
+	protoOffer.SetCreatedAt(createdAt)
+	protoOffer.SetPublicKey(offer.PublicKey)
+	protoOffer.SetSignature(offer.Signature)
+	protoOffer.SetId(offer.Id)
 	return protoOffer
 }
 
@@ -379,8 +391,8 @@ func toProtoBuyOfferWithMint(offer store.BuyOffer, mint store.Mint) (*protocol.B
 	}
 
 	protoOffer := &protocol.BuyOfferWithMint{}
-	protoOffer.Offer = toProtoBuyOffer(offer)
-	protoOffer.Mint = protoMint
+	protoOffer.SetOffer(toProtoBuyOffer(offer))
+	protoOffer.SetMint(protoMint)
 	return protoOffer, nil
 }
 
@@ -391,8 +403,8 @@ func toProtoSellOfferWithMint(offer store.SellOffer, mint store.Mint) (*protocol
 	}
 
 	protoOffer := &protocol.SellOfferWithMint{}
-	protoOffer.Offer = toProtoSellOffer(offer)
-	protoOffer.Mint = protoMint
+	protoOffer.SetOffer(toProtoSellOffer(offer))
+	protoOffer.SetMint(protoMint)
 	return protoOffer, nil
 }
 

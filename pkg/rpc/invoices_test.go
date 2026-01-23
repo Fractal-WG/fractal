@@ -45,18 +45,27 @@ func TestInvoices(t *testing.T) {
 	signature, err := doge.SignPayload(invoicePayload, privHex, pubHex)
 	assert.NilError(t, err)
 
+	paymentAddressProto := &protocol.Address{}
+	paymentAddressProto.SetValue(paymentAddress)
+	buyerAddressProto := &protocol.Address{}
+	buyerAddressProto.SetValue(buyerAddress)
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+	sellerAddressProto := &protocol.Address{}
+	sellerAddressProto.SetValue(sellOfferAddress)
+
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
-	protoPayload.PaymentAddress = &protocol.Address{Value: &paymentAddress}
-	protoPayload.BuyerAddress = &protocol.Address{Value: &buyerAddress}
-	protoPayload.MintHash = &protocol.Hash{Value: &mintHash}
-	protoPayload.Quantity = 10
-	protoPayload.Price = 100
-	protoPayload.SellerAddress = &protocol.Address{Value: &sellOfferAddress}
+	protoPayload.SetPaymentAddress(paymentAddressProto)
+	protoPayload.SetBuyerAddress(buyerAddressProto)
+	protoPayload.SetMintHash(mintHashProto)
+	protoPayload.SetQuantity(10)
+	protoPayload.SetPrice(100)
+	protoPayload.SetSellerAddress(sellerAddressProto)
 
 	invoice := &protocol.CreateInvoiceRequest{}
-	invoice.Payload = protoPayload
-	invoice.PublicKey = pubHex
-	invoice.Signature = signature
+	invoice.SetPayload(protoPayload)
+	invoice.SetPublicKey(pubHex)
+	invoice.SetSignature(signature)
 
 	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(invoice))
 	if err != nil {
@@ -140,18 +149,27 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	signature, err := doge.SignPayload(invoice.Payload, privHex, pubHex)
 	assert.NilError(t, err)
 
+	paymentAddressProto := &protocol.Address{}
+	paymentAddressProto.SetValue(paymentAddress)
+	buyerAddressProto := &protocol.Address{}
+	buyerAddressProto.SetValue(buyerAddress)
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(confirmedMint.Hash)
+	sellerAddressProto := &protocol.Address{}
+	sellerAddressProto.SetValue(sellOfferAddress)
+
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
-	protoPayload.PaymentAddress = &protocol.Address{Value: &paymentAddress}
-	protoPayload.BuyerAddress = &protocol.Address{Value: &buyerAddress}
-	protoPayload.MintHash = &protocol.Hash{Value: &confirmedMint.Hash}
-	protoPayload.Quantity = 10
-	protoPayload.Price = 100
-	protoPayload.SellerAddress = &protocol.Address{Value: &sellOfferAddress}
+	protoPayload.SetPaymentAddress(paymentAddressProto)
+	protoPayload.SetBuyerAddress(buyerAddressProto)
+	protoPayload.SetMintHash(mintHashProto)
+	protoPayload.SetQuantity(10)
+	protoPayload.SetPrice(100)
+	protoPayload.SetSellerAddress(sellerAddressProto)
 
 	protoInvoice := &protocol.CreateInvoiceRequest{}
-	protoInvoice.Payload = protoPayload
-	protoInvoice.PublicKey = pubHex
-	protoInvoice.Signature = signature
+	protoInvoice.SetPayload(protoPayload)
+	protoInvoice.SetPublicKey(pubHex)
+	protoInvoice.SetSignature(signature)
 
 	invoiceResponse, err := feClient.CreateInvoice(context.Background(), connect.NewRequest(protoInvoice))
 	if err != nil {
@@ -256,12 +274,12 @@ func TestCreateInvoiceSignature(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoPayload := &protocol.CreateInvoiceSignatureRequestPayload{}
-	protoPayload.InvoiceHash = invoice.Hash
-	protoPayload.Signature = signature
-	protoPayload.PublicKey = assetManagerPubKey
+	protoPayload.SetInvoiceHash(invoice.Hash)
+	protoPayload.SetSignature(signature)
+	protoPayload.SetPublicKey(assetManagerPubKey)
 
 	protoRequest := &protocol.CreateInvoiceSignatureRequest{}
-	protoRequest.Payload = protoPayload
+	protoRequest.SetPayload(protoPayload)
 
 	createInvoiceSignatureResponse, err := feClient.CreateInvoiceSignature(context.Background(), connect.NewRequest(protoRequest))
 	if err != nil {

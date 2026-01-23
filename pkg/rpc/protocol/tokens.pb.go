@@ -13,7 +13,6 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -25,11 +24,11 @@ const (
 )
 
 type GetPendingTokenBalancesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash      *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address  *Address               `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_MintHash *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *GetPendingTokenBalancesRequest) Reset() {
@@ -57,30 +56,71 @@ func (x *GetPendingTokenBalancesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPendingTokenBalancesRequest.ProtoReflect.Descriptor instead.
-func (*GetPendingTokenBalancesRequest) Descriptor() ([]byte, []int) {
-	return file_tokens_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *GetPendingTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
-		return x.Address
+		return x.xxx_hidden_Address
 	}
 	return nil
 }
 
 func (x *GetPendingTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
+func (x *GetPendingTokenBalancesRequest) SetAddress(v *Address) {
+	x.xxx_hidden_Address = v
+}
+
+func (x *GetPendingTokenBalancesRequest) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *GetPendingTokenBalancesRequest) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Address != nil
+}
+
+func (x *GetPendingTokenBalancesRequest) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *GetPendingTokenBalancesRequest) ClearAddress() {
+	x.xxx_hidden_Address = nil
+}
+
+func (x *GetPendingTokenBalancesRequest) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+type GetPendingTokenBalancesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Address  *Address
+	MintHash *Hash
+}
+
+func (b0 GetPendingTokenBalancesRequest_builder) Build() *GetPendingTokenBalancesRequest {
+	m0 := &GetPendingTokenBalancesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Address = b.Address
+	x.xxx_hidden_MintHash = b.MintHash
+	return m0
+}
+
 type GetPendingTokenBalancesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Balances      []*TokenBalance        `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Balances *[]*TokenBalance       `protobuf:"bytes,1,rep,name=balances"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *GetPendingTokenBalancesResponse) Reset() {
@@ -108,27 +148,42 @@ func (x *GetPendingTokenBalancesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPendingTokenBalancesResponse.ProtoReflect.Descriptor instead.
-func (*GetPendingTokenBalancesResponse) Descriptor() ([]byte, []int) {
-	return file_tokens_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *GetPendingTokenBalancesResponse) GetBalances() []*TokenBalance {
 	if x != nil {
-		return x.Balances
+		if x.xxx_hidden_Balances != nil {
+			return *x.xxx_hidden_Balances
+		}
 	}
 	return nil
 }
 
+func (x *GetPendingTokenBalancesResponse) SetBalances(v []*TokenBalance) {
+	x.xxx_hidden_Balances = &v
+}
+
+type GetPendingTokenBalancesResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Balances []*TokenBalance
+}
+
+func (b0 GetPendingTokenBalancesResponse_builder) Build() *GetPendingTokenBalancesResponse {
+	m0 := &GetPendingTokenBalancesResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Balances = &b.Balances
+	return m0
+}
+
 type GetTokenBalancesRequest struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	Address            *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	MintHash           *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	IncludeMintDetails *wrapperspb.BoolValue  `protobuf:"bytes,3,opt,name=include_mint_details,json=includeMintDetails,proto3" json:"include_mint_details,omitempty"`
-	Limit              *wrapperspb.Int32Value `protobuf:"bytes,4,opt,name=limit,proto3" json:"limit,omitempty"`
-	Page               *wrapperspb.Int32Value `protobuf:"bytes,5,opt,name=page,proto3" json:"page,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state                         protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address            *Address               `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_MintHash           *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_IncludeMintDetails *wrapperspb.BoolValue  `protobuf:"bytes,3,opt,name=include_mint_details,json=includeMintDetails"`
+	xxx_hidden_Limit              *wrapperspb.Int32Value `protobuf:"bytes,4,opt,name=limit"`
+	xxx_hidden_Page               *wrapperspb.Int32Value `protobuf:"bytes,5,opt,name=page"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *GetTokenBalancesRequest) Reset() {
@@ -156,51 +211,143 @@ func (x *GetTokenBalancesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetTokenBalancesRequest.ProtoReflect.Descriptor instead.
-func (*GetTokenBalancesRequest) Descriptor() ([]byte, []int) {
-	return file_tokens_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *GetTokenBalancesRequest) GetAddress() *Address {
 	if x != nil {
-		return x.Address
+		return x.xxx_hidden_Address
 	}
 	return nil
 }
 
 func (x *GetTokenBalancesRequest) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
 func (x *GetTokenBalancesRequest) GetIncludeMintDetails() *wrapperspb.BoolValue {
 	if x != nil {
-		return x.IncludeMintDetails
+		return x.xxx_hidden_IncludeMintDetails
 	}
 	return nil
 }
 
 func (x *GetTokenBalancesRequest) GetLimit() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.Limit
+		return x.xxx_hidden_Limit
 	}
 	return nil
 }
 
 func (x *GetTokenBalancesRequest) GetPage() *wrapperspb.Int32Value {
 	if x != nil {
-		return x.Page
+		return x.xxx_hidden_Page
 	}
 	return nil
 }
 
+func (x *GetTokenBalancesRequest) SetAddress(v *Address) {
+	x.xxx_hidden_Address = v
+}
+
+func (x *GetTokenBalancesRequest) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *GetTokenBalancesRequest) SetIncludeMintDetails(v *wrapperspb.BoolValue) {
+	x.xxx_hidden_IncludeMintDetails = v
+}
+
+func (x *GetTokenBalancesRequest) SetLimit(v *wrapperspb.Int32Value) {
+	x.xxx_hidden_Limit = v
+}
+
+func (x *GetTokenBalancesRequest) SetPage(v *wrapperspb.Int32Value) {
+	x.xxx_hidden_Page = v
+}
+
+func (x *GetTokenBalancesRequest) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Address != nil
+}
+
+func (x *GetTokenBalancesRequest) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *GetTokenBalancesRequest) HasIncludeMintDetails() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_IncludeMintDetails != nil
+}
+
+func (x *GetTokenBalancesRequest) HasLimit() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Limit != nil
+}
+
+func (x *GetTokenBalancesRequest) HasPage() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Page != nil
+}
+
+func (x *GetTokenBalancesRequest) ClearAddress() {
+	x.xxx_hidden_Address = nil
+}
+
+func (x *GetTokenBalancesRequest) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *GetTokenBalancesRequest) ClearIncludeMintDetails() {
+	x.xxx_hidden_IncludeMintDetails = nil
+}
+
+func (x *GetTokenBalancesRequest) ClearLimit() {
+	x.xxx_hidden_Limit = nil
+}
+
+func (x *GetTokenBalancesRequest) ClearPage() {
+	x.xxx_hidden_Page = nil
+}
+
+type GetTokenBalancesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Address            *Address
+	MintHash           *Hash
+	IncludeMintDetails *wrapperspb.BoolValue
+	Limit              *wrapperspb.Int32Value
+	Page               *wrapperspb.Int32Value
+}
+
+func (b0 GetTokenBalancesRequest_builder) Build() *GetTokenBalancesRequest {
+	m0 := &GetTokenBalancesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Address = b.Address
+	x.xxx_hidden_MintHash = b.MintHash
+	x.xxx_hidden_IncludeMintDetails = b.IncludeMintDetails
+	x.xxx_hidden_Limit = b.Limit
+	x.xxx_hidden_Page = b.Page
+	return m0
+}
+
 type GetTokenBalancesResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          *structpb.Struct       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data *structpb.Struct       `protobuf:"bytes,1,opt,name=data"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetTokenBalancesResponse) Reset() {
@@ -228,16 +375,40 @@ func (x *GetTokenBalancesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetTokenBalancesResponse.ProtoReflect.Descriptor instead.
-func (*GetTokenBalancesResponse) Descriptor() ([]byte, []int) {
-	return file_tokens_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *GetTokenBalancesResponse) GetData() *structpb.Struct {
 	if x != nil {
-		return x.Data
+		return x.xxx_hidden_Data
 	}
 	return nil
+}
+
+func (x *GetTokenBalancesResponse) SetData(v *structpb.Struct) {
+	x.xxx_hidden_Data = v
+}
+
+func (x *GetTokenBalancesResponse) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Data != nil
+}
+
+func (x *GetTokenBalancesResponse) ClearData() {
+	x.xxx_hidden_Data = nil
+}
+
+type GetTokenBalancesResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Data *structpb.Struct
+}
+
+func (b0 GetTokenBalancesResponse_builder) Build() *GetTokenBalancesResponse {
+	m0 := &GetTokenBalancesResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Data = b.Data
+	return m0
 }
 
 var File_tokens_proto protoreflect.FileDescriptor
@@ -257,19 +428,7 @@ const file_tokens_proto_rawDesc = "" +
 	"\x05limit\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
 	"\x04page\x18\x05 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\"G\n" +
 	"\x18GetTokenBalancesResponse\x12+\n" +
-	"\x04data\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04dataB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
-
-var (
-	file_tokens_proto_rawDescOnce sync.Once
-	file_tokens_proto_rawDescData []byte
-)
-
-func file_tokens_proto_rawDescGZIP() []byte {
-	file_tokens_proto_rawDescOnce.Do(func() {
-		file_tokens_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_tokens_proto_rawDesc), len(file_tokens_proto_rawDesc)))
-	})
-	return file_tokens_proto_rawDescData
-}
+	"\x04data\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x04dataB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_tokens_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_tokens_proto_goTypes = []any{

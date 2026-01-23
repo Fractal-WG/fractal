@@ -1,9 +1,10 @@
-syntax = "proto3";
+edition = "2023";
 
 package fractalengine.rpc.v1;
 
 import "google/protobuf/struct.proto";
 import "types.proto";
+import "buf/validate/validate.proto";
 
 option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
@@ -43,21 +44,21 @@ message Mint {
   int32 block_height = 2;
   string contract_of_sale = 3;
   string created_at = 4;
-  string description = 5;
+  string description = 5 [(buf.validate.field).required = true];
   string feed_url = 6;
-  int32 fraction_count = 7;
+  int32 fraction_count = 7 [(buf.validate.field).required = true];
   Hash hash = 8;
   string id = 9;
   StringInterfaceMap lockup_options = 10;
   StringInterfaceMap metadata = 11;
   int32 min_signatures = 12;
-  Address owner_address = 13;
+  Address owner_address = 13 [(buf.validate.field).required = true];
   string public_key = 14;
   StringInterfaceMap requirements = 15;
   string signature = 16;
   SignatureRequirementType signature_requirement_type = 17;
   repeated string tags = 18;
-  string title = 19;
+  string title = 19 [(buf.validate.field).required = true];
   Hash transaction_hash = 20;
 }
 

@@ -47,27 +47,30 @@ func TestMints(t *testing.T) {
 	assert.NilError(t, err)
 
 	protoMetadata := &protocol.StringInterfaceMap{}
-	protoMetadata.Value = metadataStruct
+	protoMetadata.SetValue(metadataStruct)
 	protoRequirements := &protocol.StringInterfaceMap{}
-	protoRequirements.Value = emptyStruct
+	protoRequirements.SetValue(emptyStruct)
 	protoLockupOptions := &protocol.StringInterfaceMap{}
-	protoLockupOptions.Value = emptyStruct
+	protoLockupOptions.SetValue(emptyStruct)
+
+	ownerAddressProto := &protocol.Address{}
+	ownerAddressProto.SetValue(payload.OwnerAddress)
 
 	protoPayload := &protocol.CreateMintRequestPayload{}
-	protoPayload.Title = payload.Title
-	protoPayload.Description = payload.Description
-	protoPayload.FractionCount = int32(payload.FractionCount)
-	protoPayload.Tags = payload.Tags
-	protoPayload.Metadata = protoMetadata
-	protoPayload.Requirements = protoRequirements
-	protoPayload.LockupOptions = protoLockupOptions
-	protoPayload.FeedUrl = payload.FeedURL
-	protoPayload.OwnerAddress = &protocol.Address{Value: &payload.OwnerAddress}
+	protoPayload.SetTitle(payload.Title)
+	protoPayload.SetDescription(payload.Description)
+	protoPayload.SetFractionCount(int32(payload.FractionCount))
+	protoPayload.SetTags(payload.Tags)
+	protoPayload.SetMetadata(protoMetadata)
+	protoPayload.SetRequirements(protoRequirements)
+	protoPayload.SetLockupOptions(protoLockupOptions)
+	protoPayload.SetFeedUrl(payload.FeedURL)
+	protoPayload.SetOwnerAddress(ownerAddressProto)
 
 	protoRequest := &protocol.CreateMintRequest{}
-	protoRequest.Payload = protoPayload
-	protoRequest.PublicKey = pubHex
-	protoRequest.Signature = signature
+	protoRequest.SetPayload(protoPayload)
+	protoRequest.SetPublicKey(pubHex)
+	protoRequest.SetSignature(signature)
 
 	mintResponse, err := feClient.CreateMint(context.Background(), connect.NewRequest(protoRequest))
 	if err != nil {

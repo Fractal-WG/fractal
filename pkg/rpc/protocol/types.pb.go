@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,10 +22,12 @@ const (
 )
 
 type Hash struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         *string                `protobuf:"bytes,1,opt,name=value" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Value       *string                `protobuf:"bytes,1,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Hash) Reset() {
@@ -54,23 +55,57 @@ func (x *Hash) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Hash.ProtoReflect.Descriptor instead.
-func (*Hash) Descriptor() ([]byte, []int) {
-	return file_types_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *Hash) GetValue() string {
-	if x != nil && x.Value != nil {
-		return *x.Value
+	if x != nil {
+		if x.xxx_hidden_Value != nil {
+			return *x.xxx_hidden_Value
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *Hash) SetValue(v string) {
+	x.xxx_hidden_Value = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *Hash) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Hash) ClearValue() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Value = nil
+}
+
+type Hash_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Value *string
+}
+
+func (b0 Hash_builder) Build() *Hash {
+	m0 := &Hash{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Value != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Value = b.Value
+	}
+	return m0
+}
+
 type Address struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         *string                `protobuf:"bytes,1,opt,name=value" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Value       *string                `protobuf:"bytes,1,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Address) Reset() {
@@ -98,16 +133,48 @@ func (x *Address) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Address.ProtoReflect.Descriptor instead.
-func (*Address) Descriptor() ([]byte, []int) {
-	return file_types_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *Address) GetValue() string {
-	if x != nil && x.Value != nil {
-		return *x.Value
+	if x != nil {
+		if x.xxx_hidden_Value != nil {
+			return *x.xxx_hidden_Value
+		}
+		return ""
 	}
 	return ""
+}
+
+func (x *Address) SetValue(v string) {
+	x.xxx_hidden_Value = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *Address) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Address) ClearValue() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Value = nil
+}
+
+type Address_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Value *string
+}
+
+func (b0 Address_builder) Build() *Address {
+	m0 := &Address{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Value != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Value = b.Value
+	}
+	return m0
 }
 
 var File_types_proto protoreflect.FileDescriptor
@@ -119,18 +186,6 @@ const file_types_proto_rawDesc = "" +
 	"\x05value\x18\x01 \x01(\tB\x18\xbaH\x15r\x132\x11^[a-fA-F0-9]{64}$R\x05value\"O\n" +
 	"\aAddress\x12D\n" +
 	"\x05value\x18\x01 \x01(\tB.\xbaH+r)2'(?:[DAmn2])[1-9A-HJ-NP-Za-km-z]{25,34}$R\x05valueB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
-
-var (
-	file_types_proto_rawDescOnce sync.Once
-	file_types_proto_rawDescData []byte
-)
-
-func file_types_proto_rawDescGZIP() []byte {
-	file_types_proto_rawDescOnce.Do(func() {
-		file_types_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_types_proto_rawDesc), len(file_types_proto_rawDesc)))
-	})
-	return file_types_proto_rawDescData
-}
 
 var file_types_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_types_proto_goTypes = []any{

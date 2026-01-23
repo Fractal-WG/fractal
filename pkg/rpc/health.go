@@ -21,11 +21,11 @@ func (s *ConnectRpcService) GetHealth(_ context.Context, _ *connect.Request[prot
 	}
 
 	resp := &protocol.GetHealthResponse{}
-	resp.Chain = chain
-	resp.CurrentBlockHeight = int32(currentBlockHeight)
-	resp.LatestBlockHeight = int32(latestBlockHeight)
-	resp.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
-	resp.Version = version.Version
-	resp.WalletsEnabled = walletsEnabled
+	resp.SetChain(chain)
+	resp.SetCurrentBlockHeight(int32(currentBlockHeight))
+	resp.SetLatestBlockHeight(int32(latestBlockHeight))
+	resp.SetUpdatedAt(updatedAt.Format(time.RFC3339Nano))
+	resp.SetVersion(version.Version)
+	resp.SetWalletsEnabled(walletsEnabled)
 	return connect.NewResponse(resp), nil
 }

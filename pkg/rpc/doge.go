@@ -16,7 +16,7 @@ func (s *ConnectRpcService) DogeConfirm(_ context.Context, _ *connect.Request[pr
 	}
 
 	resp := &protocol.DogeConfirmResponse{}
-	resp.Values = map[string]string{}
+	resp.SetValues(map[string]string{})
 	return connect.NewResponse(resp), nil
 }
 
@@ -32,7 +32,7 @@ func (s *ConnectRpcService) DogeSend(_ context.Context, req *connect.Request[pro
 	}
 
 	resp := &protocol.DogeSendResponse{}
-	resp.TransactionId = txid
+	resp.SetTransactionId(txid)
 	return connect.NewResponse(resp), nil
 }
 
@@ -55,6 +55,6 @@ func (s *ConnectRpcService) DogeTopUp(_ context.Context, req *connect.Request[pr
 	}
 
 	resp := &protocol.DogeTopUpResponse{}
-	resp.Value = address.GetValue()
+	resp.SetValue(address.GetValue())
 	return connect.NewResponse(resp), nil
 }

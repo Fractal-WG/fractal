@@ -7,11 +7,11 @@
 package protocol
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -72,16 +72,13 @@ func (x SignatureRequirementType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use SignatureRequirementType.Descriptor instead.
-func (SignatureRequirementType) EnumDescriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{0}
-}
-
 type StringResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Value       *string                `protobuf:"bytes,1,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *StringResponse) Reset() {
@@ -109,23 +106,55 @@ func (x *StringResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StringResponse.ProtoReflect.Descriptor instead.
-func (*StringResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *StringResponse) GetValue() string {
 	if x != nil {
-		return x.Value
+		if x.xxx_hidden_Value != nil {
+			return *x.xxx_hidden_Value
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *StringResponse) SetValue(v string) {
+	x.xxx_hidden_Value = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *StringResponse) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *StringResponse) ClearValue() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Value = nil
+}
+
+type StringResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Value *string
+}
+
+func (b0 StringResponse_builder) Build() *StringResponse {
+	m0 := &StringResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Value != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Value = b.Value
+	}
+	return m0
+}
+
 type StringMapResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Values        map[string]string      `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Values map[string]string      `protobuf:"bytes,1,rep,name=values" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *StringMapResponse) Reset() {
@@ -153,24 +182,39 @@ func (x *StringMapResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StringMapResponse.ProtoReflect.Descriptor instead.
-func (*StringMapResponse) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *StringMapResponse) GetValues() map[string]string {
 	if x != nil {
-		return x.Values
+		return x.xxx_hidden_Values
 	}
 	return nil
 }
 
+func (x *StringMapResponse) SetValues(v map[string]string) {
+	x.xxx_hidden_Values = v
+}
+
+type StringMapResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Values map[string]string
+}
+
+func (b0 StringMapResponse_builder) Build() *StringMapResponse {
+	m0 := &StringMapResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Values = b.Values
+	return m0
+}
+
 type SqlNullTime struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Time          string                 `protobuf:"bytes,1,opt,name=time,proto3" json:"time,omitempty"`
-	Valid         bool                   `protobuf:"varint,2,opt,name=valid,proto3" json:"valid,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Time        *string                `protobuf:"bytes,1,opt,name=time"`
+	xxx_hidden_Valid       bool                   `protobuf:"varint,2,opt,name=valid"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *SqlNullTime) Reset() {
@@ -198,32 +242,88 @@ func (x *SqlNullTime) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SqlNullTime.ProtoReflect.Descriptor instead.
-func (*SqlNullTime) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *SqlNullTime) GetTime() string {
 	if x != nil {
-		return x.Time
+		if x.xxx_hidden_Time != nil {
+			return *x.xxx_hidden_Time
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SqlNullTime) GetValid() bool {
 	if x != nil {
-		return x.Valid
+		return x.xxx_hidden_Valid
 	}
 	return false
 }
 
+func (x *SqlNullTime) SetTime(v string) {
+	x.xxx_hidden_Time = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *SqlNullTime) SetValid(v bool) {
+	x.xxx_hidden_Valid = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *SqlNullTime) HasTime() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *SqlNullTime) HasValid() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *SqlNullTime) ClearTime() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Time = nil
+}
+
+func (x *SqlNullTime) ClearValid() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Valid = false
+}
+
+type SqlNullTime_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Time  *string
+	Valid *bool
+}
+
+func (b0 SqlNullTime_builder) Build() *SqlNullTime {
+	m0 := &SqlNullTime{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Time != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Time = b.Time
+	}
+	if b.Valid != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Valid = *b.Valid
+	}
+	return m0
+}
+
 type AssetManager struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	PublicKey     string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_PublicKey   *string                `protobuf:"bytes,2,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Url         *string                `protobuf:"bytes,3,opt,name=url"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *AssetManager) Reset() {
@@ -251,37 +351,119 @@ func (x *AssetManager) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AssetManager.ProtoReflect.Descriptor instead.
-func (*AssetManager) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *AssetManager) GetName() string {
 	if x != nil {
-		return x.Name
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AssetManager) GetPublicKey() string {
 	if x != nil {
-		return x.PublicKey
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AssetManager) GetUrl() string {
 	if x != nil {
-		return x.Url
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *AssetManager) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *AssetManager) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *AssetManager) SetUrl(v string) {
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *AssetManager) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *AssetManager) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *AssetManager) HasUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *AssetManager) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *AssetManager) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *AssetManager) ClearUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Url = nil
+}
+
+type AssetManager_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name      *string
+	PublicKey *string
+	Url       *string
+}
+
+func (b0 AssetManager_builder) Build() *AssetManager {
+	m0 := &AssetManager{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Url = b.Url
+	}
+	return m0
+}
+
 type StringInterfaceMap struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         *structpb.Struct       `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Value *structpb.Struct       `protobuf:"bytes,1,opt,name=value"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *StringInterfaceMap) Reset() {
@@ -309,42 +491,68 @@ func (x *StringInterfaceMap) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StringInterfaceMap.ProtoReflect.Descriptor instead.
-func (*StringInterfaceMap) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *StringInterfaceMap) GetValue() *structpb.Struct {
 	if x != nil {
-		return x.Value
+		return x.xxx_hidden_Value
 	}
 	return nil
 }
 
+func (x *StringInterfaceMap) SetValue(v *structpb.Struct) {
+	x.xxx_hidden_Value = v
+}
+
+func (x *StringInterfaceMap) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Value != nil
+}
+
+func (x *StringInterfaceMap) ClearValue() {
+	x.xxx_hidden_Value = nil
+}
+
+type StringInterfaceMap_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Value *structpb.Struct
+}
+
+func (b0 StringInterfaceMap_builder) Build() *StringInterfaceMap {
+	m0 := &StringInterfaceMap{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Value = b.Value
+	return m0
+}
+
 type Mint struct {
-	state                    protoimpl.MessageState   `protogen:"open.v1"`
-	AssetManagers            []*AssetManager          `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers,proto3" json:"asset_managers,omitempty"`
-	BlockHeight              int32                    `protobuf:"varint,2,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
-	ContractOfSale           string                   `protobuf:"bytes,3,opt,name=contract_of_sale,json=contractOfSale,proto3" json:"contract_of_sale,omitempty"`
-	CreatedAt                string                   `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Description              string                   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	FeedUrl                  string                   `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl,proto3" json:"feed_url,omitempty"`
-	FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount,proto3" json:"fraction_count,omitempty"`
-	Hash                     *Hash                    `protobuf:"bytes,8,opt,name=hash,proto3" json:"hash,omitempty"`
-	Id                       string                   `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
-	LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions,proto3" json:"lockup_options,omitempty"`
-	Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures,proto3" json:"min_signatures,omitempty"`
-	OwnerAddress             *Address                 `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
-	PublicKey                string                   `protobuf:"bytes,14,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements,proto3" json:"requirements,omitempty"`
-	Signature                string                   `protobuf:"bytes,16,opt,name=signature,proto3" json:"signature,omitempty"`
-	SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,proto3,enum=fractalengine.rpc.v1.SignatureRequirementType" json:"signature_requirement_type,omitempty"`
-	Tags                     []string                 `protobuf:"bytes,18,rep,name=tags,proto3" json:"tags,omitempty"`
-	Title                    string                   `protobuf:"bytes,19,opt,name=title,proto3" json:"title,omitempty"`
-	TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state                               protoimpl.MessageState   `protogen:"opaque.v1"`
+	xxx_hidden_AssetManagers            *[]*AssetManager         `protobuf:"bytes,1,rep,name=asset_managers,json=assetManagers"`
+	xxx_hidden_BlockHeight              int32                    `protobuf:"varint,2,opt,name=block_height,json=blockHeight"`
+	xxx_hidden_ContractOfSale           *string                  `protobuf:"bytes,3,opt,name=contract_of_sale,json=contractOfSale"`
+	xxx_hidden_CreatedAt                *string                  `protobuf:"bytes,4,opt,name=created_at,json=createdAt"`
+	xxx_hidden_Description              *string                  `protobuf:"bytes,5,opt,name=description"`
+	xxx_hidden_FeedUrl                  *string                  `protobuf:"bytes,6,opt,name=feed_url,json=feedUrl"`
+	xxx_hidden_FractionCount            int32                    `protobuf:"varint,7,opt,name=fraction_count,json=fractionCount"`
+	xxx_hidden_Hash                     *Hash                    `protobuf:"bytes,8,opt,name=hash"`
+	xxx_hidden_Id                       *string                  `protobuf:"bytes,9,opt,name=id"`
+	xxx_hidden_LockupOptions            *StringInterfaceMap      `protobuf:"bytes,10,opt,name=lockup_options,json=lockupOptions"`
+	xxx_hidden_Metadata                 *StringInterfaceMap      `protobuf:"bytes,11,opt,name=metadata"`
+	xxx_hidden_MinSignatures            int32                    `protobuf:"varint,12,opt,name=min_signatures,json=minSignatures"`
+	xxx_hidden_OwnerAddress             *Address                 `protobuf:"bytes,13,opt,name=owner_address,json=ownerAddress"`
+	xxx_hidden_PublicKey                *string                  `protobuf:"bytes,14,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Requirements             *StringInterfaceMap      `protobuf:"bytes,15,opt,name=requirements"`
+	xxx_hidden_Signature                *string                  `protobuf:"bytes,16,opt,name=signature"`
+	xxx_hidden_SignatureRequirementType SignatureRequirementType `protobuf:"varint,17,opt,name=signature_requirement_type,json=signatureRequirementType,enum=fractalengine.rpc.v1.SignatureRequirementType"`
+	xxx_hidden_Tags                     []string                 `protobuf:"bytes,18,rep,name=tags"`
+	xxx_hidden_Title                    *string                  `protobuf:"bytes,19,opt,name=title"`
+	xxx_hidden_TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash"`
+	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
+	XXX_presence                        [1]uint32
+	unknownFields                       protoimpl.UnknownFields
+	sizeCache                           protoimpl.SizeCache
 }
 
 func (x *Mint) Reset() {
@@ -372,170 +580,585 @@ func (x *Mint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mint.ProtoReflect.Descriptor instead.
-func (*Mint) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *Mint) GetAssetManagers() []*AssetManager {
 	if x != nil {
-		return x.AssetManagers
+		if x.xxx_hidden_AssetManagers != nil {
+			return *x.xxx_hidden_AssetManagers
+		}
 	}
 	return nil
 }
 
 func (x *Mint) GetBlockHeight() int32 {
 	if x != nil {
-		return x.BlockHeight
+		return x.xxx_hidden_BlockHeight
 	}
 	return 0
 }
 
 func (x *Mint) GetContractOfSale() string {
 	if x != nil {
-		return x.ContractOfSale
+		if x.xxx_hidden_ContractOfSale != nil {
+			return *x.xxx_hidden_ContractOfSale
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetCreatedAt() string {
 	if x != nil {
-		return x.CreatedAt
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetDescription() string {
 	if x != nil {
-		return x.Description
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetFeedUrl() string {
 	if x != nil {
-		return x.FeedUrl
+		if x.xxx_hidden_FeedUrl != nil {
+			return *x.xxx_hidden_FeedUrl
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetFractionCount() int32 {
 	if x != nil {
-		return x.FractionCount
+		return x.xxx_hidden_FractionCount
 	}
 	return 0
 }
 
 func (x *Mint) GetHash() *Hash {
 	if x != nil {
-		return x.Hash
+		return x.xxx_hidden_Hash
 	}
 	return nil
 }
 
 func (x *Mint) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetLockupOptions() *StringInterfaceMap {
 	if x != nil {
-		return x.LockupOptions
+		return x.xxx_hidden_LockupOptions
 	}
 	return nil
 }
 
 func (x *Mint) GetMetadata() *StringInterfaceMap {
 	if x != nil {
-		return x.Metadata
+		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
 func (x *Mint) GetMinSignatures() int32 {
 	if x != nil {
-		return x.MinSignatures
+		return x.xxx_hidden_MinSignatures
 	}
 	return 0
 }
 
 func (x *Mint) GetOwnerAddress() *Address {
 	if x != nil {
-		return x.OwnerAddress
+		return x.xxx_hidden_OwnerAddress
 	}
 	return nil
 }
 
 func (x *Mint) GetPublicKey() string {
 	if x != nil {
-		return x.PublicKey
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetRequirements() *StringInterfaceMap {
 	if x != nil {
-		return x.Requirements
+		return x.xxx_hidden_Requirements
 	}
 	return nil
 }
 
 func (x *Mint) GetSignature() string {
 	if x != nil {
-		return x.Signature
+		if x.xxx_hidden_Signature != nil {
+			return *x.xxx_hidden_Signature
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetSignatureRequirementType() SignatureRequirementType {
 	if x != nil {
-		return x.SignatureRequirementType
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 16) {
+			return x.xxx_hidden_SignatureRequirementType
+		}
 	}
 	return SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED
 }
 
 func (x *Mint) GetTags() []string {
 	if x != nil {
-		return x.Tags
+		return x.xxx_hidden_Tags
 	}
 	return nil
 }
 
 func (x *Mint) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Mint) GetTransactionHash() *Hash {
 	if x != nil {
-		return x.TransactionHash
+		return x.xxx_hidden_TransactionHash
 	}
 	return nil
 }
 
+func (x *Mint) SetAssetManagers(v []*AssetManager) {
+	x.xxx_hidden_AssetManagers = &v
+}
+
+func (x *Mint) SetBlockHeight(v int32) {
+	x.xxx_hidden_BlockHeight = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 20)
+}
+
+func (x *Mint) SetContractOfSale(v string) {
+	x.xxx_hidden_ContractOfSale = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 20)
+}
+
+func (x *Mint) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 20)
+}
+
+func (x *Mint) SetDescription(v string) {
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 20)
+}
+
+func (x *Mint) SetFeedUrl(v string) {
+	x.xxx_hidden_FeedUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 20)
+}
+
+func (x *Mint) SetFractionCount(v int32) {
+	x.xxx_hidden_FractionCount = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 20)
+}
+
+func (x *Mint) SetHash(v *Hash) {
+	x.xxx_hidden_Hash = v
+}
+
+func (x *Mint) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 20)
+}
+
+func (x *Mint) SetLockupOptions(v *StringInterfaceMap) {
+	x.xxx_hidden_LockupOptions = v
+}
+
+func (x *Mint) SetMetadata(v *StringInterfaceMap) {
+	x.xxx_hidden_Metadata = v
+}
+
+func (x *Mint) SetMinSignatures(v int32) {
+	x.xxx_hidden_MinSignatures = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 20)
+}
+
+func (x *Mint) SetOwnerAddress(v *Address) {
+	x.xxx_hidden_OwnerAddress = v
+}
+
+func (x *Mint) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 20)
+}
+
+func (x *Mint) SetRequirements(v *StringInterfaceMap) {
+	x.xxx_hidden_Requirements = v
+}
+
+func (x *Mint) SetSignature(v string) {
+	x.xxx_hidden_Signature = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 20)
+}
+
+func (x *Mint) SetSignatureRequirementType(v SignatureRequirementType) {
+	x.xxx_hidden_SignatureRequirementType = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 20)
+}
+
+func (x *Mint) SetTags(v []string) {
+	x.xxx_hidden_Tags = v
+}
+
+func (x *Mint) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 20)
+}
+
+func (x *Mint) SetTransactionHash(v *Hash) {
+	x.xxx_hidden_TransactionHash = v
+}
+
+func (x *Mint) HasBlockHeight() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *Mint) HasContractOfSale() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *Mint) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *Mint) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *Mint) HasFeedUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *Mint) HasFractionCount() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *Mint) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Hash != nil
+}
+
+func (x *Mint) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *Mint) HasLockupOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_LockupOptions != nil
+}
+
+func (x *Mint) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Metadata != nil
+}
+
+func (x *Mint) HasMinSignatures() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
+func (x *Mint) HasOwnerAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OwnerAddress != nil
+}
+
+func (x *Mint) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
+}
+
+func (x *Mint) HasRequirements() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Requirements != nil
+}
+
+func (x *Mint) HasSignature() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 15)
+}
+
+func (x *Mint) HasSignatureRequirementType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 16)
+}
+
+func (x *Mint) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 18)
+}
+
+func (x *Mint) HasTransactionHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_TransactionHash != nil
+}
+
+func (x *Mint) ClearBlockHeight() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_BlockHeight = 0
+}
+
+func (x *Mint) ClearContractOfSale() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ContractOfSale = nil
+}
+
+func (x *Mint) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *Mint) ClearDescription() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Description = nil
+}
+
+func (x *Mint) ClearFeedUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_FeedUrl = nil
+}
+
+func (x *Mint) ClearFractionCount() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_FractionCount = 0
+}
+
+func (x *Mint) ClearHash() {
+	x.xxx_hidden_Hash = nil
+}
+
+func (x *Mint) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *Mint) ClearLockupOptions() {
+	x.xxx_hidden_LockupOptions = nil
+}
+
+func (x *Mint) ClearMetadata() {
+	x.xxx_hidden_Metadata = nil
+}
+
+func (x *Mint) ClearMinSignatures() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_MinSignatures = 0
+}
+
+func (x *Mint) ClearOwnerAddress() {
+	x.xxx_hidden_OwnerAddress = nil
+}
+
+func (x *Mint) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *Mint) ClearRequirements() {
+	x.xxx_hidden_Requirements = nil
+}
+
+func (x *Mint) ClearSignature() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 15)
+	x.xxx_hidden_Signature = nil
+}
+
+func (x *Mint) ClearSignatureRequirementType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 16)
+	x.xxx_hidden_SignatureRequirementType = SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED
+}
+
+func (x *Mint) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 18)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *Mint) ClearTransactionHash() {
+	x.xxx_hidden_TransactionHash = nil
+}
+
+type Mint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	AssetManagers            []*AssetManager
+	BlockHeight              *int32
+	ContractOfSale           *string
+	CreatedAt                *string
+	Description              *string
+	FeedUrl                  *string
+	FractionCount            *int32
+	Hash                     *Hash
+	Id                       *string
+	LockupOptions            *StringInterfaceMap
+	Metadata                 *StringInterfaceMap
+	MinSignatures            *int32
+	OwnerAddress             *Address
+	PublicKey                *string
+	Requirements             *StringInterfaceMap
+	Signature                *string
+	SignatureRequirementType *SignatureRequirementType
+	Tags                     []string
+	Title                    *string
+	TransactionHash          *Hash
+}
+
+func (b0 Mint_builder) Build() *Mint {
+	m0 := &Mint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_AssetManagers = &b.AssetManagers
+	if b.BlockHeight != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 20)
+		x.xxx_hidden_BlockHeight = *b.BlockHeight
+	}
+	if b.ContractOfSale != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 20)
+		x.xxx_hidden_ContractOfSale = b.ContractOfSale
+	}
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 20)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 20)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.FeedUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 20)
+		x.xxx_hidden_FeedUrl = b.FeedUrl
+	}
+	if b.FractionCount != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 20)
+		x.xxx_hidden_FractionCount = *b.FractionCount
+	}
+	x.xxx_hidden_Hash = b.Hash
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 20)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_LockupOptions = b.LockupOptions
+	x.xxx_hidden_Metadata = b.Metadata
+	if b.MinSignatures != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 20)
+		x.xxx_hidden_MinSignatures = *b.MinSignatures
+	}
+	x.xxx_hidden_OwnerAddress = b.OwnerAddress
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 20)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	x.xxx_hidden_Requirements = b.Requirements
+	if b.Signature != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 20)
+		x.xxx_hidden_Signature = b.Signature
+	}
+	if b.SignatureRequirementType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 20)
+		x.xxx_hidden_SignatureRequirementType = *b.SignatureRequirementType
+	}
+	x.xxx_hidden_Tags = b.Tags
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 20)
+		x.xxx_hidden_Title = b.Title
+	}
+	x.xxx_hidden_TransactionHash = b.TransactionHash
+	return m0
+}
+
 type Invoice struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty"`
-	BuyerAddress          *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress,proto3" json:"buyer_address,omitempty"`
-	CreatedAt             string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Hash                  *Hash                  `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
-	Id                    string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
-	MintHash              *Hash                  `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt,proto3" json:"paid_at,omitempty"`
-	PaymentAddress        *Address               `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress,proto3" json:"payment_address,omitempty"`
-	PendingTokenBalanceId string                 `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId,proto3" json:"pending_token_balance_id,omitempty"`
-	Price                 int32                  `protobuf:"varint,10,opt,name=price,proto3" json:"price,omitempty"`
-	PublicKey             string                 `protobuf:"bytes,11,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	Quantity              int32                  `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	SellerAddress         *Address               `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
-	Signature             string                 `protobuf:"bytes,14,opt,name=signature,proto3" json:"signature,omitempty"`
-	TransactionHash       *Hash                  `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_BlockHeight           int32                  `protobuf:"varint,1,opt,name=block_height,json=blockHeight"`
+	xxx_hidden_BuyerAddress          *Address               `protobuf:"bytes,2,opt,name=buyer_address,json=buyerAddress"`
+	xxx_hidden_CreatedAt             *string                `protobuf:"bytes,3,opt,name=created_at,json=createdAt"`
+	xxx_hidden_Hash                  *Hash                  `protobuf:"bytes,4,opt,name=hash"`
+	xxx_hidden_Id                    *string                `protobuf:"bytes,5,opt,name=id"`
+	xxx_hidden_MintHash              *Hash                  `protobuf:"bytes,6,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_PaidAt                *SqlNullTime           `protobuf:"bytes,7,opt,name=paid_at,json=paidAt"`
+	xxx_hidden_PaymentAddress        *Address               `protobuf:"bytes,8,opt,name=payment_address,json=paymentAddress"`
+	xxx_hidden_PendingTokenBalanceId *string                `protobuf:"bytes,9,opt,name=pending_token_balance_id,json=pendingTokenBalanceId"`
+	xxx_hidden_Price                 int32                  `protobuf:"varint,10,opt,name=price"`
+	xxx_hidden_PublicKey             *string                `protobuf:"bytes,11,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Quantity              int32                  `protobuf:"varint,12,opt,name=quantity"`
+	xxx_hidden_SellerAddress         *Address               `protobuf:"bytes,13,opt,name=seller_address,json=sellerAddress"`
+	xxx_hidden_Signature             *string                `protobuf:"bytes,14,opt,name=signature"`
+	xxx_hidden_TransactionHash       *Hash                  `protobuf:"bytes,15,opt,name=transaction_hash,json=transactionHash"`
+	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
+	XXX_presence                     [1]uint32
+	unknownFields                    protoimpl.UnknownFields
+	sizeCache                        protoimpl.SizeCache
 }
 
 func (x *Invoice) Reset() {
@@ -563,125 +1186,444 @@ func (x *Invoice) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Invoice.ProtoReflect.Descriptor instead.
-func (*Invoice) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *Invoice) GetBlockHeight() int32 {
 	if x != nil {
-		return x.BlockHeight
+		return x.xxx_hidden_BlockHeight
 	}
 	return 0
 }
 
 func (x *Invoice) GetBuyerAddress() *Address {
 	if x != nil {
-		return x.BuyerAddress
+		return x.xxx_hidden_BuyerAddress
 	}
 	return nil
 }
 
 func (x *Invoice) GetCreatedAt() string {
 	if x != nil {
-		return x.CreatedAt
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Invoice) GetHash() *Hash {
 	if x != nil {
-		return x.Hash
+		return x.xxx_hidden_Hash
 	}
 	return nil
 }
 
 func (x *Invoice) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Invoice) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
 func (x *Invoice) GetPaidAt() *SqlNullTime {
 	if x != nil {
-		return x.PaidAt
+		return x.xxx_hidden_PaidAt
 	}
 	return nil
 }
 
 func (x *Invoice) GetPaymentAddress() *Address {
 	if x != nil {
-		return x.PaymentAddress
+		return x.xxx_hidden_PaymentAddress
 	}
 	return nil
 }
 
 func (x *Invoice) GetPendingTokenBalanceId() string {
 	if x != nil {
-		return x.PendingTokenBalanceId
+		if x.xxx_hidden_PendingTokenBalanceId != nil {
+			return *x.xxx_hidden_PendingTokenBalanceId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Invoice) GetPrice() int32 {
 	if x != nil {
-		return x.Price
+		return x.xxx_hidden_Price
 	}
 	return 0
 }
 
 func (x *Invoice) GetPublicKey() string {
 	if x != nil {
-		return x.PublicKey
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Invoice) GetQuantity() int32 {
 	if x != nil {
-		return x.Quantity
+		return x.xxx_hidden_Quantity
 	}
 	return 0
 }
 
 func (x *Invoice) GetSellerAddress() *Address {
 	if x != nil {
-		return x.SellerAddress
+		return x.xxx_hidden_SellerAddress
 	}
 	return nil
 }
 
 func (x *Invoice) GetSignature() string {
 	if x != nil {
-		return x.Signature
+		if x.xxx_hidden_Signature != nil {
+			return *x.xxx_hidden_Signature
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Invoice) GetTransactionHash() *Hash {
 	if x != nil {
-		return x.TransactionHash
+		return x.xxx_hidden_TransactionHash
 	}
 	return nil
 }
 
+func (x *Invoice) SetBlockHeight(v int32) {
+	x.xxx_hidden_BlockHeight = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 15)
+}
+
+func (x *Invoice) SetBuyerAddress(v *Address) {
+	x.xxx_hidden_BuyerAddress = v
+}
+
+func (x *Invoice) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 15)
+}
+
+func (x *Invoice) SetHash(v *Hash) {
+	x.xxx_hidden_Hash = v
+}
+
+func (x *Invoice) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 15)
+}
+
+func (x *Invoice) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *Invoice) SetPaidAt(v *SqlNullTime) {
+	x.xxx_hidden_PaidAt = v
+}
+
+func (x *Invoice) SetPaymentAddress(v *Address) {
+	x.xxx_hidden_PaymentAddress = v
+}
+
+func (x *Invoice) SetPendingTokenBalanceId(v string) {
+	x.xxx_hidden_PendingTokenBalanceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 15)
+}
+
+func (x *Invoice) SetPrice(v int32) {
+	x.xxx_hidden_Price = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 15)
+}
+
+func (x *Invoice) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 15)
+}
+
+func (x *Invoice) SetQuantity(v int32) {
+	x.xxx_hidden_Quantity = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 15)
+}
+
+func (x *Invoice) SetSellerAddress(v *Address) {
+	x.xxx_hidden_SellerAddress = v
+}
+
+func (x *Invoice) SetSignature(v string) {
+	x.xxx_hidden_Signature = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 15)
+}
+
+func (x *Invoice) SetTransactionHash(v *Hash) {
+	x.xxx_hidden_TransactionHash = v
+}
+
+func (x *Invoice) HasBlockHeight() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Invoice) HasBuyerAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_BuyerAddress != nil
+}
+
+func (x *Invoice) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *Invoice) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Hash != nil
+}
+
+func (x *Invoice) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *Invoice) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *Invoice) HasPaidAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PaidAt != nil
+}
+
+func (x *Invoice) HasPaymentAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PaymentAddress != nil
+}
+
+func (x *Invoice) HasPendingTokenBalanceId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *Invoice) HasPrice() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *Invoice) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
+func (x *Invoice) HasQuantity() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
+func (x *Invoice) HasSellerAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SellerAddress != nil
+}
+
+func (x *Invoice) HasSignature() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
+}
+
+func (x *Invoice) HasTransactionHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_TransactionHash != nil
+}
+
+func (x *Invoice) ClearBlockHeight() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_BlockHeight = 0
+}
+
+func (x *Invoice) ClearBuyerAddress() {
+	x.xxx_hidden_BuyerAddress = nil
+}
+
+func (x *Invoice) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *Invoice) ClearHash() {
+	x.xxx_hidden_Hash = nil
+}
+
+func (x *Invoice) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *Invoice) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *Invoice) ClearPaidAt() {
+	x.xxx_hidden_PaidAt = nil
+}
+
+func (x *Invoice) ClearPaymentAddress() {
+	x.xxx_hidden_PaymentAddress = nil
+}
+
+func (x *Invoice) ClearPendingTokenBalanceId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_PendingTokenBalanceId = nil
+}
+
+func (x *Invoice) ClearPrice() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_Price = 0
+}
+
+func (x *Invoice) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *Invoice) ClearQuantity() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Quantity = 0
+}
+
+func (x *Invoice) ClearSellerAddress() {
+	x.xxx_hidden_SellerAddress = nil
+}
+
+func (x *Invoice) ClearSignature() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_Signature = nil
+}
+
+func (x *Invoice) ClearTransactionHash() {
+	x.xxx_hidden_TransactionHash = nil
+}
+
+type Invoice_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	BlockHeight           *int32
+	BuyerAddress          *Address
+	CreatedAt             *string
+	Hash                  *Hash
+	Id                    *string
+	MintHash              *Hash
+	PaidAt                *SqlNullTime
+	PaymentAddress        *Address
+	PendingTokenBalanceId *string
+	Price                 *int32
+	PublicKey             *string
+	Quantity              *int32
+	SellerAddress         *Address
+	Signature             *string
+	TransactionHash       *Hash
+}
+
+func (b0 Invoice_builder) Build() *Invoice {
+	m0 := &Invoice{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.BlockHeight != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 15)
+		x.xxx_hidden_BlockHeight = *b.BlockHeight
+	}
+	x.xxx_hidden_BuyerAddress = b.BuyerAddress
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 15)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	x.xxx_hidden_Hash = b.Hash
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 15)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_MintHash = b.MintHash
+	x.xxx_hidden_PaidAt = b.PaidAt
+	x.xxx_hidden_PaymentAddress = b.PaymentAddress
+	if b.PendingTokenBalanceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 15)
+		x.xxx_hidden_PendingTokenBalanceId = b.PendingTokenBalanceId
+	}
+	if b.Price != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 15)
+		x.xxx_hidden_Price = *b.Price
+	}
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 15)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	if b.Quantity != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 15)
+		x.xxx_hidden_Quantity = *b.Quantity
+	}
+	x.xxx_hidden_SellerAddress = b.SellerAddress
+	if b.Signature != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 15)
+		x.xxx_hidden_Signature = b.Signature
+	}
+	x.xxx_hidden_TransactionHash = b.TransactionHash
+	return m0
+}
+
 type TokenBalance struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       *Address               `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	MintHash      *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	Quantity      int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	UpdatedAt     string                 `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *Address               `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_CreatedAt   *string                `protobuf:"bytes,2,opt,name=created_at,json=createdAt"`
+	xxx_hidden_MintHash    *Hash                  `protobuf:"bytes,3,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_Quantity    int32                  `protobuf:"varint,4,opt,name=quantity"`
+	xxx_hidden_UpdatedAt   *string                `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *TokenBalance) Reset() {
@@ -709,60 +1651,175 @@ func (x *TokenBalance) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TokenBalance.ProtoReflect.Descriptor instead.
-func (*TokenBalance) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *TokenBalance) GetAddress() *Address {
 	if x != nil {
-		return x.Address
+		return x.xxx_hidden_Address
 	}
 	return nil
 }
 
 func (x *TokenBalance) GetCreatedAt() string {
 	if x != nil {
-		return x.CreatedAt
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TokenBalance) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
 func (x *TokenBalance) GetQuantity() int32 {
 	if x != nil {
-		return x.Quantity
+		return x.xxx_hidden_Quantity
 	}
 	return 0
 }
 
 func (x *TokenBalance) GetUpdatedAt() string {
 	if x != nil {
-		return x.UpdatedAt
+		if x.xxx_hidden_UpdatedAt != nil {
+			return *x.xxx_hidden_UpdatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *TokenBalance) SetAddress(v *Address) {
+	x.xxx_hidden_Address = v
+}
+
+func (x *TokenBalance) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *TokenBalance) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *TokenBalance) SetQuantity(v int32) {
+	x.xxx_hidden_Quantity = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *TokenBalance) SetUpdatedAt(v string) {
+	x.xxx_hidden_UpdatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *TokenBalance) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Address != nil
+}
+
+func (x *TokenBalance) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TokenBalance) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *TokenBalance) HasQuantity() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *TokenBalance) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *TokenBalance) ClearAddress() {
+	x.xxx_hidden_Address = nil
+}
+
+func (x *TokenBalance) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *TokenBalance) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *TokenBalance) ClearQuantity() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Quantity = 0
+}
+
+func (x *TokenBalance) ClearUpdatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type TokenBalance_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Address   *Address
+	CreatedAt *string
+	MintHash  *Hash
+	Quantity  *int32
+	UpdatedAt *string
+}
+
+func (b0 TokenBalance_builder) Build() *TokenBalance {
+	m0 := &TokenBalance{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Address = b.Address
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	x.xxx_hidden_MintHash = b.MintHash
+	if b.Quantity != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Quantity = *b.Quantity
+	}
+	if b.UpdatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	}
+	return m0
+}
+
 type BuyOffer struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	SellerAddress  *Address               `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress,proto3" json:"seller_address,omitempty"`
-	Quantity       int32                  `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	Price          int32                  `protobuf:"varint,6,opt,name=price,proto3" json:"price,omitempty"`
-	CreatedAt      string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	PublicKey      string                 `protobuf:"bytes,8,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	Signature      string                 `protobuf:"bytes,9,opt,name=signature,proto3" json:"signature,omitempty"`
-	Id             string                 `protobuf:"bytes,10,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash"`
+	xxx_hidden_MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress"`
+	xxx_hidden_SellerAddress  *Address               `protobuf:"bytes,4,opt,name=seller_address,json=sellerAddress"`
+	xxx_hidden_Quantity       int32                  `protobuf:"varint,5,opt,name=quantity"`
+	xxx_hidden_Price          int32                  `protobuf:"varint,6,opt,name=price"`
+	xxx_hidden_CreatedAt      *string                `protobuf:"bytes,7,opt,name=created_at,json=createdAt"`
+	xxx_hidden_PublicKey      *string                `protobuf:"bytes,8,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Signature      *string                `protobuf:"bytes,9,opt,name=signature"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,10,opt,name=id"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *BuyOffer) Reset() {
@@ -790,94 +1847,315 @@ func (x *BuyOffer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BuyOffer.ProtoReflect.Descriptor instead.
-func (*BuyOffer) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{8}
-}
-
 func (x *BuyOffer) GetHash() *Hash {
 	if x != nil {
-		return x.Hash
+		return x.xxx_hidden_Hash
 	}
 	return nil
 }
 
 func (x *BuyOffer) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
 func (x *BuyOffer) GetOffererAddress() *Address {
 	if x != nil {
-		return x.OffererAddress
+		return x.xxx_hidden_OffererAddress
 	}
 	return nil
 }
 
 func (x *BuyOffer) GetSellerAddress() *Address {
 	if x != nil {
-		return x.SellerAddress
+		return x.xxx_hidden_SellerAddress
 	}
 	return nil
 }
 
 func (x *BuyOffer) GetQuantity() int32 {
 	if x != nil {
-		return x.Quantity
+		return x.xxx_hidden_Quantity
 	}
 	return 0
 }
 
 func (x *BuyOffer) GetPrice() int32 {
 	if x != nil {
-		return x.Price
+		return x.xxx_hidden_Price
 	}
 	return 0
 }
 
 func (x *BuyOffer) GetCreatedAt() string {
 	if x != nil {
-		return x.CreatedAt
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetPublicKey() string {
 	if x != nil {
-		return x.PublicKey
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetSignature() string {
 	if x != nil {
-		return x.Signature
+		if x.xxx_hidden_Signature != nil {
+			return *x.xxx_hidden_Signature
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BuyOffer) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *BuyOffer) SetHash(v *Hash) {
+	x.xxx_hidden_Hash = v
+}
+
+func (x *BuyOffer) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *BuyOffer) SetOffererAddress(v *Address) {
+	x.xxx_hidden_OffererAddress = v
+}
+
+func (x *BuyOffer) SetSellerAddress(v *Address) {
+	x.xxx_hidden_SellerAddress = v
+}
+
+func (x *BuyOffer) SetQuantity(v int32) {
+	x.xxx_hidden_Quantity = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 10)
+}
+
+func (x *BuyOffer) SetPrice(v int32) {
+	x.xxx_hidden_Price = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 10)
+}
+
+func (x *BuyOffer) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 10)
+}
+
+func (x *BuyOffer) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 10)
+}
+
+func (x *BuyOffer) SetSignature(v string) {
+	x.xxx_hidden_Signature = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 10)
+}
+
+func (x *BuyOffer) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 10)
+}
+
+func (x *BuyOffer) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Hash != nil
+}
+
+func (x *BuyOffer) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *BuyOffer) HasOffererAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OffererAddress != nil
+}
+
+func (x *BuyOffer) HasSellerAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SellerAddress != nil
+}
+
+func (x *BuyOffer) HasQuantity() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *BuyOffer) HasPrice() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *BuyOffer) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *BuyOffer) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *BuyOffer) HasSignature() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *BuyOffer) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *BuyOffer) ClearHash() {
+	x.xxx_hidden_Hash = nil
+}
+
+func (x *BuyOffer) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *BuyOffer) ClearOffererAddress() {
+	x.xxx_hidden_OffererAddress = nil
+}
+
+func (x *BuyOffer) ClearSellerAddress() {
+	x.xxx_hidden_SellerAddress = nil
+}
+
+func (x *BuyOffer) ClearQuantity() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Quantity = 0
+}
+
+func (x *BuyOffer) ClearPrice() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Price = 0
+}
+
+func (x *BuyOffer) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *BuyOffer) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *BuyOffer) ClearSignature() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Signature = nil
+}
+
+func (x *BuyOffer) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_Id = nil
+}
+
+type BuyOffer_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Hash           *Hash
+	MintHash       *Hash
+	OffererAddress *Address
+	SellerAddress  *Address
+	Quantity       *int32
+	Price          *int32
+	CreatedAt      *string
+	PublicKey      *string
+	Signature      *string
+	Id             *string
+}
+
+func (b0 BuyOffer_builder) Build() *BuyOffer {
+	m0 := &BuyOffer{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Hash = b.Hash
+	x.xxx_hidden_MintHash = b.MintHash
+	x.xxx_hidden_OffererAddress = b.OffererAddress
+	x.xxx_hidden_SellerAddress = b.SellerAddress
+	if b.Quantity != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 10)
+		x.xxx_hidden_Quantity = *b.Quantity
+	}
+	if b.Price != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 10)
+		x.xxx_hidden_Price = *b.Price
+	}
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 10)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 10)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	if b.Signature != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 10)
+		x.xxx_hidden_Signature = b.Signature
+	}
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 10)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
 type SellOffer struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash,proto3" json:"mint_hash,omitempty"`
-	OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress,proto3" json:"offerer_address,omitempty"`
-	Quantity       int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	Price          int32                  `protobuf:"varint,5,opt,name=price,proto3" json:"price,omitempty"`
-	CreatedAt      string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	PublicKey      string                 `protobuf:"bytes,7,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	Signature      string                 `protobuf:"bytes,8,opt,name=signature,proto3" json:"signature,omitempty"`
-	Id             string                 `protobuf:"bytes,9,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Hash           *Hash                  `protobuf:"bytes,1,opt,name=hash"`
+	xxx_hidden_MintHash       *Hash                  `protobuf:"bytes,2,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_OffererAddress *Address               `protobuf:"bytes,3,opt,name=offerer_address,json=offererAddress"`
+	xxx_hidden_Quantity       int32                  `protobuf:"varint,4,opt,name=quantity"`
+	xxx_hidden_Price          int32                  `protobuf:"varint,5,opt,name=price"`
+	xxx_hidden_CreatedAt      *string                `protobuf:"bytes,6,opt,name=created_at,json=createdAt"`
+	xxx_hidden_PublicKey      *string                `protobuf:"bytes,7,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Signature      *string                `protobuf:"bytes,8,opt,name=signature"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,9,opt,name=id"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *SellOffer) Reset() {
@@ -905,80 +2183,282 @@ func (x *SellOffer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SellOffer.ProtoReflect.Descriptor instead.
-func (*SellOffer) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{9}
-}
-
 func (x *SellOffer) GetHash() *Hash {
 	if x != nil {
-		return x.Hash
+		return x.xxx_hidden_Hash
 	}
 	return nil
 }
 
 func (x *SellOffer) GetMintHash() *Hash {
 	if x != nil {
-		return x.MintHash
+		return x.xxx_hidden_MintHash
 	}
 	return nil
 }
 
 func (x *SellOffer) GetOffererAddress() *Address {
 	if x != nil {
-		return x.OffererAddress
+		return x.xxx_hidden_OffererAddress
 	}
 	return nil
 }
 
 func (x *SellOffer) GetQuantity() int32 {
 	if x != nil {
-		return x.Quantity
+		return x.xxx_hidden_Quantity
 	}
 	return 0
 }
 
 func (x *SellOffer) GetPrice() int32 {
 	if x != nil {
-		return x.Price
+		return x.xxx_hidden_Price
 	}
 	return 0
 }
 
 func (x *SellOffer) GetCreatedAt() string {
 	if x != nil {
-		return x.CreatedAt
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SellOffer) GetPublicKey() string {
 	if x != nil {
-		return x.PublicKey
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SellOffer) GetSignature() string {
 	if x != nil {
-		return x.Signature
+		if x.xxx_hidden_Signature != nil {
+			return *x.xxx_hidden_Signature
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SellOffer) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *SellOffer) SetHash(v *Hash) {
+	x.xxx_hidden_Hash = v
+}
+
+func (x *SellOffer) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *SellOffer) SetOffererAddress(v *Address) {
+	x.xxx_hidden_OffererAddress = v
+}
+
+func (x *SellOffer) SetQuantity(v int32) {
+	x.xxx_hidden_Quantity = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+}
+
+func (x *SellOffer) SetPrice(v int32) {
+	x.xxx_hidden_Price = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+}
+
+func (x *SellOffer) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+}
+
+func (x *SellOffer) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
+}
+
+func (x *SellOffer) SetSignature(v string) {
+	x.xxx_hidden_Signature = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+}
+
+func (x *SellOffer) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
+}
+
+func (x *SellOffer) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Hash != nil
+}
+
+func (x *SellOffer) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *SellOffer) HasOffererAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OffererAddress != nil
+}
+
+func (x *SellOffer) HasQuantity() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *SellOffer) HasPrice() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *SellOffer) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *SellOffer) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *SellOffer) HasSignature() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *SellOffer) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *SellOffer) ClearHash() {
+	x.xxx_hidden_Hash = nil
+}
+
+func (x *SellOffer) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *SellOffer) ClearOffererAddress() {
+	x.xxx_hidden_OffererAddress = nil
+}
+
+func (x *SellOffer) ClearQuantity() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Quantity = 0
+}
+
+func (x *SellOffer) ClearPrice() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Price = 0
+}
+
+func (x *SellOffer) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *SellOffer) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *SellOffer) ClearSignature() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_Signature = nil
+}
+
+func (x *SellOffer) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Id = nil
+}
+
+type SellOffer_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Hash           *Hash
+	MintHash       *Hash
+	OffererAddress *Address
+	Quantity       *int32
+	Price          *int32
+	CreatedAt      *string
+	PublicKey      *string
+	Signature      *string
+	Id             *string
+}
+
+func (b0 SellOffer_builder) Build() *SellOffer {
+	m0 := &SellOffer{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Hash = b.Hash
+	x.xxx_hidden_MintHash = b.MintHash
+	x.xxx_hidden_OffererAddress = b.OffererAddress
+	if b.Quantity != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		x.xxx_hidden_Quantity = *b.Quantity
+	}
+	if b.Price != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		x.xxx_hidden_Price = *b.Price
+	}
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	if b.Signature != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
+		x.xxx_hidden_Signature = b.Signature
+	}
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
 type BuyOfferWithMint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Offer         *BuyOffer              `protobuf:"bytes,1,opt,name=offer,proto3" json:"offer,omitempty"`
-	Mint          *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3" json:"mint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Offer *BuyOffer              `protobuf:"bytes,1,opt,name=offer"`
+	xxx_hidden_Mint  *Mint                  `protobuf:"bytes,2,opt,name=mint"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *BuyOfferWithMint) Reset() {
@@ -1006,31 +2486,72 @@ func (x *BuyOfferWithMint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BuyOfferWithMint.ProtoReflect.Descriptor instead.
-func (*BuyOfferWithMint) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{10}
-}
-
 func (x *BuyOfferWithMint) GetOffer() *BuyOffer {
 	if x != nil {
-		return x.Offer
+		return x.xxx_hidden_Offer
 	}
 	return nil
 }
 
 func (x *BuyOfferWithMint) GetMint() *Mint {
 	if x != nil {
-		return x.Mint
+		return x.xxx_hidden_Mint
 	}
 	return nil
 }
 
+func (x *BuyOfferWithMint) SetOffer(v *BuyOffer) {
+	x.xxx_hidden_Offer = v
+}
+
+func (x *BuyOfferWithMint) SetMint(v *Mint) {
+	x.xxx_hidden_Mint = v
+}
+
+func (x *BuyOfferWithMint) HasOffer() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Offer != nil
+}
+
+func (x *BuyOfferWithMint) HasMint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Mint != nil
+}
+
+func (x *BuyOfferWithMint) ClearOffer() {
+	x.xxx_hidden_Offer = nil
+}
+
+func (x *BuyOfferWithMint) ClearMint() {
+	x.xxx_hidden_Mint = nil
+}
+
+type BuyOfferWithMint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Offer *BuyOffer
+	Mint  *Mint
+}
+
+func (b0 BuyOfferWithMint_builder) Build() *BuyOfferWithMint {
+	m0 := &BuyOfferWithMint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Offer = b.Offer
+	x.xxx_hidden_Mint = b.Mint
+	return m0
+}
+
 type SellOfferWithMint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Offer         *SellOffer             `protobuf:"bytes,1,opt,name=offer,proto3" json:"offer,omitempty"`
-	Mint          *Mint                  `protobuf:"bytes,2,opt,name=mint,proto3" json:"mint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Offer *SellOffer             `protobuf:"bytes,1,opt,name=offer"`
+	xxx_hidden_Mint  *Mint                  `protobuf:"bytes,2,opt,name=mint"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SellOfferWithMint) Reset() {
@@ -1058,30 +2579,71 @@ func (x *SellOfferWithMint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SellOfferWithMint.ProtoReflect.Descriptor instead.
-func (*SellOfferWithMint) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{11}
-}
-
 func (x *SellOfferWithMint) GetOffer() *SellOffer {
 	if x != nil {
-		return x.Offer
+		return x.xxx_hidden_Offer
 	}
 	return nil
 }
 
 func (x *SellOfferWithMint) GetMint() *Mint {
 	if x != nil {
-		return x.Mint
+		return x.xxx_hidden_Mint
 	}
 	return nil
+}
+
+func (x *SellOfferWithMint) SetOffer(v *SellOffer) {
+	x.xxx_hidden_Offer = v
+}
+
+func (x *SellOfferWithMint) SetMint(v *Mint) {
+	x.xxx_hidden_Mint = v
+}
+
+func (x *SellOfferWithMint) HasOffer() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Offer != nil
+}
+
+func (x *SellOfferWithMint) HasMint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Mint != nil
+}
+
+func (x *SellOfferWithMint) ClearOffer() {
+	x.xxx_hidden_Offer = nil
+}
+
+func (x *SellOfferWithMint) ClearMint() {
+	x.xxx_hidden_Mint = nil
+}
+
+type SellOfferWithMint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Offer *SellOffer
+	Mint  *Mint
+}
+
+func (b0 SellOfferWithMint_builder) Build() *SellOfferWithMint {
+	m0 := &SellOfferWithMint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Offer = b.Offer
+	x.xxx_hidden_Mint = b.Mint
+	return m0
 }
 
 var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\"&\n" +
+	"\fcommon.proto\x12\x14fractalengine.rpc.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\vtypes.proto\x1a\x1bbuf/validate/validate.proto\"&\n" +
 	"\x0eStringResponse\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\"\x9b\x01\n" +
 	"\x11StringMapResponse\x12K\n" +
@@ -1098,30 +2660,30 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\"C\n" +
 	"\x12StringInterfaceMap\x12-\n" +
-	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xcd\a\n" +
+	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xed\a\n" +
 	"\x04Mint\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12!\n" +
 	"\fblock_height\x18\x02 \x01(\x05R\vblockHeight\x12(\n" +
 	"\x10contract_of_sale\x18\x03 \x01(\tR\x0econtractOfSale\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\tR\tcreatedAt\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x19\n" +
-	"\bfeed_url\x18\x06 \x01(\tR\afeedUrl\x12%\n" +
-	"\x0efraction_count\x18\a \x01(\x05R\rfractionCount\x12.\n" +
+	"created_at\x18\x04 \x01(\tR\tcreatedAt\x12(\n" +
+	"\vdescription\x18\x05 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\vdescription\x12\x19\n" +
+	"\bfeed_url\x18\x06 \x01(\tR\afeedUrl\x12-\n" +
+	"\x0efraction_count\x18\a \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\rfractionCount\x12.\n" +
 	"\x04hash\x18\b \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\x12\x0e\n" +
 	"\x02id\x18\t \x01(\tR\x02id\x12O\n" +
 	"\x0elockup_options\x18\n" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\rlockupOptions\x12D\n" +
 	"\bmetadata\x18\v \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\bmetadata\x12%\n" +
-	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12B\n" +
-	"\rowner_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\x12\x1d\n" +
+	"\x0emin_signatures\x18\f \x01(\x05R\rminSignatures\x12J\n" +
+	"\rowner_address\x18\r \x01(\v2\x1d.fractalengine.rpc.v1.AddressB\x06\xbaH\x03\xc8\x01\x01R\fownerAddress\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x0e \x01(\tR\tpublicKey\x12L\n" +
 	"\frequirements\x18\x0f \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12\x1c\n" +
 	"\tsignature\x18\x10 \x01(\tR\tsignature\x12l\n" +
 	"\x1asignature_requirement_type\x18\x11 \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
-	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x14\n" +
-	"\x05title\x18\x13 \x01(\tR\x05title\x12E\n" +
+	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x1c\n" +
+	"\x05title\x18\x13 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12E\n" +
 	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xc1\x05\n" +
 	"\aInvoice\x12!\n" +
 	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12B\n" +
@@ -1187,19 +2749,7 @@ const file_common_proto_rawDesc = "" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES\x10\x01\x125\n" +
 	"1SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE\x10\x02\x126\n" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES\x10\x03\x12#\n" +
-	"\x1fSIGNATURE_REQUIREMENT_TYPE_NONE\x10\x04B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\x06proto3"
-
-var (
-	file_common_proto_rawDescOnce sync.Once
-	file_common_proto_rawDescData []byte
-)
-
-func file_common_proto_rawDescGZIP() []byte {
-	file_common_proto_rawDescOnce.Do(func() {
-		file_common_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)))
-	})
-	return file_common_proto_rawDescData
-}
+	"\x1fSIGNATURE_REQUIREMENT_TYPE_NONE\x10\x04B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 13)

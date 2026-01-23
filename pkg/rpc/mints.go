@@ -45,10 +45,10 @@ func (s *ConnectRpcService) GetMints(_ context.Context, req *connect.Request[pro
 	}
 
 	resp := &protocol.GetMintsResponse{}
-	resp.Mints = responseMints
-	resp.Total = int32(len(mints))
-	resp.Page = page
-	resp.Limit = limit
+	resp.SetMints(responseMints)
+	resp.SetTotal(int32(len(mints)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
 	return connect.NewResponse(resp), nil
 }
 
@@ -69,7 +69,7 @@ func (s *ConnectRpcService) GetMint(_ context.Context, req *connect.Request[prot
 	}
 
 	resp := &protocol.GetMintResponse{}
-	resp.Mint = protoMint
+	resp.SetMint(protoMint)
 	return connect.NewResponse(resp), nil
 }
 
@@ -125,7 +125,7 @@ func (s *ConnectRpcService) CreateMint(_ context.Context, req *connect.Request[p
 	encodedTransactionBody := envelope.Serialize()
 
 	resp := &protocol.CreateMintResponse{}
-	resp.Hash = &protocol.Hash{Value: &newMintWithoutId.Hash}
-	resp.EncodedTransactionBody = hex.EncodeToString(encodedTransactionBody)
+	resp.SetHash(toProtoHash(newMintWithoutId.Hash))
+	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
 	return connect.NewResponse(resp), nil
 }
