@@ -11,7 +11,7 @@ plugins:
     opt:
       - paths=source_relative
   - remote: buf.build/bufbuild/es:v2.11.0
-    out: ../../../clients/ts/src
+    out: ../../../../fractal-engine-client-js/src
     include_imports: true
     opt:
       - target=ts
