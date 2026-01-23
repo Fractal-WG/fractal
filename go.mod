@@ -3,9 +3,11 @@ module dogecoin.org/fractal-engine
 go 1.24.2
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20251209175733-2a1774d88802.1
 	code.dogecoin.org/dogenet v0.1.10
 	code.dogecoin.org/gossip v0.0.18
 	code.dogecoin.org/governor v1.0.2
+	connectrpc.com/connect v1.19.1
 	github.com/btcsuite/btcd v0.20.1-beta
 	github.com/btcsuite/btcd/btcec/v2 v2.3.5
 	github.com/btcsuite/btcutil v1.0.2
@@ -31,7 +33,7 @@ require (
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/crypto v0.39.0
 	golang.org/x/time v0.12.0
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
 )
 
