@@ -26,14 +26,14 @@ func findInvoiceTransactionById(txs []store.OnChainTransaction, id string) *stor
 }
 
 func TestNewInvoiceProcessor(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	assert.Assert(t, processor != nil, "Processor should be created")
 }
 
 func TestInvoiceProcessorProcessSuccess(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
@@ -120,7 +120,7 @@ func TestInvoiceProcessorProcessSuccess(t *testing.T) {
 }
 
 func TestInvoiceProcessorProcessInvalidProtobuf(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	processor := service.NewInvoiceProcessor(tokenStore)
 
 	// Create transaction with invalid protobuf data
@@ -142,7 +142,7 @@ func TestInvoiceProcessorProcessInvalidProtobuf(t *testing.T) {
 }
 
 func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
@@ -219,7 +219,7 @@ func TestInvoiceProcessorProcessInsufficientTokenBalance(t *testing.T) {
 }
 
 func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
@@ -297,7 +297,7 @@ func TestInvoiceProcessorProcessExistingPendingBalance(t *testing.T) {
 }
 
 func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
@@ -384,7 +384,7 @@ func TestInvoiceProcessorProcessPartialTokenBalance(t *testing.T) {
 }
 
 func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 
@@ -456,7 +456,7 @@ func TestInvoiceProcessorEnsurePendingTokenBalanceSuccess(t *testing.T) {
 }
 
 func TestInvoiceProcessorEnsurePendingTokenBalanceInsufficientBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	processor := service.NewInvoiceProcessor(tokenStore)
 

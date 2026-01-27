@@ -89,7 +89,7 @@ func SetupRpcTest(t *testing.T) (*store.TokenisationStore, *FakeGossipClient, pr
 	}
 
 	cfg := config.NewConfig()
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	connectService := rpc.NewConnectRpcService(tokenisationStore, dogenetClient, cfg, doge.NewRpcClient(cfg))
 	connectPath, connectHandler := protocolconnect.NewFractalEngineRpcServiceHandler(connectService)
 	mux.Handle(connectPath, connectHandler)

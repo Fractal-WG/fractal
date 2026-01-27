@@ -33,7 +33,7 @@ func (f *FakeChainFollower) Stop() {
 }
 
 func TestDogeFollower(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	chainFollower := &FakeChainFollower{

@@ -11,7 +11,7 @@ import (
 var balancesTestCtx = context.Background()
 
 func TestUpsertTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test inserting a new token balance
 	err := db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 100)
@@ -36,7 +36,7 @@ func TestUpsertTokenBalance(t *testing.T) {
 }
 
 func TestGetTokenBalances(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert multiple balances
 	err := db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 100)
@@ -71,7 +71,7 @@ func TestGetTokenBalances(t *testing.T) {
 }
 
 func TestUpsertPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test inserting a new pending token balance
 	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
@@ -93,7 +93,7 @@ func TestUpsertPendingTokenBalance(t *testing.T) {
 }
 
 func TestHasPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test non-existent pending balance
 	exists, err := db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
@@ -116,7 +116,7 @@ func TestHasPendingTokenBalance(t *testing.T) {
 }
 
 func TestGetPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test getting non-existent pending balance
 	_, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
@@ -136,7 +136,7 @@ func TestGetPendingTokenBalance(t *testing.T) {
 }
 
 func TestRemovePendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert a pending balance
 	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
@@ -162,7 +162,7 @@ func TestRemovePendingTokenBalance(t *testing.T) {
 }
 
 func TestGetPendingTokenBalanceTotalForMintAndOwner(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test with no pending balances
 	total, err := db.GetPendingTokenBalanceTotalForMintAndOwner(balancesTestCtx, "mintHash1", "owner1")
@@ -202,7 +202,7 @@ func TestGetPendingTokenBalanceTotalForMintAndOwner(t *testing.T) {
 }
 
 func TestUpsertTokenBalanceWithTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Begin a transaction
 	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
@@ -225,7 +225,7 @@ func TestUpsertTokenBalanceWithTransaction(t *testing.T) {
 }
 
 func TestMovePendingToTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Setup: Create initial token balance for the owner
 	err := db.UpsertTokenBalance(balancesTestCtx, "owner1", "mintHash1", 500)
@@ -273,7 +273,7 @@ func TestMovePendingToTokenBalance(t *testing.T) {
 }
 
 func TestGetPendingTokenBalanceWithTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert a pending balance
 	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
@@ -293,7 +293,7 @@ func TestGetPendingTokenBalanceWithTransaction(t *testing.T) {
 }
 
 func TestMultipleTokenBalancesForSameAddressMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Create multiple token balance entries for same address/mint
 	// This simulates multiple transactions adding to the balance
@@ -318,7 +318,7 @@ func TestMultipleTokenBalancesForSameAddressMint(t *testing.T) {
 }
 
 func TestPendingTokenBalanceConflictResolution(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert initial pending balance
 	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
@@ -343,7 +343,7 @@ func TestPendingTokenBalanceConflictResolution(t *testing.T) {
 }
 
 func TestTransactionRollback(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Create initial state
 	err := db.UpsertTokenBalance(balancesTestCtx, "owner1", "mintHash1", 500)

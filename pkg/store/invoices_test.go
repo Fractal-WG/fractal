@@ -11,7 +11,7 @@ import (
 )
 
 func TestSaveAndGetInvoices(t *testing.T) {
-	tokenisationStore := support.SetupTestDB()
+	tokenisationStore := support.SetupTestDB(t)
 	ctx := context.Background()
 
 	paymentAddress := support.GenerateDogecoinAddress(true)

@@ -2,7 +2,6 @@ package dogenet_test
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -22,8 +21,7 @@ import (
 )
 
 func TestDogenet(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
-	ctx := context.Background()
+	tokenisationStore := test_support.SetupTestDB(t)
 
 	myConn, dogenetConn := net.Pipe()
 
@@ -106,7 +104,7 @@ func TestDogenet(t *testing.T) {
 
 	time.Sleep(3 * time.Second)
 
-	unconfMints, err := tokenisationStore.GetUnconfirmedMints(ctx, 0, 10)
+	unconfMints, err := tokenisationStore.GetUnconfirmedMints(t.Context(), 0, 10)
 	if err != nil {
 		log.Fatalf("Failed to get unconfirmed mints: %v", err)
 	}

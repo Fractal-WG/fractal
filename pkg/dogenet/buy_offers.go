@@ -79,9 +79,8 @@ func (c *DogeNetClient) GossipDeleteBuyOffer(hash string, publicKey string, sign
 	return nil
 }
 
-func (c *DogeNetClient) recvBuyOffer(msg dnet.Message) {
+func (c *DogeNetClient) recvBuyOffer(ctx context.Context, msg dnet.Message) {
 	log.Printf("[FE] received buy offer message")
-	ctx := context.Background()
 
 	envelope := protocol.BuyOfferMessageEnvelope{}
 	err := proto.Unmarshal(msg.Payload, &envelope)

@@ -12,7 +12,7 @@ import (
 )
 
 func TestHealth(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	tokenisationStore.UpsertChainPosition(ctx, 50, "0000000000000000000000000000000000000000000000000000000000000000", false)

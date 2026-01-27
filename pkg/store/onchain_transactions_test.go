@@ -12,7 +12,7 @@ import (
 var onchainTestCtx = context.Background()
 
 func TestSaveOnChainTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	txHash := "abc123def456"
 	height := int64(12345)
@@ -44,7 +44,7 @@ func TestSaveOnChainTransaction(t *testing.T) {
 }
 
 func TestGetOldOnchainTransactions(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save transactions at different block heights
 	_, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -69,7 +69,7 @@ func TestGetOldOnchainTransactions(t *testing.T) {
 }
 
 func TestTrimOldOnChainTransactions(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save transactions at different block heights
 	_, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -97,7 +97,7 @@ func TestTrimOldOnChainTransactions(t *testing.T) {
 }
 
 func TestRemoveOnChainTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save a transaction
 	id, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -116,7 +116,7 @@ func TestRemoveOnChainTransaction(t *testing.T) {
 }
 
 func TestCountOnChainTransactions(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save transactions at different block heights
 	_, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -149,7 +149,7 @@ func TestCountOnChainTransactions(t *testing.T) {
 }
 
 func TestGetOnChainTransactionsPagination(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save 5 transactions with different heights and transaction numbers
 	_, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -195,7 +195,7 @@ func TestGetOnChainTransactionsPagination(t *testing.T) {
 }
 
 func TestGetOnChainTransactionsOrdering(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save transactions out of order
 	_, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 200, "blockHash", 2, 1, 1, []byte("data1"), "addr1", map[string]interface{}{
@@ -228,7 +228,7 @@ func TestGetOnChainTransactionsOrdering(t *testing.T) {
 }
 
 func TestOnChainTransactionEdgeCases(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test with empty action data
 	id, err := db.SaveOnChainTransaction(onchainTestCtx, "tx1", 100, "blockHash", 1, 1, 1, []byte{}, "addr1", map[string]interface{}{
@@ -255,7 +255,7 @@ func TestOnChainTransactionEdgeCases(t *testing.T) {
 }
 
 func TestRemoveNonExistentTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Try to remove a non-existent transaction
 	err := db.RemoveOnChainTransaction(onchainTestCtx, "non-existent-id")
@@ -263,7 +263,7 @@ func TestRemoveNonExistentTransaction(t *testing.T) {
 }
 
 func TestGetOnChainTransactionsEmptyResult(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Get transactions when database is empty
 	transactions, err := db.GetOnChainTransactions(onchainTestCtx, 0, 10)

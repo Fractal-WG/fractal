@@ -14,7 +14,7 @@ import (
 var testCtx = context.Background()
 
 func TestSaveMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	mint := &store.MintWithoutID{
 		Hash:                     "testHash123",
@@ -54,7 +54,7 @@ func TestSaveMint(t *testing.T) {
 }
 
 func TestGetMintByHash(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test non-existent mint
 	mint, err := db.GetMintByHash(testCtx, "nonExistent")
@@ -91,7 +91,7 @@ func TestGetMintByHash(t *testing.T) {
 }
 
 func TestGetMints(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save multiple mints
 	for i := 0; i < 5; i++ {
@@ -127,7 +127,7 @@ func TestGetMints(t *testing.T) {
 }
 
 func TestGetMintsByPublicKey(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save mints with different public keys
 	mint1 := &store.MintWithoutID{
@@ -195,7 +195,7 @@ func TestGetMintsByPublicKey(t *testing.T) {
 }
 
 func TestSaveUnconfirmedMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	mint := &store.MintWithoutID{
 		Hash:                     "unconfirmedHash123",
@@ -231,7 +231,7 @@ func TestSaveUnconfirmedMint(t *testing.T) {
 }
 
 func TestGetUnconfirmedMints(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save multiple unconfirmed mints
 	for i := 0; i < 3; i++ {
@@ -262,7 +262,7 @@ func TestGetUnconfirmedMints(t *testing.T) {
 }
 
 func TestTrimOldUnconfirmedMints(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save 5 unconfirmed mints
 	for i := 0; i < 5; i++ {
@@ -292,7 +292,7 @@ func TestTrimOldUnconfirmedMints(t *testing.T) {
 }
 
 func TestMatchMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save a mint where hash matches the transaction hash (as required by MatchMint logic)
 	mint := &store.MintWithoutID{
@@ -350,7 +350,7 @@ func TestMatchMint(t *testing.T) {
 }
 
 func TestMatchUnconfirmedMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save an unconfirmed mint
 	unconfirmedMint := &store.MintWithoutID{
@@ -420,7 +420,7 @@ func TestMatchUnconfirmedMint(t *testing.T) {
 }
 
 func TestClearMints(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save some mints
 	for i := 0; i < 3; i++ {
@@ -455,7 +455,7 @@ func TestClearMints(t *testing.T) {
 }
 
 func TestMintWithComplexMetadata(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test with complex nested metadata
 	complexMetadata := store.StringInterfaceMap{
@@ -503,7 +503,7 @@ func TestMintWithComplexMetadata(t *testing.T) {
 }
 
 func TestGetMintsByPublicKeyWithUnconfirmed(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Save a confirmed mint
 	confirmedMint := &store.MintWithoutID{

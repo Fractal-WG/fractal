@@ -18,7 +18,7 @@ import (
 var ownerAddress = support.GenerateDogecoinAddress(true)
 
 func TestMintMatch(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 	ctx := context.Background()
 
@@ -31,7 +31,7 @@ func TestMintMatch(t *testing.T) {
 }
 
 func TestInvoiceMatch(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 	ctx := context.Background()
 
@@ -69,7 +69,7 @@ func TestInvoiceMatch(t *testing.T) {
 }
 
 func TestInvoiceMatchEarlierBlockHeightAndTransactionNumber(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 	ctx := context.Background()
 
@@ -97,7 +97,7 @@ func TestInvoiceMatchEarlierBlockHeightAndTransactionNumber(t *testing.T) {
 }
 
 func TestPaymentIsLessThanExpected(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 	ctx := context.Background()
 
@@ -128,7 +128,7 @@ func TestPaymentIsLessThanExpected(t *testing.T) {
 }
 
 func TestInvoiceTimesOutAfter14BlockDays(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 	ctx := context.Background()
 

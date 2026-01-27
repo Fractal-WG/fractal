@@ -24,7 +24,7 @@ import (
 )
 
 func TestGossipMint(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -149,7 +149,7 @@ func TestGossipMint(t *testing.T) {
 }
 
 func TestGossipMintWithNilMetadata(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -221,7 +221,7 @@ func TestGossipMintWithNilMetadata(t *testing.T) {
 }
 
 func TestRecvMintViaStartWithConn(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
@@ -331,7 +331,7 @@ func TestRecvMintViaStartWithConn(t *testing.T) {
 }
 
 func TestRecvMintInvalidEnvelope(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
@@ -381,7 +381,7 @@ func TestRecvMintInvalidEnvelope(t *testing.T) {
 }
 
 func TestRecvMintWrongActionType(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()

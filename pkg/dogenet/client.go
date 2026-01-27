@@ -55,13 +55,15 @@ type GossipClient interface {
 type DogeNetClient struct {
 	governor.ServiceCtx
 	GossipClient
-	cfg      *config.Config
-	store    *store.TokenisationStore
-	sock     net.Conn
-	feKey    dnet.KeyPair
-	Stopping bool
-	Messages chan dnet.Message
-	Running  bool
+	cfg           *config.Config
+	store         *store.TokenisationStore
+	sock          net.Conn
+	feKey         dnet.KeyPair
+	Stopping      bool
+	Messages      chan dnet.Message
+	Running       bool
+	dogeNetCtx    context.Context
+	dogeNetCancel context.CancelFunc
 }
 
 const GossipInterval = 71 * time.Second // gossip a random identity to peers
@@ -220,9 +222,13 @@ func (c *DogeNetClient) Run() {
 	}
 	log.Printf("[FE] completed handshake.")
 
-	go c.gossipRandomMints()
-	go c.gossipRandomInvoices()
-	go c.gossipRandomInvoiceSignatures()
+	if c.dogeNetCancel != nil {
+		c.dogeNetCancel()
+	}
+	c.dogeNetCtx, c.dogeNetCancel = context.WithCancel(context.Background())
+	go c.gossipRandomMints(c.dogeNetCtx)
+	go c.gossipRandomInvoices(c.dogeNetCtx)
+	go c.gossipRandomInvoiceSignatures(c.dogeNetCtx)
 
 	for !c.Stopping {
 		msg, err := dnet.ReadMessage(reader)
@@ -250,7 +256,7 @@ func (c *DogeNetClient) Run() {
 		case TagMint:
 			c.recvMint(msg)
 		case TagBuyOffer:
-			c.recvBuyOffer(msg)
+			c.recvBuyOffer(c.dogeNetCtx, msg)
 		case TagSellOffer:
 			c.recvSellOffer(msg)
 		case TagInvoice:
@@ -271,14 +277,25 @@ func (c *DogeNetClient) Stop() {
 	fmt.Println("Stopping dogenet client")
 	c.Stopping = true
 
+	if c.dogeNetCancel != nil {
+		c.dogeNetCancel()
+	}
+
 	if c.sock != nil {
 		c.sock.Close()
 	}
 }
 
-func (s *DogeNetClient) gossipRandomMints() {
-	ctx := context.Background()
-	for !s.Stopping {
+func (s *DogeNetClient) gossipRandomMints(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
 		// wait for next turn
 		time.Sleep(GossipInterval)
 
@@ -298,9 +315,16 @@ func (s *DogeNetClient) gossipRandomMints() {
 	}
 }
 
-func (s *DogeNetClient) gossipRandomInvoices() {
-	ctx := context.Background()
-	for !s.Stopping {
+func (s *DogeNetClient) gossipRandomInvoices(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
 		// wait for next turn
 		time.Sleep(GossipInterval)
 
@@ -335,9 +359,16 @@ func (s *DogeNetClient) gossipRandomInvoices() {
 	}
 }
 
-func (s *DogeNetClient) gossipRandomInvoiceSignatures() {
-	ctx := context.Background()
-	for !s.Stopping {
+func (s *DogeNetClient) gossipRandomInvoiceSignatures(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
 		// wait for next turn
 		time.Sleep(GossipInterval)
 

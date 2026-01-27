@@ -26,7 +26,7 @@ func findTransactionById(txs []store.OnChainTransaction, id string) *store.OnCha
 }
 
 func TestMatchPaymentSuccess(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	// This test demonstrates the full payment flow:
@@ -167,7 +167,7 @@ func TestMatchPaymentSuccess(t *testing.T) {
 }
 
 func TestMatchPaymentWrongActionType(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	paymentTx := store.OnChainTransaction{
@@ -181,7 +181,7 @@ func TestMatchPaymentWrongActionType(t *testing.T) {
 }
 
 func TestMatchPaymentInvalidProtobuf(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	paymentTx := store.OnChainTransaction{
@@ -196,7 +196,7 @@ func TestMatchPaymentInvalidProtobuf(t *testing.T) {
 }
 
 func TestMatchPaymentInvoiceNotFound(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	buyerAddress := test_support.GenerateDogecoinAddress(true)
@@ -221,7 +221,7 @@ func TestMatchPaymentInvoiceNotFound(t *testing.T) {
 }
 
 func TestMatchPaymentValueMismatch(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
@@ -263,7 +263,7 @@ func TestMatchPaymentValueMismatch(t *testing.T) {
 }
 
 func TestMatchPaymentPendingBalanceMismatch(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
@@ -313,7 +313,7 @@ func TestMatchPaymentPendingBalanceMismatch(t *testing.T) {
 }
 
 func TestMatchPaymentNoPendingBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
@@ -358,7 +358,7 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 	assert.Assert(t, err != nil, "Should fail without pending balance")
 
 	var paidAt sql.NullTime
-err = tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
+	err = tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
 	fmt.Println(paidAt)
 	assert.NilError(t, err)
 	assert.Assert(t, !paidAt.Valid, "Invoice should NOT be paid due to rollback")

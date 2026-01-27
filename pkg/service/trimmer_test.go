@@ -13,7 +13,7 @@ import (
 )
 
 func TestTrimmerServiceForOnChainTransactions(t *testing.T) {
-	tokenisationStore := test_support.SetupTestDB()
+	tokenisationStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 
 	rpcClient := support.NewTestDogeClient(t)

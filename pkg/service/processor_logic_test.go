@@ -16,7 +16,7 @@ import (
 )
 
 func TestProcessEmptyDatabase(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	rpcClient := support.NewTestDogeClient(t)
 
 	processor := service.NewFractalEngineProcessor(tokenStore, rpcClient)
@@ -29,7 +29,7 @@ func TestProcessEmptyDatabase(t *testing.T) {
 }
 
 func TestProcessMintTransactionMatched(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -89,7 +89,7 @@ func TestProcessMintTransactionMatched(t *testing.T) {
 }
 
 func TestProcessMintTransactionNotMatched(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -127,7 +127,7 @@ func TestProcessMintTransactionNotMatched(t *testing.T) {
 }
 
 func TestProcessPaymentTransaction(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -232,7 +232,7 @@ func TestProcessPaymentTransaction(t *testing.T) {
 }
 
 func TestProcessInvoiceTransaction(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -307,7 +307,7 @@ func TestProcessInvoiceTransaction(t *testing.T) {
 }
 
 func TestProcessPagination(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
@@ -346,7 +346,7 @@ func TestProcessPagination(t *testing.T) {
 }
 
 func TestProcessUnknownActionType(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
 	rpcClient := support.NewTestDogeClient(t)
 
