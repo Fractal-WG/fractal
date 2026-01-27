@@ -11,7 +11,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -23,10 +22,10 @@ const (
 )
 
 type CreateNewPaymentRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	InvoiceHash   *Hash                  `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash,proto3" json:"invoice_hash,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_InvoiceHash *Hash                  `protobuf:"bytes,1,opt,name=invoice_hash,json=invoiceHash"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CreateNewPaymentRequest) Reset() {
@@ -54,23 +53,47 @@ func (x *CreateNewPaymentRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateNewPaymentRequest.ProtoReflect.Descriptor instead.
-func (*CreateNewPaymentRequest) Descriptor() ([]byte, []int) {
-	return file_payments_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *CreateNewPaymentRequest) GetInvoiceHash() *Hash {
 	if x != nil {
-		return x.InvoiceHash
+		return x.xxx_hidden_InvoiceHash
 	}
 	return nil
 }
 
+func (x *CreateNewPaymentRequest) SetInvoiceHash(v *Hash) {
+	x.xxx_hidden_InvoiceHash = v
+}
+
+func (x *CreateNewPaymentRequest) HasInvoiceHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_InvoiceHash != nil
+}
+
+func (x *CreateNewPaymentRequest) ClearInvoiceHash() {
+	x.xxx_hidden_InvoiceHash = nil
+}
+
+type CreateNewPaymentRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	InvoiceHash *Hash
+}
+
+func (b0 CreateNewPaymentRequest_builder) Build() *CreateNewPaymentRequest {
+	m0 := &CreateNewPaymentRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_InvoiceHash = b.InvoiceHash
+	return m0
+}
+
 type CreateNewPaymentResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Values        map[string]string      `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Values map[string]string      `protobuf:"bytes,1,rep,name=values" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreateNewPaymentResponse) Reset() {
@@ -98,16 +121,29 @@ func (x *CreateNewPaymentResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateNewPaymentResponse.ProtoReflect.Descriptor instead.
-func (*CreateNewPaymentResponse) Descriptor() ([]byte, []int) {
-	return file_payments_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *CreateNewPaymentResponse) GetValues() map[string]string {
 	if x != nil {
-		return x.Values
+		return x.xxx_hidden_Values
 	}
 	return nil
+}
+
+func (x *CreateNewPaymentResponse) SetValues(v map[string]string) {
+	x.xxx_hidden_Values = v
+}
+
+type CreateNewPaymentResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Values map[string]string
+}
+
+func (b0 CreateNewPaymentResponse_builder) Build() *CreateNewPaymentResponse {
+	m0 := &CreateNewPaymentResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Values = b.Values
+	return m0
 }
 
 var File_payments_proto protoreflect.FileDescriptor
@@ -121,19 +157,7 @@ const file_payments_proto_rawDesc = "" +
 	"\x06values\x18\x01 \x03(\v2:.fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntryR\x06values\x1a9\n" +
 	"\vValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12Z\x10pkg/rpc/protocolb\x06proto3"
-
-var (
-	file_payments_proto_rawDescOnce sync.Once
-	file_payments_proto_rawDescData []byte
-)
-
-func file_payments_proto_rawDescGZIP() []byte {
-	file_payments_proto_rawDescOnce.Do(func() {
-		file_payments_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_payments_proto_rawDesc), len(file_payments_proto_rawDesc)))
-	})
-	return file_payments_proto_rawDescData
-}
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_payments_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_payments_proto_goTypes = []any{

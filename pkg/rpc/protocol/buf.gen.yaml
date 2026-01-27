@@ -5,7 +5,14 @@ plugins:
     out: .
     opt:
       - paths=source_relative
+      - default_api_level=API_OPAQUE
   - local: protoc-gen-connect-go
     out: .
     opt:
       - paths=source_relative
+  - local: protoc-gen-es
+    out: ../../../../fractal-engine-client-js/src
+    include_imports: true
+    opt:
+      - target=ts
+      - import_extension=.js

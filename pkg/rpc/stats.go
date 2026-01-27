@@ -1,50 +1,25 @@
 package rpc
 
 import (
-	"log"
-	"net/http"
+	"context"
 
-	"dogecoin.org/fractal-engine/pkg/store"
+	connect "connectrpc.com/connect"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 )
 
-type StatRoutes struct {
-	store *store.TokenisationStore
-}
 
-func HandleStatRoutes(store *store.TokenisationStore, mux *http.ServeMux) {
-	sr := &StatRoutes{store: store}
-
-	mux.HandleFunc("/stats", sr.handleStats)
-}
-
-func (sr *StatRoutes) handleStats(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		sr.getStats(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-// @Summary		Get stats
-// @Description	Returns the current statistics
-// @Tags			stats
-// @Accept			json
-// @Produce		json
-// @Success		200		{object}	GetStatsResponse
-// @Failure		400		{object}	string
-// @Router			/stats [get]
-func (sr *StatRoutes) getStats(w http.ResponseWriter, _ *http.Request) {
-	stats, err := sr.store.GetStats()
+func (s *ConnectRpcService) GetStats(ctx context.Context, _ *connect.Request[protocol.GetStatsRequest]) (*connect.Response[protocol.GetStatsResponse], error) {
+	stats, err := s.store.GetStats(ctx)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	response := GetStatsResponse{
-		Stats: stats,
+	responseStats := make(map[string]int32, len(stats))
+	for key, value := range stats {
+		responseStats[key] = int32(value)
 	}
 
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetStatsResponse{}
+	resp.SetStats(responseStats)
+	return connect.NewResponse(resp), nil
 }

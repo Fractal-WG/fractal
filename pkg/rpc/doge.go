@@ -1,172 +1,60 @@
 package rpc
 
 import (
-	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"net/http"
+	"errors"
 
-	"dogecoin.org/fractal-engine/pkg/doge"
-	"dogecoin.org/fractal-engine/pkg/store"
+	connect "connectrpc.com/connect"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 )
 
-type DogeRoutes struct {
-	store      *store.TokenisationStore
-	dogeClient *doge.RpcClient
-}
-
-func HandleDogeRoutes(store *store.TokenisationStore, dogeClient *doge.RpcClient, mux *http.ServeMux) {
-	dr := &DogeRoutes{store: store, dogeClient: dogeClient}
-
-	mux.HandleFunc("/doge/send", dr.handleSend)
-	mux.HandleFunc("/doge/confirm", dr.handleConfirm)
-	mux.HandleFunc("/doge/top-up", dr.handleTopUp)
-}
-
-func (dr *DogeRoutes) handleSend(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		dr.postSend(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (dr *DogeRoutes) handleConfirm(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		dr.postConfirm(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-type SendRequest struct {
-	EncodedTrxn string `json:"encoded_transaction_hex"`
-}
-
-type SendResponse struct {
-	TransactionID string `json:"transaction_id"`
-}
-
-// @Summary		Send a raw transaction
-// @Description	Sends a raw transaction to the Dogecoin network
-// @Tags			doge
-// @Accept			json
-// @Produce		json
-// @Param			request	body		SendRequest	true	"Send transaction request"
-// @Success		201		{object}	SendResponse
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/doge/send [post]
-func (dr *DogeRoutes) postSend(w http.ResponseWriter, r *http.Request) {
-	var request SendRequest
-
-	bodyBytes, err := io.ReadAll(r.Body)
+func (s *ConnectRpcService) DogeConfirm(ctx context.Context, _ *connect.Request[protocol.DogeConfirmRequest]) (*connect.Response[protocol.DogeConfirmResponse], error) {
+	_, err := s.dogeClient.Request(ctx, "generate", []interface{}{10})
 	if err != nil {
-		log.Println("error reading request body", err)
-		http.Error(w, "Error reading request", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	if err := json.NewDecoder(bytes.NewReader(bodyBytes)).Decode(&request); err != nil {
-		log.Println("error decoding request", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	res, err := dr.dogeClient.Request("sendrawtransaction", []interface{}{request.EncodedTrxn, true})
+	resp := &protocol.DogeConfirmResponse{}
+	resp.SetValues(map[string]string{})
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) DogeSend(ctx context.Context, req *connect.Request[protocol.DogeSendRequest]) (*connect.Response[protocol.DogeSendResponse], error) {
+	res, err := s.dogeClient.Request(ctx, "sendrawtransaction", []interface{}{req.Msg.GetEncodedTransactionHex(), true})
 	if err != nil {
-		log.Println("error sending raw transaction", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	var txid string
-
 	if err := json.Unmarshal(*res, &txid); err != nil {
-		log.Println("error parsing send raw transaction response", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	log.Println("transaction sent", txid)
-
-	respondJSON(w, http.StatusCreated, SendResponse{
-		TransactionID: txid,
-	})
+	resp := &protocol.DogeSendResponse{}
+	resp.SetTransactionId(txid)
+	return connect.NewResponse(resp), nil
 }
 
-// @Summary		Confirm transactions by generating blocks (Regtest only)
-// @Description	Generates 10 blocks for transaction confirmation
-// @Tags			doge
-// @Accept			json
-// @Produce		json
-// @Success		201		{object}	map[string]string
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/doge/confirm [post]
-func (dr *DogeRoutes) postConfirm(w http.ResponseWriter, _ *http.Request) {
-	_, err := dr.dogeClient.Request("generate", []interface{}{10})
-	if err != nil {
-		log.Println("error sending raw transaction", err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+func (s *ConnectRpcService) DogeTopUp(ctx context.Context, req *connect.Request[protocol.DogeTopUpRequest]) (*connect.Response[protocol.DogeTopUpResponse], error) {
+	address := req.Msg.GetAddress()
+	if address == nil || address.GetValue() == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
 	}
 
-	respondJSON(w, http.StatusCreated, map[string]string{})
-}
-
-func (dr *DogeRoutes) handleTopUp(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		dr.postTopUp(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-// @Summary		Top up an address with test DOGE (Regtest only)
-// @Description	Sends 1000 DOGE to the specified address for testing/development
-// @Tags			doge
-// @Accept			json
-// @Produce		json
-// @Param			address	query		string	true	"Dogecoin address to send funds to"
-// @Success		200		{object}	string
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/doge/top-up [post]
-func (dr *DogeRoutes) postTopUp(w http.ResponseWriter, r *http.Request) {
-	_, err := dr.dogeClient.Generate(101)
-	if err != nil {
-		fmt.Println("error generating blocks", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if _, err := s.dogeClient.Generate(ctx, 101); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	address := r.URL.Query().Get("address")
-	if address == "" {
-		fmt.Println("address is required")
-		http.Error(w, "Address is required", http.StatusBadRequest)
-		return
+	if _, err := s.dogeClient.SendToAddress(ctx, address.GetValue(), 1000); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	_, err = dr.dogeClient.SendToAddress(address, 1000)
-	if err != nil {
-		fmt.Println("error sending to address", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if _, err := s.dogeClient.Generate(ctx, 1); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	_, err = dr.dogeClient.Generate(1)
-	if err != nil {
-		fmt.Println("error generating blocks", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	respondJSON(w, http.StatusOK, address)
+	resp := &protocol.DogeTopUpResponse{}
+	resp.SetValue(address.GetValue())
+	return connect.NewResponse(resp), nil
 }

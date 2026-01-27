@@ -1,6 +1,7 @@
 package store_test
 
 import (
+	"context"
 	"database/sql"
 	"encoding/hex"
 	"fmt"
@@ -25,7 +26,8 @@ func findTransactionById(txs []store.OnChainTransaction, id string) *store.OnCha
 }
 
 func TestMatchPaymentSuccess(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	// This test demonstrates the full payment flow:
 	// 1. Create mint and match it to establish token balance
@@ -40,7 +42,7 @@ func TestMatchPaymentSuccess(t *testing.T) {
 	value := 50.0 * 100
 
 	// Step 1: Create and match mint
-	_, err := tokenStore.SaveUnconfirmedMint(&store.MintWithoutID{
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
 		Hash:            mintHash,
 		Title:           "Test Mint",
 		Description:     "Test Description",
@@ -52,21 +54,21 @@ func TestMatchPaymentSuccess(t *testing.T) {
 
 	mintMsg := &protocol.OnChainMintMessage{Hash: mintHash}
 	encodedMintMsg, _ := proto.Marshal(mintMsg)
-	mintTxId, err := tokenStore.SaveOnChainTransaction("mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
+	mintTxId, err := tokenStore.SaveOnChainTransaction(ctx, "mintTx", 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMintMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: 100,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	mintTx := findTransactionById(txs, mintTxId)
 	assert.Assert(t, mintTx != nil)
 
-	err = tokenStore.MatchUnconfirmedMint(*mintTx)
+	err = tokenStore.MatchUnconfirmedMint(ctx, *mintTx)
 	assert.NilError(t, err)
 
 	// Step 2: Create and match invoice
-	_, err = tokenStore.SaveUnconfirmedInvoice(&store.UnconfirmedInvoice{
+	_, err = tokenStore.SaveUnconfirmedInvoice(ctx, &store.UnconfirmedInvoice{
 		Hash:           invoiceHash,
 		PaymentAddress: sellerAddress,
 		BuyerAddress:   buyerAddress,
@@ -89,22 +91,22 @@ func TestMatchPaymentSuccess(t *testing.T) {
 		Quantity:    int32(quantity),
 	}
 	encodedInvoiceMsg, _ := proto.Marshal(invoiceMsg)
-	invoiceTxId, err := tokenStore.SaveOnChainTransaction("invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
+	invoiceTxId, err := tokenStore.SaveOnChainTransaction(ctx, "invoiceTx", 2, "blockHash", 1, protocol.ACTION_INVOICE, protocol.DEFAULT_VERSION, encodedInvoiceMsg, sellerAddress, map[string]interface{}{
 		sellerAddress: quantity,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	invoiceTx := findTransactionById(txs, invoiceTxId)
 	assert.Assert(t, invoiceTx != nil)
 
 	// The invoice processing normally creates pending token balance
 	// For this test, we need to create it manually
-	err = tokenStore.UpsertPendingTokenBalance(invoiceHash, mintHash, quantity, invoiceTx.Id, sellerAddress)
+	err = tokenStore.UpsertPendingTokenBalance(ctx, invoiceHash, mintHash, quantity, invoiceTx.Id, sellerAddress)
 	assert.NilError(t, err)
 
-	err = tokenStore.MatchUnconfirmedInvoice(*invoiceTx)
+	err = tokenStore.MatchUnconfirmedInvoice(ctx, *invoiceTx)
 	assert.NilError(t, err)
 
 	// Step 3: Create and match payment
@@ -112,24 +114,24 @@ func TestMatchPaymentSuccess(t *testing.T) {
 		Hash: invoiceHash,
 	}
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
-	paymentTxId, err := tokenStore.SaveOnChainTransaction("paymentTx", 3, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
+	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 3, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
 		sellerAddress: value,
 	})
 	assert.NilError(t, err)
 
-	txs, err = tokenStore.GetOnChainTransactions(0, 10)
+	txs, err = tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
 	// Test MatchPayment
-	invoice, err := tokenStore.MatchPayment(*paymentTx)
+	invoice, err := tokenStore.MatchPayment(ctx, *paymentTx)
 	assert.NilError(t, err)
 
-	err = tokenStore.ProcessPayment(*paymentTx, invoice)
+	err = tokenStore.ProcessPayment(ctx, *paymentTx, invoice)
 	assert.NilError(t, err)
 
-	row := tokenStore.DB.QueryRow("SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash)
+	row := tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash)
 	var paidAt sql.NullTime
 	if err := row.Scan(&paidAt); err != nil {
 		fmt.Println(err)
@@ -140,22 +142,22 @@ func TestMatchPaymentSuccess(t *testing.T) {
 
 	// Check payment transaction was deleted
 	var count int
-	err = tokenStore.DB.QueryRow("SELECT COUNT(*) FROM onchain_transactions WHERE id = $1", paymentTx.Id).Scan(&count)
+	err = tokenStore.DB.QueryRowContext(ctx, "SELECT COUNT(*) FROM onchain_transactions WHERE id = $1", paymentTx.Id).Scan(&count)
 	assert.NilError(t, err)
 	assert.Equal(t, 0, count, "Payment transaction should be deleted")
 
 	// Check pending balance was removed
-	_, err = tokenStore.GetPendingTokenBalance(invoiceHash, mintHash, nil)
+	_, err = tokenStore.GetPendingTokenBalance(ctx, invoiceHash, mintHash, nil)
 	assert.Assert(t, err != nil, "Pending balance should be removed")
 
 	// Check buyer received tokens
-	buyerBalances, err := tokenStore.GetTokenBalances(buyerAddress, mintHash)
+	buyerBalances, err := tokenStore.GetTokenBalances(ctx, buyerAddress, mintHash)
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(buyerBalances))
 	assert.Equal(t, quantity, buyerBalances[0].Quantity)
 
 	// Check seller's balance was reduced
-	sellerBalances, err := tokenStore.GetTokenBalances(sellerAddress, mintHash)
+	sellerBalances, err := tokenStore.GetTokenBalances(ctx, sellerAddress, mintHash)
 	assert.NilError(t, err)
 	totalSellerBalance := 0
 	for _, balance := range sellerBalances {
@@ -165,7 +167,8 @@ func TestMatchPaymentSuccess(t *testing.T) {
 }
 
 func TestMatchPaymentWrongActionType(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	paymentTx := store.OnChainTransaction{
 		Id:         "payment123",
@@ -173,12 +176,13 @@ func TestMatchPaymentWrongActionType(t *testing.T) {
 		ActionType: protocol.ACTION_MINT, // Wrong type
 	}
 
-	_, err := tokenStore.MatchPayment(paymentTx)
+	_, err := tokenStore.MatchPayment(ctx, paymentTx)
 	assert.ErrorContains(t, err, "action type is not payment")
 }
 
 func TestMatchPaymentInvalidProtobuf(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	paymentTx := store.OnChainTransaction{
 		Id:         "payment123",
@@ -187,12 +191,13 @@ func TestMatchPaymentInvalidProtobuf(t *testing.T) {
 		ActionData: []byte("invalid protobuf data"),
 	}
 
-	_, err := tokenStore.MatchPayment(paymentTx)
+	_, err := tokenStore.MatchPayment(ctx, paymentTx)
 	assert.Assert(t, err != nil, "Should fail with invalid protobuf")
 }
 
 func TestMatchPaymentInvoiceNotFound(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	buyerAddress := test_support.GenerateDogecoinAddress(true)
 
@@ -201,22 +206,23 @@ func TestMatchPaymentInvoiceNotFound(t *testing.T) {
 	}
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
-	paymentTxId, err := tokenStore.SaveOnChainTransaction("paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
+	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
 		buyerAddress: 50,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
-	_, err = tokenStore.MatchPayment(*paymentTx)
+	_, err = tokenStore.MatchPayment(ctx, *paymentTx)
 	assert.ErrorContains(t, err, "invoice not found")
 }
 
 func TestMatchPaymentValueMismatch(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
 	buyerAddress := test_support.GenerateDogecoinAddress(true)
@@ -233,7 +239,7 @@ func TestMatchPaymentValueMismatch(t *testing.T) {
 		CreatedAt:      time.Now(),
 		SellerAddress:  sellerAddress,
 	}
-	_, err := tokenStore.SaveInvoice(actualInvoice)
+	_, err := tokenStore.SaveInvoice(ctx, actualInvoice)
 	assert.NilError(t, err)
 
 	// Create payment with wrong value
@@ -242,22 +248,23 @@ func TestMatchPaymentValueMismatch(t *testing.T) {
 	}
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
-	paymentTxId, err := tokenStore.SaveOnChainTransaction("paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
+	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
 		buyerAddress: 25,
 	}) // Wrong value
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
-	_, err = tokenStore.MatchPayment(*paymentTx)
+	_, err = tokenStore.MatchPayment(ctx, *paymentTx)
 	assert.ErrorContains(t, err, "payment value is not equal to buy offer value")
 }
 
 func TestMatchPaymentPendingBalanceMismatch(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
 	mintHash := "mint123"
@@ -275,11 +282,11 @@ func TestMatchPaymentPendingBalanceMismatch(t *testing.T) {
 		CreatedAt:      time.Now(),
 		SellerAddress:  sellerAddress,
 	}
-	_, err := tokenStore.SaveInvoice(actualInvoice)
+	_, err := tokenStore.SaveInvoice(ctx, actualInvoice)
 	assert.NilError(t, err)
 
 	// Create pending balance with wrong quantity
-	err = tokenStore.UpsertPendingTokenBalance(invoiceHash, mintHash, 30, "invoiceTxId", sellerAddress) // Wrong quantity
+	err = tokenStore.UpsertPendingTokenBalance(ctx, invoiceHash, mintHash, 30, "invoiceTxId", sellerAddress) // Wrong quantity
 	assert.NilError(t, err)
 
 	// Create payment
@@ -288,25 +295,26 @@ func TestMatchPaymentPendingBalanceMismatch(t *testing.T) {
 	}
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
-	paymentTxId, err := tokenStore.SaveOnChainTransaction("paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
+	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
 		sellerAddress: 5000,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
-	invoice, err := tokenStore.MatchPayment(*paymentTx)
+	invoice, err := tokenStore.MatchPayment(ctx, *paymentTx)
 	assert.NilError(t, err)
 
-	err = tokenStore.ProcessPayment(*paymentTx, invoice)
+	err = tokenStore.ProcessPayment(ctx, *paymentTx, invoice)
 	assert.ErrorContains(t, err, "no pending token balance found")
 }
 
 func TestMatchPaymentNoPendingBalance(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
 
 	invoiceHash := "testInvoice123"
 	buyerAddress := test_support.GenerateDogecoinAddress(true)
@@ -323,7 +331,7 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 		CreatedAt:      time.Now(),
 		SellerAddress:  sellerAddress,
 	}
-	_, err := tokenStore.SaveInvoice(actualInvoice)
+	_, err := tokenStore.SaveInvoice(ctx, actualInvoice)
 	assert.NilError(t, err)
 
 	// Create payment
@@ -332,25 +340,25 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 	}
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
-	paymentTxId, err := tokenStore.SaveOnChainTransaction("paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
+	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
 		buyerAddress: 50,
 	})
 	assert.NilError(t, err)
 
-	txs, err := tokenStore.GetOnChainTransactions(0, 10)
+	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
 	assert.NilError(t, err)
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
 	// Should fail due to missing pending balance
-	inv, err := tokenStore.MatchPayment(*paymentTx)
+	inv, err := tokenStore.MatchPayment(ctx, *paymentTx)
 	assert.Assert(t, err != nil, "Should fail without pending balance")
 
-	err = tokenStore.ProcessPayment(*paymentTx, inv)
+	err = tokenStore.ProcessPayment(ctx, *paymentTx, inv)
 	assert.Assert(t, err != nil, "Should fail without pending balance")
 
 	var paidAt sql.NullTime
-	err = tokenStore.DB.QueryRow("SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
+	err = tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)
 	fmt.Println(paidAt)
 	assert.NilError(t, err)
 	assert.Assert(t, !paidAt.Valid, "Invoice should NOT be paid due to rollback")

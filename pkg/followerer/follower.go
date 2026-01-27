@@ -53,7 +53,7 @@ func NewFollowerWithCustomChainFollower(cfg *fecfg.Config, store *store.Tokenisa
 func (f *DogeFollower) Start() error {
 	f.Running = true
 
-	blockHeight, blockHash, _, err := f.store.GetChainPosition()
+	blockHeight, blockHash, _, err := f.store.GetChainPosition(f.context)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (f *DogeFollower) Start() error {
 						}
 					}
 
-					_, err = f.store.SaveOnChainTransaction(tx.Hash, msg.Block.Height, blockHash, transactionNumber, fractalMessage.Action, fractalMessage.Version, fractalMessage.Data, address, addressValues)
+					_, err = f.store.SaveOnChainTransaction(f.context, tx.Hash, msg.Block.Height, blockHash, transactionNumber, fractalMessage.Action, fractalMessage.Version, fractalMessage.Data, address, addressValues)
 					if err != nil {
 						log.Println("Error saving on chain transaction:", err)
 					}
@@ -106,7 +106,7 @@ func (f *DogeFollower) Start() error {
 				}
 
 				if f.cfg.PersistFollower {
-					err := f.store.UpsertChainPosition(msg.ChainPos.BlockHeight, msg.ChainPos.BlockHash, msg.ChainPos.WaitingForNextHash)
+					err := f.store.UpsertChainPosition(f.context, msg.ChainPos.BlockHeight, msg.ChainPos.BlockHash, msg.ChainPos.WaitingForNextHash)
 					if err != nil {
 						log.Println("Error setting chain position:", err)
 					}
@@ -115,7 +115,7 @@ func (f *DogeFollower) Start() error {
 			case messages.RollbackMessage:
 				log.Println("Received rollback message from chainfollower:")
 				if f.cfg.PersistFollower {
-					err := f.store.UpsertChainPosition(msg.NewChainPos.BlockHeight, msg.NewChainPos.BlockHash, msg.NewChainPos.WaitingForNextHash)
+					err := f.store.UpsertChainPosition(f.context, msg.NewChainPos.BlockHeight, msg.NewChainPos.BlockHash, msg.NewChainPos.WaitingForNextHash)
 					if err != nil {
 						log.Println("Error setting chain position:", err)
 					}

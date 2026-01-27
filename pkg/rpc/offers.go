@@ -1,221 +1,90 @@
 package rpc
 
 import (
-	"encoding/json"
-	"log"
-	"math"
-	"net/http"
-	"strconv"
+	"context"
+	"errors"
 	"time"
 
-	"dogecoin.org/fractal-engine/pkg/config"
-	"dogecoin.org/fractal-engine/pkg/dogenet"
+	connect "connectrpc.com/connect"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 )
 
-type OfferRoutes struct {
-	store        *store.TokenisationStore
-	gossipClient dogenet.GossipClient
-	cfg          *config.Config
-}
-
-func HandleOfferRoutes(store *store.TokenisationStore, gossipClient dogenet.GossipClient, mux *http.ServeMux, cfg *config.Config) {
-	or := &OfferRoutes{store: store, gossipClient: gossipClient, cfg: cfg}
-
-	mux.HandleFunc("/buy-offers/delete", or.handleDeleteBuyOffer)
-	mux.HandleFunc("/buy-offers", or.handleBuyOffers)
-	mux.HandleFunc("/sell-offers/delete", or.handleDeleteSellOffer)
-	mux.HandleFunc("/sell-offers", or.handleSellOffers)
-}
-
-func (or *OfferRoutes) handleBuyOffers(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		or.getBuyOffers(w, r)
-	case http.MethodPost:
-		or.postBuyOffer(w, r)
-	case http.MethodDelete:
-		or.deleteBuyOffer(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (or *OfferRoutes) handleSellOffers(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		or.getSellOffers(w, r)
-	case http.MethodPost:
-		or.postSellOffer(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (or *OfferRoutes) handleDeleteBuyOffer(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		or.deleteBuyOffer(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (or *OfferRoutes) handleDeleteSellOffer(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		or.deleteSellOffer(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (or *OfferRoutes) deleteBuyOffer(w http.ResponseWriter, r *http.Request) {
-	var request DeleteBuyOfferRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+func (s *ConnectRpcService) GetSellOffers(ctx context.Context, req *connect.Request[protocol.GetSellOffersRequest]) (*connect.Response[protocol.GetSellOffersResponse], error) {
+	limit := int32(100)
+	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() < limit {
+		limit = req.Msg.GetLimit().GetValue()
 	}
 
-	err := request.Validate()
+	page := int32(0)
+	if req.Msg.GetPage() != nil && req.Msg.GetPage().GetValue() > 0 {
+		page = req.Msg.GetPage().GetValue()
+	}
+
+	start := int(page * limit)
+	end := int(start + int(limit))
+
+	mintHash := ""
+	if req.Msg.GetMintHash() != nil {
+		mintHash = req.Msg.GetMintHash().GetValue()
+	}
+
+	offererAddress := ""
+	if req.Msg.GetOffererAddress() != nil {
+		offererAddress = req.Msg.GetOffererAddress().GetValue()
+	}
+
+	offers, err := s.store.GetSellOffers(ctx, start, end, mintHash, offererAddress)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = or.store.DeleteBuyOffer(request.Payload.OfferHash, request.PublicKey)
-	if err != nil {
-		http.Error(w, "Failed to delete buy offer", http.StatusBadRequest)
-		return
-	}
-
-	err = or.gossipClient.GossipDeleteBuyOffer(request.Payload.OfferHash, request.PublicKey, request.Signature)
-	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
-	}
-
-	respondJSON(w, http.StatusOK, "Buy offer deleted")
-}
-
-func (or *OfferRoutes) deleteSellOffer(w http.ResponseWriter, r *http.Request) {
-	var request DeleteSellOfferRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
-
-	err := request.Validate()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = or.store.DeleteSellOffer(request.Payload.OfferHash, request.PublicKey)
-	if err != nil {
-		http.Error(w, "Failed to delete sell offer", http.StatusBadRequest)
-		return
-	}
-
-	err = or.gossipClient.GossipDeleteSellOffer(request.Payload.OfferHash, request.PublicKey, request.Signature)
-	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
-	}
-
-	respondJSON(w, http.StatusOK, "Sell offer deleted")
-}
-
-func (or *OfferRoutes) getSellOffers(w http.ResponseWriter, r *http.Request) {
-	limitStr := r.URL.Query().Get("limit")
-	limit := 100
-
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil && l < limit {
-			limit = l
-		}
-	}
-
-	pageStr := r.URL.Query().Get("page")
-	page := 0
-
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
-			page = p
-		}
-	}
-
-	// max 100 records per page
-	limit = int(math.Min(float64(limit), 100))
-
-	start := page * limit
-	end := start + limit
-
-	mintHash := r.URL.Query().Get("mint_hash")
-	offererAddress := r.URL.Query().Get("offerer_address")
-
-	offers, err := or.store.GetSellOffers(start, end, mintHash, offererAddress)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	if start >= len(offers) {
-		respondJSON(w, http.StatusOK, GetSellOffersResponse{})
-		return
+		return connect.NewResponse(&protocol.GetSellOffersResponse{}), nil
 	}
 
 	if end > len(offers) {
 		end = len(offers)
 	}
 
-	offersWithMints := []SellOfferWithMint{}
+	offersWithMints := make([]*protocol.SellOfferWithMint, 0, len(offers))
 	for _, offer := range offers {
-		mint, err := or.store.GetMintByHash(offer.MintHash)
+		mint, err := s.store.GetMintByHash(ctx, offer.MintHash)
 		if err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
+			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
-
-		offersWithMints = append(offersWithMints, SellOfferWithMint{
-			Offer: offer,
-			Mint:  mint,
-		})
+		protoOffer, err := toProtoSellOfferWithMint(offer, mint)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		offersWithMints = append(offersWithMints, protoOffer)
 	}
 
-	response := GetSellOffersResponse{
-		Offers: offersWithMints[start:end],
-		Total:  len(offers),
-		Page:   page,
-		Limit:  limit,
-	}
-
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetSellOffersResponse{}
+	resp.SetOffers(offersWithMints[start:end])
+	resp.SetTotal(int32(len(offers)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
+	return connect.NewResponse(resp), nil
 }
 
-func (or *OfferRoutes) postSellOffer(w http.ResponseWriter, r *http.Request) {
-	var request CreateSellOfferRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
-
-	err := request.Validate()
+func (s *ConnectRpcService) CreateSellOffer(ctx context.Context, req *connect.Request[protocol.CreateSellOfferRequest]) (*connect.Response[protocol.CreateSellOfferResponse], error) {
+	request, err := toCreateSellOfferRequest(req.Msg)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := or.store.CountSellOffers(request.Payload.MintHash, request.Payload.OffererAddress)
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	count, err := s.store.CountSellOffers(ctx, request.Payload.MintHash, request.Payload.OffererAddress)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	if count >= or.cfg.SellOfferLimit {
-		http.Error(w, "Sell offer limit reached", http.StatusBadRequest)
-		return
+	if count >= s.cfg.SellOfferLimit {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("sell offer limit reached"))
 	}
 
 	newOfferWithoutId := &store.SellOfferWithoutID{
@@ -229,14 +98,12 @@ func (or *OfferRoutes) postSellOffer(w http.ResponseWriter, r *http.Request) {
 	}
 	newOfferWithoutId.Hash, err = newOfferWithoutId.GenerateHash()
 	if err != nil {
-		http.Error(w, "Failed to generate hash", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := or.store.SaveSellOffer(newOfferWithoutId)
+	id, err := s.store.SaveSellOffer(ctx, newOfferWithoutId)
 	if err != nil {
-		http.Error(w, "Failed to save sell offer", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	newOffer := &store.SellOffer{
@@ -244,111 +111,114 @@ func (or *OfferRoutes) postSellOffer(w http.ResponseWriter, r *http.Request) {
 		Id:                 id,
 	}
 
-	err = or.gossipClient.GossipSellOffer(*newOffer)
-	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
+	if err := s.gossipClient.GossipSellOffer(*newOffer); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	response := CreateOfferResponse{
-		Id:   id,
-		Hash: newOfferWithoutId.Hash,
-	}
-
-	respondJSON(w, http.StatusCreated, response)
+	resp := &protocol.CreateSellOfferResponse{}
+	resp.SetId(id)
+	resp.SetHash(toProtoHash(newOfferWithoutId.Hash))
+	return connect.NewResponse(resp), nil
 }
 
-func (or *OfferRoutes) getBuyOffers(w http.ResponseWriter, r *http.Request) {
-	limitStr := r.URL.Query().Get("limit")
-	limit := 100
-
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil && l < limit {
-			limit = l
-		}
-	}
-
-	// max 100 records per page
-	limit = int(math.Min(float64(limit), 100))
-
-	pageStr := r.URL.Query().Get("page")
-	page := 0
-
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
-			page = p
-		}
-	}
-
-	mintHash := r.URL.Query().Get("mint_hash")
-	sellerAddress := r.URL.Query().Get("seller_address")
-
-	start := page * limit
-	end := start + limit
-
-	offers, err := or.store.GetBuyOffersByMintAndSellerAddress(start, end, mintHash, sellerAddress)
+func (s *ConnectRpcService) DeleteSellOffer(ctx context.Context, req *connect.Request[protocol.DeleteSellOfferRequest]) (*connect.Response[protocol.DeleteSellOfferResponse], error) {
+	request, err := toDeleteSellOfferRequest(req.Msg)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	// Clamp the slice range
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := s.store.DeleteSellOffer(ctx, request.Payload.OfferHash, request.PublicKey); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := s.gossipClient.GossipDeleteSellOffer(request.Payload.OfferHash, request.PublicKey, request.Signature); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := &protocol.DeleteSellOfferResponse{}
+	resp.SetValue("Sell offer deleted")
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) GetBuyOffers(ctx context.Context, req *connect.Request[protocol.GetBuyOffersRequest]) (*connect.Response[protocol.GetBuyOffersResponse], error) {
+	limit := int32(100)
+	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() < limit {
+		limit = req.Msg.GetLimit().GetValue()
+	}
+
+	page := int32(0)
+	if req.Msg.GetPage() != nil && req.Msg.GetPage().GetValue() > 0 {
+		page = req.Msg.GetPage().GetValue()
+	}
+
+	start := int(page * limit)
+	end := int(start + int(limit))
+
+	mintHash := ""
+	if req.Msg.GetMintHash() != nil {
+		mintHash = req.Msg.GetMintHash().GetValue()
+	}
+
+	sellerAddress := ""
+	if req.Msg.GetSellerAddress() != nil {
+		sellerAddress = req.Msg.GetSellerAddress().GetValue()
+	}
+
+	offers, err := s.store.GetBuyOffersByMintAndSellerAddress(ctx, start, end, mintHash, sellerAddress)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
 	if start >= len(offers) {
-		respondJSON(w, http.StatusOK, GetBuyOffersResponse{})
-		return
+		return connect.NewResponse(&protocol.GetBuyOffersResponse{}), nil
 	}
 
 	if end > len(offers) {
 		end = len(offers)
 	}
 
-	offersWithMints := []BuyOfferWithMint{}
+	offersWithMints := make([]*protocol.BuyOfferWithMint, 0, len(offers))
 	for _, offer := range offers {
-		mint, err := or.store.GetMintByHash(offer.MintHash)
+		mint, err := s.store.GetMintByHash(ctx, offer.MintHash)
 		if err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
+			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
-
-		offersWithMints = append(offersWithMints, BuyOfferWithMint{
-			Offer: offer,
-			Mint:  mint,
-		})
+		protoOffer, err := toProtoBuyOfferWithMint(offer, mint)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		offersWithMints = append(offersWithMints, protoOffer)
 	}
 
-	response := GetBuyOffersResponse{
-		Offers: offersWithMints[start:end],
-		Total:  len(offers),
-		Page:   page,
-		Limit:  limit,
-	}
-
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetBuyOffersResponse{}
+	resp.SetOffers(offersWithMints[start:end])
+	resp.SetTotal(int32(len(offers)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
+	return connect.NewResponse(resp), nil
 }
 
-func (or *OfferRoutes) postBuyOffer(w http.ResponseWriter, r *http.Request) {
-	var request CreateBuyOfferRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
-
-	err := request.Validate()
+func (s *ConnectRpcService) CreateBuyOffer(ctx context.Context, req *connect.Request[protocol.CreateBuyOfferRequest]) (*connect.Response[protocol.CreateBuyOfferResponse], error) {
+	request, err := toCreateBuyOfferRequest(req.Msg)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := or.store.CountBuyOffers(request.Payload.MintHash, request.Payload.OffererAddress, request.Payload.SellerAddress)
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	count, err := s.store.CountBuyOffers(ctx, request.Payload.MintHash, request.Payload.OffererAddress, request.Payload.SellerAddress)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	if count >= or.cfg.BuyOfferLimit {
-		http.Error(w, "Buy offer limit reached", http.StatusBadRequest)
-		return
+	if count >= s.cfg.BuyOfferLimit {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("buy offer limit reached"))
 	}
 
 	newOfferWithoutId := &store.BuyOfferWithoutID{
@@ -362,14 +232,12 @@ func (or *OfferRoutes) postBuyOffer(w http.ResponseWriter, r *http.Request) {
 	}
 	newOfferWithoutId.Hash, err = newOfferWithoutId.GenerateHash()
 	if err != nil {
-		http.Error(w, "Failed to generate hash", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := or.store.SaveBuyOffer(newOfferWithoutId)
+	id, err := s.store.SaveBuyOffer(ctx, newOfferWithoutId)
 	if err != nil {
-		http.Error(w, "Failed to save buy offer", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	newOffer := &store.BuyOffer{
@@ -377,16 +245,35 @@ func (or *OfferRoutes) postBuyOffer(w http.ResponseWriter, r *http.Request) {
 		Id:                id,
 	}
 
-	err = or.gossipClient.GossipBuyOffer(*newOffer)
+	if err := s.gossipClient.GossipBuyOffer(*newOffer); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := &protocol.CreateBuyOfferResponse{}
+	resp.SetId(id)
+	resp.SetHash(toProtoHash(newOfferWithoutId.Hash))
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) DeleteBuyOffer(ctx context.Context, req *connect.Request[protocol.DeleteBuyOfferRequest]) (*connect.Response[protocol.DeleteBuyOfferResponse], error) {
+	request, err := toDeleteBuyOfferRequest(req.Msg)
 	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	response := CreateOfferResponse{
-		Id:   id,
-		Hash: newOfferWithoutId.Hash,
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	respondJSON(w, http.StatusCreated, response)
+	if err := s.store.DeleteBuyOffer(ctx, request.Payload.OfferHash, request.PublicKey); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := s.gossipClient.GossipDeleteBuyOffer(request.Payload.OfferHash, request.PublicKey, request.Signature); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := &protocol.DeleteBuyOfferResponse{}
+	resp.SetValue("Buy offer deleted")
+	return connect.NewResponse(resp), nil
 }

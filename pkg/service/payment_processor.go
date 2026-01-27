@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -20,14 +21,15 @@ func NewPaymentProcessor(store *store.TokenisationStore, dogeClient *doge.RpcCli
 }
 
 func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
-	invoice, err := p.store.MatchPayment(tx)
+	ctx := context.Background()
+	invoice, err := p.store.MatchPayment(ctx, tx)
 	if err != nil {
 		log.Println("Match Payment", err)
 		return err
 	}
 
 	if tx.BlockHash == "" {
-		blockHash, err := p.dogeClient.GetBlockHash(int(tx.Height))
+		blockHash, err := p.dogeClient.GetBlockHash(ctx, int(tx.Height))
 		if err != nil {
 			log.Println("GetBlockHash", err)
 			return err
@@ -36,7 +38,7 @@ func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
 		tx.BlockHash = blockHash
 	}
 
-	blockHeader, err := p.dogeClient.GetBlockHeader(tx.BlockHash)
+	blockHeader, err := p.dogeClient.GetBlockHeader(ctx, tx.BlockHash)
 	if err != nil {
 		log.Println("GetBlockHeader", err)
 		return err
@@ -47,7 +49,7 @@ func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
 		return fmt.Errorf("Minimum confirmations not met: %d < %d", blockHeader.Confirmations, MIN_CONFIRMATIONS_REQUIRED)
 	}
 
-	err = p.store.ProcessPayment(tx, invoice)
+	err = p.store.ProcessPayment(ctx, tx, invoice)
 	if err != nil {
 		log.Println("ProcessPayment:", err)
 		return err

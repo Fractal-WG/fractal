@@ -1,38 +1,55 @@
 package rpc_test
 
 import (
+	"context"
 	"testing"
 
-	"dogecoin.org/fractal-engine/pkg/rpc"
+	connect "connectrpc.com/connect"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"gotest.tools/assert"
 )
 
 func TestGetTokenBalance(t *testing.T) {
-	tokenisationStore, _, mux, feClient := SetupRpcTest(t)
-	rpc.HandleTokenRoutes(tokenisationStore, mux)
+	tokenisationStore, _, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
-	err := tokenisationStore.UpsertTokenBalance("address1", "mint1", 10)
+	err := tokenisationStore.UpsertTokenBalance(ctx, "address1", "mint1", 10)
 	if err != nil {
 		t.Fatalf("Failed to upsert token balance: %v", err)
 	}
 
-	tokens, err := feClient.GetTokenBalance("address1", "mint1")
+	request := &protocol.GetTokenBalancesRequest{}
+	addressProto := &protocol.Address{}
+	addressProto.SetValue("address1")
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue("mint1")
+	request.SetAddress(addressProto)
+	request.SetMintHash(mintHashProto)
+
+	response, err := feClient.GetTokenBalances(ctx, connect.NewRequest(request))
 	if err != nil {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}
 
-	assert.Equal(t, len(tokens), 1)
-	assert.Equal(t, tokens[0].Address, "address1")
-	assert.Equal(t, tokens[0].MintHash, "mint1")
-	assert.Equal(t, tokens[0].Quantity, 10)
+	data := response.Msg.GetData().AsMap()
+	balances, ok := data["balances"].([]interface{})
+	assert.Assert(t, ok)
+	assert.Equal(t, len(balances), 1)
+
+	balance, ok := balances[0].(map[string]interface{})
+	assert.Assert(t, ok)
+	assert.Equal(t, balance["address"], "address1")
+	assert.Equal(t, balance["mint_hash"], "mint1")
+	assert.Equal(t, int(balance["quantity"].(float64)), 10)
 }
 
 func TestGetTokenBalanceWithMintDetails(t *testing.T) {
-	tokenisationStore, _, mux, feClient := SetupRpcTest(t)
-	rpc.HandleTokenRoutes(tokenisationStore, mux)
+	tokenisationStore, _, feClient := SetupRpcTest(t)
+	ctx := context.Background()
 
-	_, err := tokenisationStore.SaveMint(&store.MintWithoutID{
+	_, err := tokenisationStore.SaveMint(ctx, &store.MintWithoutID{
 		Title:         "mint1",
 		Description:   "description1",
 		FractionCount: 10,
@@ -42,24 +59,34 @@ func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 		t.Fatalf("Failed to save mint: %v", err)
 	}
 
-	err = tokenisationStore.UpsertTokenBalance("address1", "mint1", 10)
+	err = tokenisationStore.UpsertTokenBalance(ctx, "address1", "mint1", 10)
 	if err != nil {
 		t.Fatalf("Failed to upsert token balance: %v", err)
 	}
 
-	response, err := feClient.GetTokenBalanceWithMintDetails("address1")
+	request := &protocol.GetTokenBalancesRequest{}
+	addressProto := &protocol.Address{}
+	addressProto.SetValue("address1")
+	request.SetAddress(addressProto)
+	request.SetIncludeMintDetails(wrapperspb.Bool(true))
+
+	response, err := feClient.GetTokenBalances(ctx, connect.NewRequest(request))
 	if err != nil {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}
 
-	tokens := response.Mints
+	data := response.Msg.GetData().AsMap()
+	mints, ok := data["mints"].([]interface{})
+	assert.Assert(t, ok)
 
-	assert.Equal(t, len(tokens), 1)
-	assert.Equal(t, tokens[0].Address, "address1")
-	assert.Equal(t, tokens[0].Quantity, 10)
-	assert.Equal(t, tokens[0].Mint.Hash, "mint1")
-	assert.Equal(t, tokens[0].Mint.Title, "mint1")
-	assert.Equal(t, tokens[0].Mint.Description, "description1")
-	assert.Equal(t, tokens[0].Mint.FractionCount, 10)
+	assert.Equal(t, len(mints), 1)
 
+	mint, ok := mints[0].(map[string]interface{})
+	assert.Assert(t, ok)
+	assert.Equal(t, mint["address"], "address1")
+	assert.Equal(t, int(mint["quantity"].(float64)), 10)
+	assert.Equal(t, mint["hash"], "mint1")
+	assert.Equal(t, mint["title"], "mint1")
+	assert.Equal(t, mint["description"], "description1")
+	assert.Equal(t, int(mint["fraction_count"].(float64)), 10)
 }

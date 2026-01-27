@@ -7,9 +7,9 @@ package protocolconnect
 import (
 	connect "connectrpc.com/connect"
 	context "context"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	errors "errors"
 	http "net/http"
-	protocol "pkg/rpc/protocol"
 	strings "strings"
 )
 

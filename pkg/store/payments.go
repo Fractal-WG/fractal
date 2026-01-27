@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -9,33 +10,33 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (s *TokenisationStore) ProcessPayment(onchainTransaction OnChainTransaction, invoice Invoice) error {
-	tx, err := s.DB.Begin()
+func (s *TokenisationStore) ProcessPayment(ctx context.Context, onchainTransaction OnChainTransaction, invoice Invoice) error {
+	tx, err := s.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
 	defer tx.Rollback()
 
-	_, err = tx.Exec("UPDATE invoices SET paid_at = $1 WHERE id = $2", time.Now().UTC(), invoice.Id)
+	_, err = tx.ExecContext(ctx, "UPDATE invoices SET paid_at = $1 WHERE id = $2", time.Now().UTC(), invoice.Id)
 	if err != nil {
 		log.Println("Error updating invoice:", err)
 		return err
 	}
 
-	_, err = tx.Exec("DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
+	_, err = tx.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
 	if err != nil {
 		log.Println("Error deleting onchain transaction:", err)
 		return err
 	}
 
-	pendingTokenBalance, err := s.GetPendingTokenBalanceForQuantity(invoice.Hash, invoice.MintHash, invoice.Quantity, tx)
+	pendingTokenBalance, err := s.GetPendingTokenBalanceForQuantity(ctx, invoice.Hash, invoice.MintHash, invoice.Quantity, tx)
 	if err != nil {
 		log.Println("Error getting pending token balance:", err)
 		return err
 	}
 
-	err = s.MovePendingToTokenBalance(pendingTokenBalance, invoice.BuyerAddress, tx)
+	err = s.MovePendingToTokenBalance(ctx, pendingTokenBalance, invoice.BuyerAddress, tx)
 	if err != nil {
 		log.Println("Error moving pending to token balance:", err)
 		return err
@@ -49,7 +50,7 @@ func (s *TokenisationStore) ProcessPayment(onchainTransaction OnChainTransaction
 	return nil
 }
 
-func (s *TokenisationStore) MatchPayment(onchainTransaction OnChainTransaction) (Invoice, error) {
+func (s *TokenisationStore) MatchPayment(ctx context.Context, onchainTransaction OnChainTransaction) (Invoice, error) {
 	if onchainTransaction.ActionType != protocol.ACTION_PAYMENT {
 		return Invoice{}, fmt.Errorf("action type is not payment: %d", onchainTransaction.ActionType)
 	}
@@ -60,7 +61,7 @@ func (s *TokenisationStore) MatchPayment(onchainTransaction OnChainTransaction) 
 		return Invoice{}, err
 	}
 
-	rows, err := s.DB.Query("SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address FROM invoices WHERE hash = $1", onchainMessage.Hash)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address FROM invoices WHERE hash = $1", onchainMessage.Hash)
 	if err != nil {
 		log.Println("Error querying invoices:", err)
 		return Invoice{}, err

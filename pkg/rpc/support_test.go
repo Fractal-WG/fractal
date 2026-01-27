@@ -7,9 +7,11 @@ import (
 	"testing"
 
 	test_support "dogecoin.org/fractal-engine/internal/test/support"
-	"dogecoin.org/fractal-engine/pkg/client"
+	"dogecoin.org/fractal-engine/pkg/config"
 	"dogecoin.org/fractal-engine/pkg/doge"
 	"dogecoin.org/fractal-engine/pkg/dogenet"
+	"dogecoin.org/fractal-engine/pkg/rpc"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol/protocolconnect"
 	"dogecoin.org/fractal-engine/pkg/store"
 )
 
@@ -71,9 +73,12 @@ func (g *FakeGossipClient) GossipInvoiceSignature(invoiceSignature store.Invoice
 	return nil
 }
 
-func SetupRpcTest(t *testing.T) (*store.TokenisationStore, *FakeGossipClient, *http.ServeMux, *client.TokenisationClient) {
+func SetupRpcTest(t *testing.T) (*store.TokenisationStore, *FakeGossipClient, protocolconnect.FractalEngineRpcServiceClient) {
+	t.Helper()
+
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
+	t.Cleanup(server.Close)
 
 	dogenetClient := &FakeGossipClient{
 		buyOffers:         []store.BuyOffer{},
@@ -83,14 +88,13 @@ func SetupRpcTest(t *testing.T) (*store.TokenisationStore, *FakeGossipClient, *h
 		invoiceSignatures: []store.InvoiceSignature{},
 	}
 
-	privHex, pubHex, _, err := doge.GenerateDogecoinKeypair(doge.PrefixTestnet)
-	if err != nil {
-		t.Fatalf("Failed to generate dogecoin keypair: %v", err)
-	}
+	cfg := config.NewConfig()
+	tokenisationStore := test_support.SetupTestDB(t)
+	connectService := rpc.NewConnectRpcService(tokenisationStore, dogenetClient, cfg, doge.NewRpcClient(cfg))
+	connectPath, connectHandler := protocolconnect.NewFractalEngineRpcServiceHandler(connectService)
+	mux.Handle(connectPath, connectHandler)
 
-	feClient := client.NewTokenisationClient(server.URL, privHex, pubHex)
+	feClient := protocolconnect.NewFractalEngineRpcServiceClient(server.Client(), server.URL)
 
-	tokenisationStore := test_support.SetupTestDB()
-
-	return tokenisationStore, dogenetClient, mux, feClient
+	return tokenisationStore, dogenetClient, feClient
 }

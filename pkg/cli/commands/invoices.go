@@ -240,7 +240,7 @@ func createInvoiceAction(ctx context.Context, cmd *cli.Command) error {
 		DogePassword: config.DogePassword,
 	})
 
-	rawTx, err := dogeClient.Request("createrawtransaction", []interface{}{inputs, outputs})
+	rawTx, err := dogeClient.Request(ctx, "createrawtransaction", []interface{}{inputs, outputs})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -261,7 +261,7 @@ func createInvoiceAction(ctx context.Context, cmd *cli.Command) error {
 		log.Fatal(err)
 	}
 
-	res, err := dogeClient.Request("sendrawtransaction", []interface{}{encodedTx})
+	res, err := dogeClient.Request(ctx, "sendrawtransaction", []interface{}{encodedTx})
 	if err != nil {
 		log.Println("error sending raw transaction", err)
 		return err

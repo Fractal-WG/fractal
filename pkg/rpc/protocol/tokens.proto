@@ -1,4 +1,4 @@
-syntax = "proto3";
+edition = "2023";
 
 import "buf/validate/validate.proto";
 import "google/protobuf/struct.proto";
@@ -9,7 +9,7 @@ import "types.proto";
 
 package fractalengine.rpc.v1;
 
-option go_package = "pkg/rpc/protocol";
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 message GetPendingTokenBalancesRequest {
   Address address = 1;

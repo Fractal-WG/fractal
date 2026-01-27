@@ -1,10 +1,13 @@
 package store
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
-func approximateTableCountPostgres(db *sql.DB, table string) (int, error) {
+func approximateTableCountPostgres(ctx context.Context, db *sql.DB, table string) (int, error) {
 	var count sql.NullInt64
-	err := db.QueryRow(`
+	err := db.QueryRowContext(ctx, `
 		SELECT COALESCE(reltuples::bigint, 0)
 		FROM pg_class c
 		JOIN pg_namespace n ON n.oid = c.relnamespace

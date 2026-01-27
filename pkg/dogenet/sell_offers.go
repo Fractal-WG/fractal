@@ -1,6 +1,7 @@
 package dogenet
 
 import (
+	"context"
 	"log"
 
 	"code.dogecoin.org/gossip/dnet"
@@ -78,6 +79,7 @@ func (c *DogeNetClient) GossipDeleteSellOffer(hash string, publicKey string, sig
 
 func (c *DogeNetClient) recvSellOffer(msg dnet.Message) {
 	log.Printf("[FE] received sell offer message")
+	ctx := context.Background()
 
 	envelope := protocol.SellOfferMessageEnvelope{}
 	err := proto.Unmarshal(msg.Payload, &envelope)
@@ -143,7 +145,7 @@ func (c *DogeNetClient) recvSellOffer(msg dnet.Message) {
 		Signature:      envelope.Signature,
 	}
 
-	id, err := c.store.SaveSellOffer(&offerWithoutID)
+	id, err := c.store.SaveSellOffer(ctx, &offerWithoutID)
 	if err != nil {
 		log.Println("Error saving sell offer:", err)
 		return
@@ -154,6 +156,7 @@ func (c *DogeNetClient) recvSellOffer(msg dnet.Message) {
 
 func (c *DogeNetClient) recvDeleteSellOffer(msg dnet.Message) {
 	log.Printf("[FE] received delete sell offer message")
+	ctx := context.Background()
 
 	envelope := protocol.DeleteSellOfferMessageEnvelope{}
 	err := proto.Unmarshal(msg.Payload, &envelope)
@@ -175,7 +178,7 @@ func (c *DogeNetClient) recvDeleteSellOffer(msg dnet.Message) {
 		return
 	}
 
-	err = c.store.DeleteSellOffer(message.Hash, envelope.PublicKey)
+	err = c.store.DeleteSellOffer(ctx, message.Hash, envelope.PublicKey)
 	if err != nil {
 		log.Println("Error deleting sell offer:", err)
 		return

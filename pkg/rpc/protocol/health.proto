@@ -1,8 +1,8 @@
-syntax = "proto3";
+edition = "2023";
 
 package fractalengine.rpc.v1;
 
-option go_package = "pkg/rpc/protocol";
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 
 message GetHealthResponse {
   string chain = 1;

@@ -1,108 +1,17 @@
 package rpc
 
 import (
+	"context"
 	"encoding/hex"
-	"encoding/json"
-	"log"
-	"net/http"
-	"strconv"
+	"errors"
 	"time"
 
-	"dogecoin.org/fractal-engine/pkg/config"
-	"dogecoin.org/fractal-engine/pkg/dogenet"
-	"dogecoin.org/fractal-engine/pkg/protocol"
+	connect "connectrpc.com/connect"
+	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	"dogecoin.org/fractal-engine/pkg/validation"
 )
-
-type InvoiceRoutes struct {
-	store        *store.TokenisationStore
-	gossipClient dogenet.GossipClient
-	cfg          *config.Config
-}
-
-func HandleInvoiceRoutes(store *store.TokenisationStore, gossipClient dogenet.GossipClient, mux *http.ServeMux, cfg *config.Config) {
-	ir := &InvoiceRoutes{store: store, gossipClient: gossipClient, cfg: cfg}
-
-	mux.HandleFunc("/invoices/{hash}/signatures", ir.handleCreateInvoiceSignature)
-	mux.HandleFunc("/invoices", ir.handleInvoices)
-	mux.HandleFunc("/invoices/{address}", ir.handleInvoices)
-
-}
-
-func (ir *InvoiceRoutes) handleCreateInvoiceSignature(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		ir.postCreateInvoiceSignature(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-// @Summary		Create an invoice signature
-// @Description	Creates a new invoice signature
-// @Tags			invoices
-// @Accept			json
-// @Produce		json
-// @Param			request	body		CreateInvoiceSignatureRequest	true	"Invoice signature request"
-// @Success		201		{object}	CreateInvoiceSignatureResponse
-// @Failure		400		{object}	string
-// @Router			/invoices/{hash}/signatures [post]
-func (ir *InvoiceRoutes) postCreateInvoiceSignature(w http.ResponseWriter, r *http.Request) {
-	var request CreateInvoiceSignatureRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		log.Println("error decoding request", err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
-
-	newInvoiceSignature := &store.InvoiceSignature{
-		InvoiceHash: request.Payload.InvoiceHash,
-		Signature:   request.Payload.Signature,
-		PublicKey:   request.Payload.PublicKey,
-		CreatedAt:   time.Now(),
-	}
-
-	invoice, err := ir.store.GetUnconfirmedInvoiceByHash(request.Payload.InvoiceHash)
-	if err != nil {
-		log.Println("error getting invoice by hash", err)
-		http.Error(w, "Could not find invoice by hash", http.StatusBadRequest)
-		return
-	}
-
-	mint, err := ir.store.GetMintByHash(invoice.MintHash)
-	if err != nil {
-		log.Println("error getting mint by hash", err)
-		http.Error(w, "Could not find mint by hash", http.StatusBadRequest)
-		return
-	}
-
-	err = newInvoiceSignature.Validate(mint, invoice)
-	if err != nil {
-		log.Println("error validating signature", err)
-		http.Error(w, "Invalid signature", http.StatusBadRequest)
-		return
-	}
-
-	id, err := ir.store.SaveApprovedInvoiceSignature(newInvoiceSignature)
-	if err != nil {
-		log.Println("error saving approved invoice signature", err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
-
-	err = ir.gossipClient.GossipInvoiceSignature(*newInvoiceSignature)
-	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
-	}
-
-	response := CreateInvoiceSignatureResponse{
-		Id: id,
-	}
-
-	respondJSON(w, http.StatusCreated, response)
-}
 
 type CreateInvoiceSignatureRequest struct {
 	Payload CreateInvoiceSignatureRequestPayload `json:"payload"`
@@ -118,145 +27,136 @@ type CreateInvoiceSignatureResponse struct {
 	Id string `json:"id"`
 }
 
-func (ir *InvoiceRoutes) handleInvoices(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		ir.getInvoices(w, r)
-	case http.MethodPost:
-		ir.postInvoice(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+func (s *ConnectRpcService) GetInvoices(ctx context.Context, req *connect.Request[protocol.GetInvoicesRequest]) (*connect.Response[protocol.GetInvoicesResponse], error) {
+	address := req.Msg.GetAddress()
+	if address == nil || address.GetValue() == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("address is required"))
 	}
-}
-
-// @Summary		Get invoices
-// @Description	Returns a list of invoices with optional filtering by mint_hash and address
-// @Tags			invoices
-// @Accept			json
-// @Produce		json
-// @Param			address			path		string	true	"Filter by address of buyer or seller"
-// @Param			limit			query		int		false	"Limit number of results (max 100)"
-// @Param			page			query		int		false	"Page number (max 1000)"
-// @Param			mint_hash		query		string	false	"Filter by mint hash"
-// @Success		200				{object}	GetInvoicesResponse
-// @Failure		400				{object}	string
-// @Router			/invoices/{address} [get]
-func (ir *InvoiceRoutes) getInvoices(w http.ResponseWriter, r *http.Request) {
-	// Extract address from URL path
-	address := r.URL.Path[len("/invoices/"):]
-	if address == "" {
-		http.Error(w, "Address is required", http.StatusBadRequest)
-		return
+	if err := validation.ValidateAddress(address.GetValue()); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	if err := validation.ValidateAddress(address); err != nil {
-		http.Error(w, "Invalid address format", http.StatusBadRequest)
-		return
+	limit := int32(100)
+	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
+		limit = req.Msg.GetLimit().GetValue()
 	}
 
-	limitStr := validation.SanitizeQueryParam(r.URL.Query().Get("limit"))
-	limit := 100
-
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= limit {
-			limit = l
-		}
+	page := int32(0)
+	if req.Msg.GetPage() != nil && req.Msg.GetPage().GetValue() > 0 && req.Msg.GetPage().GetValue() <= 1000 {
+		page = req.Msg.GetPage().GetValue()
 	}
 
-	pageStr := validation.SanitizeQueryParam(r.URL.Query().Get("page"))
-	page := 0
+	start := int(page * limit)
+	end := int(start + int(limit))
 
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 && p <= 1000 { // Reasonable page limit
-			page = p
-		}
+	mintHash := ""
+	if req.Msg.GetMintHash() != nil {
+		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
-	mintHash := validation.SanitizeQueryParam(r.URL.Query().Get("mint_hash"))
-
-	start := page * limit
-	end := start + limit
 	var invoices []store.Invoice
 	var err error
-
 	if mintHash == "" {
-		invoices, err = ir.store.GetInvoicesForMe(start, end, address)
+		invoices, err = s.store.GetInvoicesForMe(ctx, start, end, address.GetValue())
 	} else {
-		invoices, err = ir.store.GetInvoices(start, end, mintHash, address)
+		invoices, err = s.store.GetInvoices(ctx, start, end, mintHash, address.GetValue())
 	}
-
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	// Clamp the slice range
 	if start >= len(invoices) {
-		respondJSON(w, http.StatusOK, GetInvoicesResponse{})
-		return
+		return connect.NewResponse(&protocol.GetInvoicesResponse{}), nil
 	}
 
 	if end > len(invoices) {
 		end = len(invoices)
 	}
 
-	response := GetInvoicesResponse{
-		Invoices: invoices[start:end],
-		Total:    len(invoices),
-		Page:     page,
-		Limit:    limit,
+	responseInvoices, err := toProtoInvoices(invoices[start:end])
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetInvoicesResponse{}
+	resp.SetInvoices(responseInvoices)
+	resp.SetTotal(int32(len(invoices)))
+	resp.SetLimit(limit)
+	return connect.NewResponse(resp), nil
 }
 
-// @Summary		Create an invoice
-// @Description	Creates a new invoice
-// @Tags			invoices
-// @Accept			json
-// @Produce		json
-// @Param			request	body		CreateInvoiceRequest	true	"Invoice request"
-// @Success		201		{object}	CreateInvoiceResponse
-// @Failure		400		{object}	string
-// @Failure		500		{object}	string
-// @Router			/invoices [post]
-
-func (ir *InvoiceRoutes) postInvoice(w http.ResponseWriter, r *http.Request) {
-	var request CreateInvoiceRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+func (s *ConnectRpcService) GetAllInvoices(ctx context.Context, req *connect.Request[protocol.GetAllInvoicesRequest]) (*connect.Response[protocol.GetAllInvoicesResponse], error) {
+	limit := int32(100)
+	if req.Msg.GetLimit() != nil && req.Msg.GetLimit().GetValue() > 0 && req.Msg.GetLimit().GetValue() <= limit {
+		limit = req.Msg.GetLimit().GetValue()
 	}
 
-	err := request.Validate()
+	page := int32(0)
+	if req.Msg.GetPage() != nil && req.Msg.GetPage().GetValue() > 0 && req.Msg.GetPage().GetValue() <= 1000 {
+		page = req.Msg.GetPage().GetValue()
+	}
+
+	start := int(page * limit)
+	end := int(start + int(limit))
+
+	mintHash := ""
+	if req.Msg.GetMintHash() != nil {
+		mintHash = req.Msg.GetMintHash().GetValue()
+	}
+
+	invoices, err := s.store.GetAllInvoices(ctx, start, end, mintHash)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	count, err := ir.store.CountUnconfirmedInvoices(request.Payload.MintHash, request.Payload.BuyerAddress)
+	if start >= len(invoices) {
+		return connect.NewResponse(&protocol.GetAllInvoicesResponse{}), nil
+	}
+
+	if end > len(invoices) {
+		end = len(invoices)
+	}
+
+	responseInvoices, err := toProtoInvoices(invoices[start:end])
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	if count >= ir.cfg.InvoiceLimit {
-		http.Error(w, "Invoice limit reached", http.StatusBadRequest)
-		return
-	}
+	resp := &protocol.GetAllInvoicesResponse{}
+	resp.SetInvoices(responseInvoices)
+	resp.SetTotal(int32(len(invoices)))
+	resp.SetPage(page)
+	resp.SetLimit(limit)
+	return connect.NewResponse(resp), nil
+}
 
-	mint, err := ir.store.GetMintByHash(request.Payload.MintHash)
+func (s *ConnectRpcService) CreateInvoice(ctx context.Context, req *connect.Request[protocol.CreateInvoiceRequest]) (*connect.Response[protocol.CreateInvoiceResponse], error) {
+	request, err := toCreateInvoiceRequest(req.Msg)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	var initialStatus string
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	count, err := s.store.CountUnconfirmedInvoices(ctx, request.Payload.MintHash, request.Payload.BuyerAddress)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if count >= s.cfg.InvoiceLimit {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invoice limit reached"))
+	}
+
+	mint, err := s.store.GetMintByHash(ctx, request.Payload.MintHash)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	initialStatus := "pending_signatures"
 	if mint.SignatureRequirementType == store.SignatureRequirementType_NONE || mint.SignatureRequirementType == "" {
 		initialStatus = "draft"
-	} else {
-		initialStatus = "pending_signatures"
 	}
 
 	newInvoiceWithoutId := &store.UnconfirmedInvoice{
@@ -274,31 +174,66 @@ func (ir *InvoiceRoutes) postInvoice(w http.ResponseWriter, r *http.Request) {
 
 	newInvoiceWithoutId.Hash, err = newInvoiceWithoutId.GenerateHash()
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	id, err := ir.store.SaveUnconfirmedInvoice(newInvoiceWithoutId)
+	id, err := s.store.SaveUnconfirmedInvoice(ctx, newInvoiceWithoutId)
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	newInvoiceWithoutId.Id = id
 
-	err = ir.gossipClient.GossipUnconfirmedInvoice(*newInvoiceWithoutId)
-	if err != nil {
-		http.Error(w, "Unable to gossip", http.StatusInternalServerError)
-		return
+	if err := s.gossipClient.GossipUnconfirmedInvoice(*newInvoiceWithoutId); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	envelope := protocol.NewInvoiceTransactionEnvelope(newInvoiceWithoutId.Hash, newInvoiceWithoutId.MintHash, int32(newInvoiceWithoutId.Quantity), protocol.ACTION_INVOICE)
+	envelope := engineprotocol.NewInvoiceTransactionEnvelope(newInvoiceWithoutId.Hash, newInvoiceWithoutId.MintHash, int32(newInvoiceWithoutId.Quantity), engineprotocol.ACTION_INVOICE)
 	encodedTransactionBody := envelope.Serialize()
 
-	response := CreateInvoiceResponse{
-		Hash:                   newInvoiceWithoutId.Hash,
-		EncodedTransactionBody: hex.EncodeToString(encodedTransactionBody),
+	resp := &protocol.CreateInvoiceResponse{}
+	resp.SetHash(toProtoHash(newInvoiceWithoutId.Hash))
+	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) CreateInvoiceSignature(ctx context.Context, req *connect.Request[protocol.CreateInvoiceSignatureRequest]) (*connect.Response[protocol.CreateInvoiceSignatureResponse], error) {
+	payload := req.Msg.GetPayload()
+	if payload == nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("payload is required"))
 	}
 
-	respondJSON(w, http.StatusCreated, response)
+	newInvoiceSignature := &store.InvoiceSignature{
+		InvoiceHash: payload.GetInvoiceHash(),
+		Signature:   payload.GetSignature(),
+		PublicKey:   payload.GetPublicKey(),
+		CreatedAt:   time.Now(),
+	}
+
+	invoice, err := s.store.GetUnconfirmedInvoiceByHash(ctx, payload.GetInvoiceHash())
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	mint, err := s.store.GetMintByHash(ctx, invoice.MintHash)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := newInvoiceSignature.Validate(mint, invoice); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	id, err := s.store.SaveApprovedInvoiceSignature(ctx, newInvoiceSignature)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := s.gossipClient.GossipInvoiceSignature(*newInvoiceSignature); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := &protocol.CreateInvoiceSignatureResponse{}
+	resp.SetId(id)
+	return connect.NewResponse(resp), nil
 }

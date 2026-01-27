@@ -19,7 +19,7 @@ import (
 )
 
 func TestNewDogeNetClient(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -57,7 +57,7 @@ func TestDogeNetClientGetNodes(t *testing.T) {
 	defer server.Close()
 
 	// Setup client
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -86,7 +86,7 @@ func TestDogeNetClientGetNodesServerError(t *testing.T) {
 	defer server.Close()
 
 	// Setup client
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -129,7 +129,7 @@ func TestDogeNetClientAddPeerSuccess(t *testing.T) {
 	defer server.Close()
 
 	// Setup client
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -160,7 +160,7 @@ func TestDogeNetClientAddPeerServerError(t *testing.T) {
 	defer server.Close()
 
 	// Setup client
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -190,7 +190,7 @@ func TestDogeNetClientCheckRunning(t *testing.T) {
 	defer server.Close()
 
 	// Setup client
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -206,7 +206,7 @@ func TestDogeNetClientCheckRunning(t *testing.T) {
 
 func TestDogeNetClientCheckRunningServerDown(t *testing.T) {
 	// Setup client with invalid address
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -221,7 +221,7 @@ func TestDogeNetClientCheckRunningServerDown(t *testing.T) {
 }
 
 func TestDogeNetClientStartStop(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -239,7 +239,7 @@ func TestDogeNetClientStartStop(t *testing.T) {
 }
 
 func TestDogeNetClientStartWithConn(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -284,7 +284,7 @@ func TestDogeNetClientStartWithConn(t *testing.T) {
 }
 
 func TestDogeNetClientMessageChannel(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -309,7 +309,7 @@ func TestConvertToStructPBMap(t *testing.T) {
 	// We can't directly test it since it's not exported, but we can verify
 	// the DogeNetClient uses it correctly by testing the overall functionality
 
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)
@@ -323,7 +323,7 @@ func TestConvertToStructPBMap(t *testing.T) {
 }
 
 func TestDogeNetClientFields(t *testing.T) {
-	tokenStore := test_support.SetupTestDB()
+	tokenStore := test_support.SetupTestDB(t)
 	cfg := config.NewConfig()
 	keyPair, err := dnet.GenerateKeyPair()
 	assert.NilError(t, err)

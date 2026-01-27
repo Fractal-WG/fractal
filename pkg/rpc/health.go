@@ -1,59 +1,31 @@
 package rpc
 
 import (
+	"context"
 	"database/sql"
-	"net/http"
+	"errors"
+	"time"
 
-	"dogecoin.org/fractal-engine/pkg/store"
+	connect "connectrpc.com/connect"
+	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/version"
 )
 
-type HealthRoutes struct {
-	store *store.TokenisationStore
-}
-
-func HandleHealthRoutes(store *store.TokenisationStore, mux *http.ServeMux) {
-	hr := &HealthRoutes{store: store}
-
-	mux.HandleFunc("/health", hr.handleHealth)
-}
-
-func (hr *HealthRoutes) handleHealth(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		hr.getHealth(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-// @Summary		Get health
-// @Description	Returns the current and latest block height
-// @Tags			health
-// @Accept			json
-// @Produce		json
-// @Success		200		{object}	GetHealthResponse
-// @Failure		400		{object}	string
-// @Router			/health [get]
-func (hr *HealthRoutes) getHealth(w http.ResponseWriter, _ *http.Request) {
-	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := hr.store.GetHealth()
+func (s *ConnectRpcService) GetHealth(ctx context.Context, _ *connect.Request[protocol.GetHealthRequest]) (*connect.Response[protocol.GetHealthResponse], error) {
+	currentBlockHeight, latestBlockHeight, chain, walletsEnabled, updatedAt, err := s.store.GetHealth(ctx)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "No health data found", http.StatusNotFound)
-			return
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
 		}
-		http.Error(w, "Error getting health", http.StatusInternalServerError)
-		return
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	response := GetHealthResponse{
-		CurrentBlockHeight: currentBlockHeight,
-		LatestBlockHeight:  latestBlockHeight,
-		UpdatedAt:          updatedAt,
-		Chain:              chain,
-		WalletsEnabled:     walletsEnabled,
-		Version:            version.Version,
-	}
-
-	respondJSON(w, http.StatusOK, response)
+	resp := &protocol.GetHealthResponse{}
+	resp.SetChain(chain)
+	resp.SetCurrentBlockHeight(int32(currentBlockHeight))
+	resp.SetLatestBlockHeight(int32(latestBlockHeight))
+	resp.SetUpdatedAt(updatedAt.Format(time.RFC3339Nano))
+	resp.SetVersion(version.Version)
+	resp.SetWalletsEnabled(walletsEnabled)
+	return connect.NewResponse(resp), nil
 }

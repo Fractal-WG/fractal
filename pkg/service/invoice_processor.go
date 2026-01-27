@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/hex"
 	"log"
 	"strings"
@@ -28,6 +29,7 @@ func NewInvoiceProcessor(store *store.TokenisationStore) *InvoiceProcessor {
 * If not, remove onchain transaction (discard invoice)
  */
 func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
+	ctx := context.Background()
 	invoice := protocol.OnChainInvoiceMessage{}
 	err := proto.Unmarshal(tx.ActionData, &invoice)
 	if err != nil {
@@ -51,7 +53,7 @@ func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
 		return nil
 	}
 
-	mint, err := p.store.GetMintByHash(hex.EncodeToString(invoice.MintHash))
+	mint, err := p.store.GetMintByHash(ctx, hex.EncodeToString(invoice.MintHash))
 	if err != nil {
 		log.Println("Error getting mint:", err)
 		return err
@@ -59,7 +61,7 @@ func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
 
 	// Check if signatures are required and if the number of signatures is correct
 	if mint.SignatureRequired() {
-		signatures, err := p.store.GetApprovedInvoiceSignatures(hex.EncodeToString(invoice.InvoiceHash))
+		signatures, err := p.store.GetApprovedInvoiceSignatures(ctx, hex.EncodeToString(invoice.InvoiceHash))
 		if err != nil {
 			log.Println("Error getting invoice signatures:", err)
 			return err
@@ -72,12 +74,12 @@ func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
 	}
 
 	// Try to match confirmed invoice first
-	if p.store.MatchInvoice(tx) {
+	if p.store.MatchInvoice(ctx, tx) {
 		return nil
 	}
 
 	// Try to match unconfirmed invoice (already transaction-safe)
-	err = p.store.MatchUnconfirmedInvoice(tx)
+	err = p.store.MatchUnconfirmedInvoice(ctx, tx)
 	if err == nil {
 		log.Println("Matched invoice:", tx.TxHash)
 	} else {
@@ -93,6 +95,7 @@ func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
 }
 
 func (p *InvoiceProcessor) EnsurePendingTokenBalance(tx store.OnChainTransaction) (bool, error) {
+	ctx := context.Background()
 	invoice := protocol.OnChainInvoiceMessage{}
 	err := proto.Unmarshal(tx.ActionData, &invoice)
 	if err != nil {
@@ -108,20 +111,20 @@ func (p *InvoiceProcessor) EnsurePendingTokenBalance(tx store.OnChainTransaction
 	defer dbTx.Rollback()
 
 	// Check if pending token balance already exists with lock
-	pendingTokenBalance, _ := p.store.GetPendingTokenBalance(hex.EncodeToString(invoice.InvoiceHash), hex.EncodeToString(invoice.MintHash), dbTx)
+	pendingTokenBalance, _ := p.store.GetPendingTokenBalance(ctx, hex.EncodeToString(invoice.InvoiceHash), hex.EncodeToString(invoice.MintHash), dbTx)
 	if pendingTokenBalance.InvoiceHash != "" {
 		log.Println("Pending token balance already exists")
 		dbTx.Commit()
 		return true, nil
 	}
 
-	tokenBalances, err := p.store.GetTokenBalances(tx.Address, hex.EncodeToString(invoice.MintHash))
+	tokenBalances, err := p.store.GetTokenBalances(ctx, tx.Address, hex.EncodeToString(invoice.MintHash))
 	if err != nil {
 		log.Println("Error getting token balance:", err)
 		return false, err
 	}
 
-	pendingTokenBalanceTotal, err := p.store.GetPendingTokenBalanceTotalForMintAndOwner(hex.EncodeToString(invoice.MintHash), tx.Address)
+	pendingTokenBalanceTotal, err := p.store.GetPendingTokenBalanceTotalForMintAndOwner(ctx, hex.EncodeToString(invoice.MintHash), tx.Address)
 	if err != nil {
 		log.Println("Error getting pending token balance total:", err)
 		return false, err
@@ -138,7 +141,7 @@ func (p *InvoiceProcessor) EnsurePendingTokenBalance(tx store.OnChainTransaction
 		log.Println("Token balance is enough")
 
 		// Use transaction-aware UpsertPendingTokenBalance
-		err = p.store.UpsertPendingTokenBalanceWithTx(hex.EncodeToString(invoice.InvoiceHash), hex.EncodeToString(invoice.MintHash), int(invoice.Quantity), tx.Id, tx.Address, dbTx)
+		err = p.store.UpsertPendingTokenBalanceWithTx(ctx, hex.EncodeToString(invoice.InvoiceHash), hex.EncodeToString(invoice.MintHash), int(invoice.Quantity), tx.Id, tx.Address, dbTx)
 		if err != nil {
 			log.Println("Error inserting pending token balance:", err)
 			return false, err

@@ -58,7 +58,7 @@ func confirmAction(ctx context.Context, cmd *cli.Command) error {
 		DogePassword: config.DogePassword,
 	})
 
-	_, err = dogeClient.Request("generate", []interface{}{1})
+	_, err = dogeClient.Request(ctx, "generate", []interface{}{1})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -116,7 +116,7 @@ func SetupTestDBShared() *store.TokenisationStore {
 		log.Fatalf("Failed to create tokenisation store: %v", err)
 	}
 
-	err = tokenisationStore.Migrate()
+	err = tokenisationStore.Migrate(context.Background())
 	if err != nil && err.Error() != "no change" {
 		log.Fatalf("Failed to migrate tokenisation store: %v", err)
 	}

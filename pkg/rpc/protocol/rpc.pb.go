@@ -48,7 +48,7 @@ const file_rpc_proto_rawDesc = "" +
 	"\x0fDeleteSellOffer\x12,.fractalengine.rpc.v1.DeleteSellOfferRequest\x1a-.fractalengine.rpc.v1.DeleteSellOfferResponse\x12e\n" +
 	"\fGetBuyOffers\x12).fractalengine.rpc.v1.GetBuyOffersRequest\x1a*.fractalengine.rpc.v1.GetBuyOffersResponse\x12k\n" +
 	"\x0eCreateBuyOffer\x12+.fractalengine.rpc.v1.CreateBuyOfferRequest\x1a,.fractalengine.rpc.v1.CreateBuyOfferResponse\x12k\n" +
-	"\x0eDeleteBuyOffer\x12+.fractalengine.rpc.v1.DeleteBuyOfferRequest\x1a,.fractalengine.rpc.v1.DeleteBuyOfferResponseB\x12Z\x10pkg/rpc/protocolb\x06proto3"
+	"\x0eDeleteBuyOffer\x12+.fractalengine.rpc.v1.DeleteBuyOfferRequest\x1a,.fractalengine.rpc.v1.DeleteBuyOfferResponseB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_rpc_proto_goTypes = []any{
 	(*DogeConfirmRequest)(nil),              // 0: fractalengine.rpc.v1.DogeConfirmRequest

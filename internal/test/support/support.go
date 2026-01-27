@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"strings"
+	"testing"
 	"time"
 
 	"dogecoin.org/fractal-engine/pkg/config"
@@ -17,7 +18,9 @@ import (
 	"github.com/dogecoinfoundation/dogetest/pkg/dogetest"
 )
 
-func SetupTestDB() *store.TokenisationStore {
+func SetupTestDB(t *testing.T) *store.TokenisationStore {
+	t.Helper()
+
 	randoDb := rand.Intn(10000)
 
 	url := "file:memdb" + fmt.Sprintf("%d", randoDb) + "?mode=memory&cache=shared"
@@ -27,7 +30,7 @@ func SetupTestDB() *store.TokenisationStore {
 		log.Fatal(err)
 	}
 
-	err = tokenStore.Migrate()
+	err = tokenStore.Migrate(t.Context())
 	if err != nil && err.Error() != "no change" {
 		log.Fatal(err)
 	}

@@ -21,7 +21,6 @@ require (
 	github.com/dogeorg/doge v0.1.2-0.20250818072130-2d2e0619e480
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/mux v1.7.4
 	github.com/gowebpki/jcs v1.0.1
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.28
@@ -32,6 +31,7 @@ require (
 	github.com/urfave/cli/v3 v3.3.8
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/crypto v0.39.0
+	golang.org/x/net v0.40.0
 	golang.org/x/time v0.12.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
@@ -126,7 +126,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
-	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -1,21 +1,24 @@
 package store_test
 
 import (
+	"context"
 	"testing"
 
 	"dogecoin.org/fractal-engine/internal/test/support"
 	"gotest.tools/assert"
 )
 
+var balancesTestCtx = context.Background()
+
 func TestUpsertTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test inserting a new token balance
-	err := db.UpsertTokenBalance("address1", "mintHash1", 100)
+	err := db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 100)
 	assert.NilError(t, err)
 
 	// Verify the balance was created
-	balances, err := db.GetTokenBalances("address1", "mintHash1")
+	balances, err := db.GetTokenBalances(balancesTestCtx, "address1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 1)
 	assert.Equal(t, balances[0].Address, "address1")
@@ -23,30 +26,30 @@ func TestUpsertTokenBalance(t *testing.T) {
 	assert.Equal(t, balances[0].Quantity, 100)
 
 	// Test inserting another balance for same address/mint (should create another row)
-	err = db.UpsertTokenBalance("address1", "mintHash1", 50)
+	err = db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 50)
 	assert.NilError(t, err)
 
 	// Verify both balances exist
-	balances, err = db.GetTokenBalances("address1", "mintHash1")
+	balances, err = db.GetTokenBalances(balancesTestCtx, "address1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 2)
 }
 
 func TestGetTokenBalances(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert multiple balances
-	err := db.UpsertTokenBalance("address1", "mintHash1", 100)
+	err := db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 100)
 	assert.NilError(t, err)
-	err = db.UpsertTokenBalance("address1", "mintHash1", 50)
+	err = db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 50)
 	assert.NilError(t, err)
-	err = db.UpsertTokenBalance("address1", "mintHash2", 200)
+	err = db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash2", 200)
 	assert.NilError(t, err)
-	err = db.UpsertTokenBalance("address2", "mintHash1", 300)
+	err = db.UpsertTokenBalance(balancesTestCtx, "address2", "mintHash1", 300)
 	assert.NilError(t, err)
 
 	// Test getting balances for specific address and mint
-	balances, err := db.GetTokenBalances("address1", "mintHash1")
+	balances, err := db.GetTokenBalances(balancesTestCtx, "address1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 2)
 	totalQuantity := 0
@@ -56,75 +59,75 @@ func TestGetTokenBalances(t *testing.T) {
 	assert.Equal(t, totalQuantity, 150)
 
 	// Test getting balances for different mint
-	balances, err = db.GetTokenBalances("address1", "mintHash2")
+	balances, err = db.GetTokenBalances(balancesTestCtx, "address1", "mintHash2")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 1)
 	assert.Equal(t, balances[0].Quantity, 200)
 
 	// Test getting balances for non-existent combination
-	balances, err = db.GetTokenBalances("address3", "mintHash3")
+	balances, err = db.GetTokenBalances(balancesTestCtx, "address3", "mintHash3")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 0)
 }
 
 func TestUpsertPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test inserting a new pending token balance
-	err := db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Verify the pending balance exists
-	exists, err := db.HasPendingTokenBalance("invoice1", "mintHash1", "onchainTx1")
+	exists, err := db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
 	assert.NilError(t, err)
 	assert.Assert(t, exists)
 
 	// Test upserting with same invoice/mint (should update quantity)
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 200, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 200, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Verify the quantity was updated
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.Quantity, 200)
 }
 
 func TestHasPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test non-existent pending balance
-	exists, err := db.HasPendingTokenBalance("invoice1", "mintHash1", "onchainTx1")
+	exists, err := db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
 	assert.NilError(t, err)
 	assert.Assert(t, !exists)
 
 	// Insert a pending balance
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Test existing pending balance
-	exists, err = db.HasPendingTokenBalance("invoice1", "mintHash1", "onchainTx1")
+	exists, err = db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
 	assert.NilError(t, err)
 	assert.Assert(t, exists)
 
 	// Test with different onchain transaction ID
-	exists, err = db.HasPendingTokenBalance("invoice1", "mintHash1", "differentTx")
+	exists, err = db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "differentTx")
 	assert.NilError(t, err)
 	assert.Assert(t, !exists)
 }
 
 func TestGetPendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test getting non-existent pending balance
-	_, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	_, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.ErrorContains(t, err, "no pending token balance found")
 
 	// Insert a pending balance
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 150, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 150, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Get the pending balance
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.InvoiceHash, "invoice1")
 	assert.Equal(t, pendingBalance.MintHash, "mintHash1")
@@ -133,81 +136,81 @@ func TestGetPendingTokenBalance(t *testing.T) {
 }
 
 func TestRemovePendingTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert a pending balance
-	err := db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Verify it exists
-	exists, err := db.HasPendingTokenBalance("invoice1", "mintHash1", "onchainTx1")
+	exists, err := db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
 	assert.NilError(t, err)
 	assert.Assert(t, exists)
 
 	// Remove the pending balance
-	err = db.RemovePendingTokenBalance("invoice1", "mintHash1")
+	err = db.RemovePendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1")
 	assert.NilError(t, err)
 
 	// Verify it no longer exists
-	exists, err = db.HasPendingTokenBalance("invoice1", "mintHash1", "onchainTx1")
+	exists, err = db.HasPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", "onchainTx1")
 	assert.NilError(t, err)
 	assert.Assert(t, !exists)
 
 	// Test removing non-existent balance (should not error)
-	err = db.RemovePendingTokenBalance("nonExistent", "nonExistent")
+	err = db.RemovePendingTokenBalance(balancesTestCtx, "nonExistent", "nonExistent")
 	assert.NilError(t, err)
 }
 
 func TestGetPendingTokenBalanceTotalForMintAndOwner(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Test with no pending balances
-	total, err := db.GetPendingTokenBalanceTotalForMintAndOwner("mintHash1", "owner1")
+	total, err := db.GetPendingTokenBalanceTotalForMintAndOwner(balancesTestCtx, "mintHash1", "owner1")
 	assert.NilError(t, err)
 	assert.Equal(t, total, 0)
 
 	// Insert multiple pending balances for same mint and owner
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
-	err = db.UpsertPendingTokenBalance("invoice2", "mintHash1", 150, "onchainTx2", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice2", "mintHash1", 150, "onchainTx2", "owner1")
 	assert.NilError(t, err)
-	err = db.UpsertPendingTokenBalance("invoice3", "mintHash1", 50, "onchainTx3", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice3", "mintHash1", 50, "onchainTx3", "owner1")
 	assert.NilError(t, err)
 
 	// Insert pending balance for different owner
-	err = db.UpsertPendingTokenBalance("invoice4", "mintHash1", 200, "onchainTx4", "owner2")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice4", "mintHash1", 200, "onchainTx4", "owner2")
 	assert.NilError(t, err)
 
 	// Insert pending balance for different mint
-	err = db.UpsertPendingTokenBalance("invoice5", "mintHash2", 300, "onchainTx5", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice5", "mintHash2", 300, "onchainTx5", "owner1")
 	assert.NilError(t, err)
 
 	// Test getting total for mint1 and owner1
-	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner("mintHash1", "owner1")
+	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner(balancesTestCtx, "mintHash1", "owner1")
 	assert.NilError(t, err)
 	assert.Equal(t, total, 300) // 100 + 150 + 50
 
 	// Test getting total for mint1 and owner2
-	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner("mintHash1", "owner2")
+	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner(balancesTestCtx, "mintHash1", "owner2")
 	assert.NilError(t, err)
 	assert.Equal(t, total, 200)
 
 	// Test getting total for mint2 and owner1
-	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner("mintHash2", "owner1")
+	total, err = db.GetPendingTokenBalanceTotalForMintAndOwner(balancesTestCtx, "mintHash2", "owner1")
 	assert.NilError(t, err)
 	assert.Equal(t, total, 300)
 }
 
 func TestUpsertTokenBalanceWithTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 	defer tx.Rollback()
 
 	// Insert a token balance within transaction
-	err = db.UpsertTokenBalanceWithTransaction("address1", "mintHash1", 100, tx)
+	err = db.UpsertTokenBalanceWithTransaction(balancesTestCtx, "address1", "mintHash1", 100, tx)
 	assert.NilError(t, err)
 
 	// Commit the transaction
@@ -215,33 +218,33 @@ func TestUpsertTokenBalanceWithTransaction(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Verify the balance was created
-	balances, err := db.GetTokenBalances("address1", "mintHash1")
+	balances, err := db.GetTokenBalances(balancesTestCtx, "address1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 1)
 	assert.Equal(t, balances[0].Quantity, 100)
 }
 
 func TestMovePendingToTokenBalance(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Setup: Create initial token balance for the owner
-	err := db.UpsertTokenBalance("owner1", "mintHash1", 500)
+	err := db.UpsertTokenBalance(balancesTestCtx, "owner1", "mintHash1", 500)
 	assert.NilError(t, err)
 
 	// Create a pending token balance
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Get the pending balance
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 
 	// Move pending to token balance
-	err = db.MovePendingToTokenBalance(pendingBalance, "buyer1", tx)
+	err = db.MovePendingToTokenBalance(balancesTestCtx, pendingBalance, "buyer1", tx)
 	assert.NilError(t, err)
 
 	// Commit the transaction
@@ -249,13 +252,13 @@ func TestMovePendingToTokenBalance(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Verify buyer received the tokens
-	buyerBalances, err := db.GetTokenBalances("buyer1", "mintHash1")
+	buyerBalances, err := db.GetTokenBalances(balancesTestCtx, "buyer1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(buyerBalances), 1)
 	assert.Equal(t, buyerBalances[0].Quantity, 100)
 
 	// Verify owner has a negative balance entry (deduction)
-	ownerBalances, err := db.GetTokenBalances("owner1", "mintHash1")
+	ownerBalances, err := db.GetTokenBalances(balancesTestCtx, "owner1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(ownerBalances), 2) // Original + deduction
 	totalOwnerBalance := 0
@@ -265,24 +268,24 @@ func TestMovePendingToTokenBalance(t *testing.T) {
 	assert.Equal(t, totalOwnerBalance, 400) // 500 - 100
 
 	// Verify pending balance was removed
-	_, err = db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	_, err = db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.ErrorContains(t, err, "no pending token balance found")
 }
 
 func TestGetPendingTokenBalanceWithTransaction(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert a pending balance
-	err := db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Begin a transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 	defer tx.Rollback()
 
 	// Get the pending balance within transaction
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", tx)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", tx)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.InvoiceHash, "invoice1")
 	assert.Equal(t, pendingBalance.MintHash, "mintHash1")
@@ -290,19 +293,19 @@ func TestGetPendingTokenBalanceWithTransaction(t *testing.T) {
 }
 
 func TestMultipleTokenBalancesForSameAddressMint(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Create multiple token balance entries for same address/mint
 	// This simulates multiple transactions adding to the balance
-	err := db.UpsertTokenBalance("address1", "mintHash1", 100)
+	err := db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 100)
 	assert.NilError(t, err)
-	err = db.UpsertTokenBalance("address1", "mintHash1", 200)
+	err = db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", 200)
 	assert.NilError(t, err)
-	err = db.UpsertTokenBalance("address1", "mintHash1", -50) // Deduction
+	err = db.UpsertTokenBalance(balancesTestCtx, "address1", "mintHash1", -50) // Deduction
 	assert.NilError(t, err)
 
 	// Get all balances
-	balances, err := db.GetTokenBalances("address1", "mintHash1")
+	balances, err := db.GetTokenBalances(balancesTestCtx, "address1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(balances), 3)
 
@@ -315,23 +318,23 @@ func TestMultipleTokenBalancesForSameAddressMint(t *testing.T) {
 }
 
 func TestPendingTokenBalanceConflictResolution(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Insert initial pending balance
-	err := db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err := db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Verify initial quantity
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.Quantity, 100)
 
 	// Update with new quantity (ON CONFLICT should update)
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 250, "onchainTx2", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 250, "onchainTx2", "owner1")
 	assert.NilError(t, err)
 
 	// Verify quantity was updated
-	pendingBalance, err = db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err = db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.Quantity, 250)
 
@@ -340,24 +343,24 @@ func TestPendingTokenBalanceConflictResolution(t *testing.T) {
 }
 
 func TestTransactionRollback(t *testing.T) {
-	db := support.SetupTestDB()
+	db := support.SetupTestDB(t)
 
 	// Create initial state
-	err := db.UpsertTokenBalance("owner1", "mintHash1", 500)
+	err := db.UpsertTokenBalance(balancesTestCtx, "owner1", "mintHash1", 500)
 	assert.NilError(t, err)
-	err = db.UpsertPendingTokenBalance("invoice1", "mintHash1", 100, "onchainTx1", "owner1")
+	err = db.UpsertPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", 100, "onchainTx1", "owner1")
 	assert.NilError(t, err)
 
 	// Get pending balance
-	pendingBalance, err := db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err := db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 
 	// Begin transaction
-	tx, err := db.DB.Begin()
+	tx, err := db.DB.BeginTx(balancesTestCtx, nil)
 	assert.NilError(t, err)
 
 	// Perform operations within transaction
-	err = db.MovePendingToTokenBalance(pendingBalance, "buyer1", tx)
+	err = db.MovePendingToTokenBalance(balancesTestCtx, pendingBalance, "buyer1", tx)
 	assert.NilError(t, err)
 
 	// Rollback the transaction
@@ -365,17 +368,17 @@ func TestTransactionRollback(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Verify nothing changed - pending balance still exists
-	pendingBalance, err = db.GetPendingTokenBalance("invoice1", "mintHash1", nil)
+	pendingBalance, err = db.GetPendingTokenBalance(balancesTestCtx, "invoice1", "mintHash1", nil)
 	assert.NilError(t, err)
 	assert.Equal(t, pendingBalance.Quantity, 100)
 
 	// Verify buyer has no balance
-	buyerBalances, err := db.GetTokenBalances("buyer1", "mintHash1")
+	buyerBalances, err := db.GetTokenBalances(balancesTestCtx, "buyer1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(buyerBalances), 0)
 
 	// Verify owner balance unchanged
-	ownerBalances, err := db.GetTokenBalances("owner1", "mintHash1")
+	ownerBalances, err := db.GetTokenBalances(balancesTestCtx, "owner1", "mintHash1")
 	assert.NilError(t, err)
 	assert.Equal(t, len(ownerBalances), 1)
 	assert.Equal(t, ownerBalances[0].Quantity, 500)

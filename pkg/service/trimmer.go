@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -24,16 +25,17 @@ func NewTrimmerService(blocksToKeep int, unconfirmedMintsToKeep int, store *stor
 
 func (t *TrimmerService) Start() {
 	t.running = true
+	ctx := context.Background()
 
 	for {
-		bestBlockHash, err := t.dogeClient.GetBestBlockHash()
+		bestBlockHash, err := t.dogeClient.GetBestBlockHash(ctx)
 		if err != nil {
 			log.Println("Error getting best block hash:", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
 
-		blockHeader, err := t.dogeClient.GetBlockHeader(bestBlockHash)
+		blockHeader, err := t.dogeClient.GetBlockHeader(ctx, bestBlockHash)
 		if err != nil {
 			log.Println("Error getting block header:", err)
 			time.Sleep(10 * time.Second)
@@ -48,12 +50,12 @@ func (t *TrimmerService) Start() {
 			log.Println("Error processing invoice timeout:", err)
 		}
 
-		err = t.store.TrimOldUnconfirmedMints(t.unconfirmedMintsToKeep)
+		err = t.store.TrimOldUnconfirmedMints(ctx, t.unconfirmedMintsToKeep)
 		if err != nil {
 			log.Println("Error trimming unconfirmed mints:", err)
 		}
 
-		err = t.store.TrimOldOnChainTransactions(oldestBlockHeight)
+		err = t.store.TrimOldOnChainTransactions(ctx, oldestBlockHeight)
 		if err != nil {
 			log.Println("Error trimming on chain transactions:", err)
 		}

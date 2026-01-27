@@ -1,6 +1,7 @@
 package store_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -10,7 +11,8 @@ import (
 )
 
 func TestSaveAndGetInvoices(t *testing.T) {
-	tokenisationStore := support.SetupTestDB()
+	tokenisationStore := support.SetupTestDB(t)
+	ctx := context.Background()
 
 	paymentAddress := support.GenerateDogecoinAddress(true)
 	offererAddress := support.GenerateDogecoinAddress(true)
@@ -30,12 +32,12 @@ func TestSaveAndGetInvoices(t *testing.T) {
 		Signature:      "mySignature",
 	}
 
-	id, err := tokenisationStore.SaveInvoice(&invoice)
+	id, err := tokenisationStore.SaveInvoice(ctx, &invoice)
 	if err != nil {
 		t.Fatalf("Failed to save invoice: %v", err)
 	}
 
-	invoices, err := tokenisationStore.GetInvoices(0, 10, "myMintHash", offererAddress)
+	invoices, err := tokenisationStore.GetInvoices(ctx, 0, 10, "myMintHash", offererAddress)
 	if err != nil {
 		t.Fatalf("Failed to get offer: %v", err)
 	}

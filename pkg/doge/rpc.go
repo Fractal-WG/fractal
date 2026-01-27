@@ -2,6 +2,7 @@ package doge
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -36,8 +37,8 @@ func NewRpcClient(config *config.Config) *RpcClient {
 	}
 }
 
-func (t *RpcClient) ListUnspent(address string) ([]UTXO, error) {
-	res, err := t.Request("listunspent", []any{0, 99999999, []string{address}})
+func (t *RpcClient) ListUnspent(ctx context.Context, address string) ([]UTXO, error) {
+	res, err := t.Request(ctx, "listunspent", []any{0, 99999999, []string{address}})
 	if err != nil {
 		return []UTXO{}, err
 	}
@@ -51,8 +52,8 @@ func (t *RpcClient) ListUnspent(address string) ([]UTXO, error) {
 	return result, nil
 }
 
-func (t *RpcClient) Generate(n int) ([]string, error) {
-	res, err := t.Request("generate", []any{n})
+func (t *RpcClient) Generate(ctx context.Context, n int) ([]string, error) {
+	res, err := t.Request(ctx, "generate", []any{n})
 	if err != nil {
 		return []string{}, err
 	}
@@ -66,8 +67,8 @@ func (t *RpcClient) Generate(n int) ([]string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) AddPeer(address string) error {
-	_, err := t.Request("addnode", []any{address, "add"})
+func (t *RpcClient) AddPeer(ctx context.Context, address string) error {
+	_, err := t.Request(ctx, "addnode", []any{address, "add"})
 	if err != nil && err.Error() != "json-rpc no result or error was returned" {
 		return err
 	}
@@ -75,8 +76,8 @@ func (t *RpcClient) AddPeer(address string) error {
 	return nil
 }
 
-func (t *RpcClient) GetNewAddress() (string, error) {
-	res, err := t.Request("getnewaddress", []any{})
+func (t *RpcClient) GetNewAddress(ctx context.Context) (string, error) {
+	res, err := t.Request(ctx, "getnewaddress", []any{})
 	if err != nil {
 		return "", err
 	}
@@ -90,8 +91,8 @@ func (t *RpcClient) GetNewAddress() (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) DumpPrivKey(address string) (string, error) {
-	res, err := t.Request("dumpprivkey", []any{address})
+func (t *RpcClient) DumpPrivKey(ctx context.Context, address string) (string, error) {
+	res, err := t.Request(ctx, "dumpprivkey", []any{address})
 	if err != nil {
 		return "", err
 	}
@@ -105,8 +106,8 @@ func (t *RpcClient) DumpPrivKey(address string) (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) SendToAddress(address string, amount int64) (string, error) {
-	res, err := t.Request("sendtoaddress", []any{address, amount})
+func (t *RpcClient) SendToAddress(ctx context.Context, address string, amount int64) (string, error) {
+	res, err := t.Request(ctx, "sendtoaddress", []any{address, amount})
 	if err != nil {
 		return "", err
 	}
@@ -120,8 +121,8 @@ func (t *RpcClient) SendToAddress(address string, amount int64) (string, error) 
 	return result, nil
 }
 
-func (t *RpcClient) GetWalletInfo() (WalletInfo, error) {
-	res, err := t.Request("getwalletinfo", []any{})
+func (t *RpcClient) GetWalletInfo(ctx context.Context) (WalletInfo, error) {
+	res, err := t.Request(ctx, "getwalletinfo", []any{})
 	if err != nil {
 		return WalletInfo{}, err
 	}
@@ -135,8 +136,8 @@ func (t *RpcClient) GetWalletInfo() (WalletInfo, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBestBlockHash() (string, error) {
-	res, err := t.Request("getbestblockhash", []any{})
+func (t *RpcClient) GetBestBlockHash(ctx context.Context) (string, error) {
+	res, err := t.Request(ctx, "getbestblockhash", []any{})
 	if err != nil {
 		return "", err
 	}
@@ -150,8 +151,8 @@ func (t *RpcClient) GetBestBlockHash() (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlockHex(blockHash string) (string, error) {
-	res, err := t.Request("getblock", []any{blockHash, 0})
+func (t *RpcClient) GetBlockHex(ctx context.Context, blockHash string) (string, error) {
+	res, err := t.Request(ctx, "getblock", []any{blockHash, 0})
 	if err != nil {
 		return "", err
 	}
@@ -165,8 +166,8 @@ func (t *RpcClient) GetBlockHex(blockHash string) (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlock(blockHash string) (Block, error) {
-	res, err := t.Request("getblock", []any{blockHash, 1})
+func (t *RpcClient) GetBlock(ctx context.Context, blockHash string) (Block, error) {
+	res, err := t.Request(ctx, "getblock", []any{blockHash, 1})
 	if err != nil {
 		return Block{}, err
 	}
@@ -179,8 +180,8 @@ func (t *RpcClient) GetBlock(blockHash string) (Block, error) {
 	return block, nil
 }
 
-func (t *RpcClient) GetBlockWithTransactions(blockHash string) (BlockWithTransactions, error) {
-	res, err := t.Request("getblock", []any{blockHash, 2})
+func (t *RpcClient) GetBlockWithTransactions(ctx context.Context, blockHash string) (BlockWithTransactions, error) {
+	res, err := t.Request(ctx, "getblock", []any{blockHash, 2})
 	if err != nil {
 		return BlockWithTransactions{}, err
 	}
@@ -194,8 +195,8 @@ func (t *RpcClient) GetBlockWithTransactions(blockHash string) (BlockWithTransac
 	return block, nil
 }
 
-func (t *RpcClient) GetBlockchainInfo() (BlockchainInfo, error) {
-	res, err := t.Request("getblockchaininfo", []any{})
+func (t *RpcClient) GetBlockchainInfo(ctx context.Context) (BlockchainInfo, error) {
+	res, err := t.Request(ctx, "getblockchaininfo", []any{})
 	if err != nil {
 		return BlockchainInfo{}, err
 	}
@@ -208,8 +209,8 @@ func (t *RpcClient) GetBlockchainInfo() (BlockchainInfo, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlockCount() (int64, error) {
-	res, err := t.Request("getblockcount", []any{})
+func (t *RpcClient) GetBlockCount(ctx context.Context) (int64, error) {
+	res, err := t.Request(ctx, "getblockcount", []any{})
 	if err != nil {
 		return 0, err
 	}
@@ -225,7 +226,7 @@ func (t *RpcClient) GetBlockCount() (int64, error) {
 
 // Doesn't seem to be implemented in Dogecoin Core
 // func (t *RpcClient) GetBlockFilter(blockHash string, filterType string) (BlockFilter, error) {
-// 	res, err := t.Request("getblockfilter", []any{blockHash, filterType})
+// 	res, err := t.Request(ctx, "getblockfilter", []any{blockHash, filterType})
 // 	if err != nil {
 // 		return BlockFilter{}, err
 // 	}
@@ -238,8 +239,8 @@ func (t *RpcClient) GetBlockCount() (int64, error) {
 // 	return result, nil
 // }
 
-func (t *RpcClient) GetBlockHash(blockHeight int) (string, error) {
-	res, err := t.Request("getblockhash", []any{blockHeight})
+func (t *RpcClient) GetBlockHash(ctx context.Context, blockHeight int) (string, error) {
+	res, err := t.Request(ctx, "getblockhash", []any{blockHeight})
 	if err != nil {
 		return "", err
 	}
@@ -253,8 +254,8 @@ func (t *RpcClient) GetBlockHash(blockHeight int) (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlockHeaderHex(blockHash string) (string, error) {
-	res, err := t.Request("getblockheader", []any{blockHash, false})
+func (t *RpcClient) GetBlockHeaderHex(ctx context.Context, blockHash string) (string, error) {
+	res, err := t.Request(ctx, "getblockheader", []any{blockHash, false})
 	if err != nil {
 		return "", err
 	}
@@ -268,8 +269,8 @@ func (t *RpcClient) GetBlockHeaderHex(blockHash string) (string, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlockHeader(blockHash string) (BlockHeader, error) {
-	res, err := t.Request("getblockheader", []any{blockHash, true})
+func (t *RpcClient) GetBlockHeader(ctx context.Context, blockHash string) (BlockHeader, error) {
+	res, err := t.Request(ctx, "getblockheader", []any{blockHash, true})
 	if err != nil {
 		return BlockHeader{}, err
 	}
@@ -283,8 +284,8 @@ func (t *RpcClient) GetBlockHeader(blockHash string) (BlockHeader, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetBlockStatsFromHash(blockHash string, stats []string) (BlockStats, error) {
-	res, err := t.Request("getblockstats", []any{blockHash, stats})
+func (t *RpcClient) GetBlockStatsFromHash(ctx context.Context, blockHash string, stats []string) (BlockStats, error) {
+	res, err := t.Request(ctx, "getblockstats", []any{blockHash, stats})
 	if err != nil {
 		return BlockStats{}, err
 	}
@@ -298,8 +299,8 @@ func (t *RpcClient) GetBlockStatsFromHash(blockHash string, stats []string) (Blo
 	return result, nil
 }
 
-func (t *RpcClient) GetChainTips() ([]ChainTip, error) {
-	res, err := t.Request("getchaintips", []any{})
+func (t *RpcClient) GetChainTips(ctx context.Context) ([]ChainTip, error) {
+	res, err := t.Request(ctx, "getchaintips", []any{})
 	if err != nil {
 		return []ChainTip{}, err
 	}
@@ -313,8 +314,8 @@ func (t *RpcClient) GetChainTips() ([]ChainTip, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetDifficulty() (float64, error) {
-	res, err := t.Request("getdifficulty", []any{})
+func (t *RpcClient) GetDifficulty(ctx context.Context) (float64, error) {
+	res, err := t.Request(ctx, "getdifficulty", []any{})
 	if err != nil {
 		return 0, err
 	}
@@ -329,7 +330,7 @@ func (t *RpcClient) GetDifficulty() (float64, error) {
 }
 
 // func (t *RpcClient) GetMempoolAncestorsHexs(txId string) ([]string, error) {
-// 	res, err := t.Request("getmempoolancestors", []any{txId})
+// 	res, err := t.Request(ctx, "getmempoolancestors", []any{txId})
 // 	if err != nil {
 // 		return []string{}, err
 // 	}
@@ -344,7 +345,7 @@ func (t *RpcClient) GetDifficulty() (float64, error) {
 // }
 
 // func (t *RpcClient) GetMempoolAncestors(txId string) (MempoolAncestors, error) {
-// 	res, err := t.Request("getmempoolancestors", []any{txId})
+// 	res, err := t.Request(ctx, "getmempoolancestors", []any{txId})
 // 	if err != nil {
 // 		return MempoolAncestors{}, err
 // 	}
@@ -360,7 +361,7 @@ func (t *RpcClient) GetDifficulty() (float64, error) {
 
 // Doesnt seem to be implemented in Dogecoin Core
 // func (t *RpcClient) GetChainTxStats(nBlocks int, blockHash string) (ChainTxStats, error) {
-// 	res, err := t.Request("getchaintxstats", []any{nBlocks, blockHash})
+// 	res, err := t.Request(ctx, "getchaintxstats", []any{nBlocks, blockHash})
 // 	if err != nil {
 // 		return ChainTxStats{}, err
 // 	}
@@ -376,7 +377,7 @@ func (t *RpcClient) GetDifficulty() (float64, error) {
 
 // Doesnt seem like the height version of this function is implemented in Dogecoin Core
 // func (t *RpcClient) GetBlockStatsFromHeight(blockHeight int, stats []string) (BlockStats, error) {
-// 	res, err := t.Request("getblockstats", []any{blockHeight, stats})
+// 	res, err := t.Request(ctx, "getblockstats", []any{blockHeight, stats})
 // 	if err != nil {
 // 		return BlockStats{}, err
 // 	}
@@ -390,8 +391,8 @@ func (t *RpcClient) GetDifficulty() (float64, error) {
 // 	return result, nil
 // }
 
-func (t *RpcClient) GetMempoolInfo() (MempoolInfo, error) {
-	res, err := t.Request("getmempoolinfo", []any{})
+func (t *RpcClient) GetMempoolInfo(ctx context.Context) (MempoolInfo, error) {
+	res, err := t.Request(ctx, "getmempoolinfo", []any{})
 	if err != nil {
 		return MempoolInfo{}, err
 	}
@@ -405,8 +406,8 @@ func (t *RpcClient) GetMempoolInfo() (MempoolInfo, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetRawMempoolInfo() (RawMempoolInfo, error) {
-	res, err := t.Request("getrawmempool", []any{})
+func (t *RpcClient) GetRawMempoolInfo(ctx context.Context) (RawMempoolInfo, error) {
+	res, err := t.Request(ctx, "getrawmempool", []any{})
 	if err != nil {
 		return RawMempoolInfo{}, err
 	}
@@ -420,8 +421,8 @@ func (t *RpcClient) GetRawMempoolInfo() (RawMempoolInfo, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetTxOut(txId string, vout int) (TxOut, error) {
-	res, err := t.Request("gettxout", []any{txId, vout})
+func (t *RpcClient) GetTxOut(ctx context.Context, txId string, vout int) (TxOut, error) {
+	res, err := t.Request(ctx, "gettxout", []any{txId, vout})
 	if err != nil {
 		return TxOut{}, err
 	}
@@ -435,8 +436,8 @@ func (t *RpcClient) GetTxOut(txId string, vout int) (TxOut, error) {
 	return result, nil
 }
 
-func (t *RpcClient) GetTxOutProof(txIds []string, blockHash string) ([]string, error) {
-	res, err := t.Request("gettxoutproof", []any{txIds, blockHash})
+func (t *RpcClient) GetTxOutProof(ctx context.Context, txIds []string, blockHash string) ([]string, error) {
+	res, err := t.Request(ctx, "gettxoutproof", []any{txIds, blockHash})
 	if err != nil {
 		return []string{}, err
 	}
@@ -450,7 +451,7 @@ func (t *RpcClient) GetTxOutProof(txIds []string, blockHash string) ([]string, e
 	return result, nil
 }
 
-func (t *RpcClient) Request(method string, params []any) (*json.RawMessage, error) {
+func (t *RpcClient) Request(ctx context.Context, method string, params []any) (*json.RawMessage, error) {
 	id := t.Id.Add(1)
 
 	body := rpcRequest{
@@ -462,7 +463,7 @@ func (t *RpcClient) Request(method string, params []any) (*json.RawMessage, erro
 	if err != nil {
 		return nil, fmt.Errorf("json-rpc marshal request: %v", err)
 	}
-	req, err := http.NewRequest("POST", t.Config.DogeScheme+"://"+t.Config.DogeHost+":"+t.Config.DogePort, bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, "POST", t.Config.DogeScheme+"://"+t.Config.DogeHost+":"+t.Config.DogePort, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, fmt.Errorf("json-rpc request: %v", err)
 	}

@@ -51,7 +51,7 @@ func TestSimpleFlow(t *testing.T) {
 	}, sellQty, 10, 3*time.Second)
 	fmt.Println("Invoice confirmed")
 
-	inv, err := seller.TokenisationStore.GetUnconfirmedInvoiceByHash(invoiceHash)
+	inv, err := seller.TokenisationStore.GetUnconfirmedInvoiceByHash(t.Context(), invoiceHash)
 	if err != nil {
 		t.Fatal(err)
 	}
