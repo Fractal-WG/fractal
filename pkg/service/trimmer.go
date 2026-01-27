@@ -28,14 +28,14 @@ func (t *TrimmerService) Start() {
 	ctx := context.Background()
 
 	for {
-		bestBlockHash, err := t.dogeClient.GetBestBlockHash()
+		bestBlockHash, err := t.dogeClient.GetBestBlockHash(ctx)
 		if err != nil {
 			log.Println("Error getting best block hash:", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
 
-		blockHeader, err := t.dogeClient.GetBlockHeader(bestBlockHash)
+		blockHeader, err := t.dogeClient.GetBlockHeader(ctx, bestBlockHash)
 		if err != nil {
 			log.Println("Error getting block header:", err)
 			time.Sleep(10 * time.Second)

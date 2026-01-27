@@ -24,21 +24,21 @@ func (h *HealthService) Start() {
 	ctx := context.Background()
 
 	for {
-		bestBlockHash, err := h.dogeClient.GetBestBlockHash()
+		bestBlockHash, err := h.dogeClient.GetBestBlockHash(ctx)
 		if err != nil {
 			log.Println("Error getting best block hash:", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
 
-		blockHeader, err := h.dogeClient.GetBlockHeader(bestBlockHash)
+		blockHeader, err := h.dogeClient.GetBlockHeader(ctx, bestBlockHash)
 		if err != nil {
 			log.Println("Error getting block header:", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
 
-		blockchainInfo, err := h.dogeClient.GetBlockchainInfo()
+		blockchainInfo, err := h.dogeClient.GetBlockchainInfo(ctx)
 		if err != nil {
 			log.Println("Error getting blockchain info:", err)
 			time.Sleep(10 * time.Second)
@@ -54,7 +54,7 @@ func (h *HealthService) Start() {
 			continue
 		}
 
-		_, err = h.dogeClient.GetWalletInfo()
+		_, err = h.dogeClient.GetWalletInfo(ctx)
 
 		err = h.tokenStore.UpsertHealth(ctx, int64(currentBlockHeight), int64(latestBlockHeight), chain, err == nil)
 		if err != nil {

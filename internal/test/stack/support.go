@@ -186,7 +186,8 @@ func GetUnspentUtxos(stackConfig *StackConfig, address string) ([]indexer.UTXOIt
 }
 
 func WriteToBlockchain(stackConfig *StackConfig, paymentAddress string, hexBody string, amount int64) string {
-	blockChainInfo, err := stackConfig.DogeClient.GetBlockchainInfo()
+	ctx := context.Background()
+	blockChainInfo, err := stackConfig.DogeClient.GetBlockchainInfo(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -212,7 +213,7 @@ func WriteToBlockchain(stackConfig *StackConfig, paymentAddress string, hexBody 
 		}
 
 		for _, utxo := range utxos {
-			_, err := stackConfig.DogeClient.Request("gettxout", []interface{}{utxo.TxID, utxo.VOut, true})
+			_, err := stackConfig.DogeClient.Request(ctx, "gettxout", []interface{}{utxo.TxID, utxo.VOut, true})
 			if err != nil {
 				continue
 			}
@@ -260,7 +261,7 @@ func WriteToBlockchain(stackConfig *StackConfig, paymentAddress string, hexBody 
 		}
 	}
 
-	rawTx, err := stackConfig.DogeClient.Request("createrawtransaction", []interface{}{inputs, outputs})
+	rawTx, err := stackConfig.DogeClient.Request(ctx, "createrawtransaction", []interface{}{inputs, outputs})
 	if err != nil {
 		panic(err)
 	}
@@ -281,7 +282,7 @@ func WriteToBlockchain(stackConfig *StackConfig, paymentAddress string, hexBody 
 		panic(err)
 	}
 
-	res, err := stackConfig.DogeClient.Request("sendrawtransaction", []interface{}{encodedTx})
+	res, err := stackConfig.DogeClient.Request(ctx, "sendrawtransaction", []interface{}{encodedTx})
 	if err != nil {
 		panic(err)
 	}
@@ -333,7 +334,8 @@ func GetPendingTokenBalance(stackConfig *StackConfig, mintHash string) int {
 }
 
 func ConfirmBlocks(stackConfig *StackConfig) {
-	_, err := stackConfig.DogeClient.Request("generate", []interface{}{10})
+	ctx := context.Background()
+	_, err := stackConfig.DogeClient.Request(ctx, "generate", []interface{}{10})
 	if err != nil {
 		panic(err)
 	}

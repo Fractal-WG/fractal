@@ -29,7 +29,7 @@ func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
 	}
 
 	if tx.BlockHash == "" {
-		blockHash, err := p.dogeClient.GetBlockHash(int(tx.Height))
+		blockHash, err := p.dogeClient.GetBlockHash(ctx, int(tx.Height))
 		if err != nil {
 			log.Println("GetBlockHash", err)
 			return err
@@ -38,7 +38,7 @@ func (p *PaymentProcessor) Process(tx store.OnChainTransaction) error {
 		tx.BlockHash = blockHash
 	}
 
-	blockHeader, err := p.dogeClient.GetBlockHeader(tx.BlockHash)
+	blockHeader, err := p.dogeClient.GetBlockHeader(ctx, tx.BlockHash)
 	if err != nil {
 		log.Println("GetBlockHeader", err)
 		return err
