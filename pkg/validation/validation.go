@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+	"dogecoin.org/fractal-engine/pkg/doge"
 )
 
 const (
@@ -107,6 +109,46 @@ func ValidatePublicKey(pubKey string) error {
 	}
 
 	return nil
+}
+
+// ValidateAddressPublicKeyMatch checks that a P2PKH address matches the provided compressed public key.
+func ValidateAddressPublicKeyMatch(address, pubKey string) error {
+	if err := ValidateAddress(address); err != nil {
+		return err
+	}
+
+	if err := ValidatePublicKey(pubKey); err != nil {
+		return err
+	}
+
+	switch address[0] {
+	case 'D':
+		expected, err := doge.PublicKeyToDogeAddress(pubKey, doge.PrefixMainnet)
+		if err != nil {
+			return err
+		}
+		if address != expected {
+			return fmt.Errorf("address does not match public key")
+		}
+		return nil
+	case 'm', 'n':
+		expectedTestnet, err := doge.PublicKeyToDogeAddress(pubKey, doge.PrefixTestnet)
+		if err != nil {
+			return err
+		}
+		expectedRegtest, err := doge.PublicKeyToDogeAddress(pubKey, doge.PrefixRegtest)
+		if err != nil {
+			return err
+		}
+		if address != expectedTestnet && address != expectedRegtest {
+			return fmt.Errorf("address does not match public key")
+		}
+		return nil
+	case 'A', '2':
+		return fmt.Errorf("address must be P2PKH to match public key")
+	default:
+		return fmt.Errorf("unsupported address prefix")
+	}
 }
 
 // ValidateStringLength validates string length with custom limits

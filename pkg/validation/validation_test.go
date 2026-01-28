@@ -3,6 +3,8 @@ package validation
 import (
 	"strings"
 	"testing"
+
+	"dogecoin.org/fractal-engine/pkg/doge"
 )
 
 func TestValidateAddress(t *testing.T) {
@@ -73,6 +75,40 @@ func TestValidatePublicKey(t *testing.T) {
 			err := ValidatePublicKey(tt.pubKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ValidatePublicKey() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidateAddressPublicKeyMatch(t *testing.T) {
+	_, pubKey, address, err := doge.GenerateDogecoinKeypair(doge.PrefixMainnet)
+	if err != nil {
+		t.Fatalf("GenerateDogecoinKeypair: %v", err)
+	}
+
+	_, badPub, _, err := doge.GenerateDogecoinKeypair(doge.PrefixMainnet)
+	if err != nil {
+		t.Fatalf("GenerateDogecoinKeypair: %v", err)
+	}
+
+	tests := []struct {
+		name    string
+		addr    string
+		pubKey  string
+		wantErr bool
+	}{
+		{"Matching mainnet address", address, pubKey, false},
+		{"Mismatched mainnet address", address, badPub, true},
+		{"Invalid address", "not-an-address", pubKey, true},
+		{"Invalid pubkey", address, "1234", true},
+		{"P2SH address not supported", "A7P2jVEK6JGiGepUGTAHqELKK8QJ8GCahZ", pubKey, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateAddressPublicKeyMatch(tt.addr, tt.pubKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateAddressPublicKeyMatch() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
