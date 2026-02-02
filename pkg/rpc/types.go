@@ -340,6 +340,10 @@ func (req *CreateInvoiceRequest) Validate() error {
 		return err
 	}
 
+	if err := validation.ValidateAddressPublicKeyMatch(req.Payload.SellerAddress, req.PublicKey); err != nil {
+		return err
+	}
+
 	return nil
 }
 

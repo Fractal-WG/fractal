@@ -203,6 +203,76 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	assert.Equal(t, dogenetClient.invoices[0].SellerAddress, invoice.Payload.SellerAddress)
 }
 
+func TestInvoiceBuyerCantCreateOwnInvoiceWithBuyerSignature(t *testing.T) {
+	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
+	ctx := context.Background()
+
+	paymentAddress := support.GenerateDogecoinAddress(true)
+	sellOfferAddress := support.GenerateDogecoinAddress(true)
+	mintHash := support.GenerateRandomHash()
+
+	_, err := tokenisationStore.SaveMint(ctx, &store.MintWithoutID{
+		Title:         "mint-buyer-signs",
+		Description:   "buyer-signs",
+		FractionCount: 100,
+		Hash:          mintHash,
+	}, "owner")
+	assert.NilError(t, err)
+
+	buyerPrivKey, buyerPubKey, buyerAddress, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
+
+	invoicePayload := rpc.CreateInvoiceRequestPayload{
+		PaymentAddress: paymentAddress,
+		BuyerAddress:   buyerAddress,
+		MintHash:       mintHash,
+		Quantity:       10,
+		Price:          100,
+		SellerAddress:  sellOfferAddress,
+	}
+
+	// Buyer signs their own invoice payload (should be rejected, but currently succeeds).
+	signature, err := doge.SignPayload(invoicePayload, buyerPrivKey, buyerPubKey)
+	assert.NilError(t, err)
+
+	paymentAddressProto := &protocol.Address{}
+	paymentAddressProto.SetValue(paymentAddress)
+	buyerAddressProto := &protocol.Address{}
+	buyerAddressProto.SetValue(buyerAddress)
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+	sellerAddressProto := &protocol.Address{}
+	sellerAddressProto.SetValue(sellOfferAddress)
+
+	protoPayload := &protocol.CreateInvoiceRequestPayload{}
+	protoPayload.SetPaymentAddress(paymentAddressProto)
+	protoPayload.SetBuyerAddress(buyerAddressProto)
+	protoPayload.SetMintHash(mintHashProto)
+	protoPayload.SetQuantity(10)
+	protoPayload.SetPrice(100)
+	protoPayload.SetSellerAddress(sellerAddressProto)
+
+	invoice := &protocol.CreateInvoiceRequest{}
+	invoice.SetPayload(protoPayload)
+	invoice.SetPublicKey(buyerPubKey)
+	invoice.SetSignature(signature)
+
+	invoiceResponse, err := feClient.CreateInvoice(ctx, connect.NewRequest(invoice))
+	assert.Assert(t, err != nil, "expected buyer-signed invoice creation to be rejected")
+
+	invoices, err := tokenisationStore.GetUnconfirmedInvoices(ctx, 0, 10, mintHash, buyerAddress)
+	if err != nil {
+		t.Fatalf("Failed to get invoices: %v", err)
+	}
+
+	assert.Equal(t, len(invoices), 0)
+	assert.Equal(t, len(dogenetClient.invoices), 0)
+
+	if invoiceResponse != nil && invoiceResponse.Msg != nil && invoiceResponse.Msg.GetHash() != nil {
+		t.Fatalf("unexpected invoice hash returned: %s", invoiceResponse.Msg.GetHash().GetValue())
+	}
+}
+
 func TestCreateInvoiceSignature(t *testing.T) {
 	tokenisationStore, _, feClient := SetupRpcTest(t)
 	ctx := context.Background()
