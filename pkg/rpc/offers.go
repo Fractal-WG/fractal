@@ -87,6 +87,33 @@ func (s *ConnectRpcService) CreateSellOffer(ctx context.Context, req *connect.Re
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("sell offer limit reached"))
 	}
 
+	// Validate seller has sufficient token balance
+	tokenBalances, err := s.store.GetTokenBalances(ctx, request.Payload.OffererAddress, request.Payload.MintHash)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	totalTokenBalance := 0
+	for _, tokenBalance := range tokenBalances {
+		totalTokenBalance += tokenBalance.Quantity
+	}
+
+	pendingTokenBalance, err := s.store.GetPendingTokenBalanceTotalForMintAndOwner(ctx, request.Payload.MintHash, request.Payload.OffererAddress)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	existingSellOffersQuantity, err := s.store.GetSellOffersTotalQuantity(ctx, request.Payload.MintHash, request.Payload.OffererAddress)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	availableBalance := totalTokenBalance - pendingTokenBalance - existingSellOffersQuantity
+
+	if request.Payload.Quantity > availableBalance {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("insufficient token balance to create sell offer"))
+	}
+
 	newOfferWithoutId := &store.SellOfferWithoutID{
 		OffererAddress: request.Payload.OffererAddress,
 		MintHash:       request.Payload.MintHash,

@@ -48,6 +48,13 @@ func (s *TokenisationStore) CountSellOffers(ctx context.Context, mintHash string
 	return count, err
 }
 
+func (s *TokenisationStore) GetSellOffersTotalQuantity(ctx context.Context, mintHash string, offererAddress string) (int, error) {
+	row := s.DB.QueryRowContext(ctx, "SELECT COALESCE(SUM(quantity), 0) FROM sell_offers WHERE mint_hash = $1 AND offerer_address = $2", mintHash, offererAddress)
+	var totalQuantity int
+	err := row.Scan(&totalQuantity)
+	return totalQuantity, err
+}
+
 func (s *TokenisationStore) SaveSellOffer(ctx context.Context, d *SellOfferWithoutID) (string, error) {
 	return s.SaveSellOfferWithTx(ctx, d, nil)
 }
