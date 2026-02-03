@@ -36,14 +36,14 @@ jobs:
           cp -L result/bin/fractal-engine dist/fractal-engine
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage.txt
 
       - name: Upload binary
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fractal-engine
           path: dist/fractal-engine
