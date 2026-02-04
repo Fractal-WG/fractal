@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"log"
 	"strings"
 
@@ -69,7 +70,7 @@ func (p *InvoiceProcessor) Process(tx store.OnChainTransaction) error {
 
 		if !mint.HasRequiredSignatures(signatures) {
 			log.Println("Invalid number of signatures")
-			return err
+			return errors.New("Invalid number of signatures")
 		}
 	}
 
