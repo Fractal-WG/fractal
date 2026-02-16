@@ -14,7 +14,7 @@ pkgs.pkgsMusl.buildGo124Module rec {
 
   src = ../.;
 
-  vendorHash = "sha256-cEazt2Cq7D7JBFDf3oUW5dQhmMzqFNuccDde7RYJDZs=";
+  vendorHash = "sha256-kWt7PWvOm6d6A53NyeFVGeUsfPnH0oSDEg2pPk6GVyE=";
 
   nativeBuildInputs = [ pkgs.pkg-config ];
   buildInputs = [ ];

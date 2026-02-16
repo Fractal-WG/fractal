@@ -60,6 +60,8 @@ message Mint {
   repeated string tags = 18;
   string title = 19 [(buf.validate.field).required = true];
   Hash transaction_hash = 20;
+  bool allow_expansion = 21;
+  int32 current_supply = 22;
 }
 
 message Invoice {

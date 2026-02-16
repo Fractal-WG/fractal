@@ -29,6 +29,7 @@ service FractalEngineRpcService {
   rpc GetMints(GetMintsRequest) returns (GetMintsResponse);
   rpc GetMint(GetMintRequest) returns (GetMintResponse);
   rpc CreateMint(CreateMintRequest) returns (CreateMintResponse);
+  rpc ExpandMint(ExpandMintRequest) returns (ExpandMintResponse);
 
   rpc CreateNewPayment(CreateNewPaymentRequest) returns (CreateNewPaymentResponse);
 

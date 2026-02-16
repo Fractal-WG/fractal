@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package fractalengine;
+
+option go_package = "pkg/protocol";
+
+// This is what gets written to the OP_RETURN on the L1
+message OnChainMintExpansionMessage {
+    bytes mint_hash = 1;
+    int32 additional_supply = 2;
+    bytes expansion_hash = 3;
+}

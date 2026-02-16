@@ -553,6 +553,7 @@ type CreateMintRequestPayload struct {
 	xxx_hidden_SignatureRequirementType SignatureRequirementType `protobuf:"varint,11,opt,name=signature_requirement_type,json=signatureRequirementType,enum=fractalengine.rpc.v1.SignatureRequirementType"`
 	xxx_hidden_Tags                     []string                 `protobuf:"bytes,12,rep,name=tags"`
 	xxx_hidden_Title                    *string                  `protobuf:"bytes,13,opt,name=title"`
+	xxx_hidden_AllowExpansion           bool                     `protobuf:"varint,14,opt,name=allow_expansion,json=allowExpansion"`
 	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
 	XXX_presence                        [1]uint32
 	unknownFields                       protoimpl.UnknownFields
@@ -691,28 +692,35 @@ func (x *CreateMintRequestPayload) GetTitle() string {
 	return ""
 }
 
+func (x *CreateMintRequestPayload) GetAllowExpansion() bool {
+	if x != nil {
+		return x.xxx_hidden_AllowExpansion
+	}
+	return false
+}
+
 func (x *CreateMintRequestPayload) SetAssetManagers(v []*AssetManager) {
 	x.xxx_hidden_AssetManagers = &v
 }
 
 func (x *CreateMintRequestPayload) SetContractOfSale(v string) {
 	x.xxx_hidden_ContractOfSale = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 14)
 }
 
 func (x *CreateMintRequestPayload) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 14)
 }
 
 func (x *CreateMintRequestPayload) SetFeedUrl(v string) {
 	x.xxx_hidden_FeedUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 14)
 }
 
 func (x *CreateMintRequestPayload) SetFractionCount(v int32) {
 	x.xxx_hidden_FractionCount = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 14)
 }
 
 func (x *CreateMintRequestPayload) SetLockupOptions(v *StringInterfaceMap) {
@@ -725,7 +733,7 @@ func (x *CreateMintRequestPayload) SetMetadata(v *StringInterfaceMap) {
 
 func (x *CreateMintRequestPayload) SetMinSignatures(v int32) {
 	x.xxx_hidden_MinSignatures = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 14)
 }
 
 func (x *CreateMintRequestPayload) SetOwnerAddress(v *Address) {
@@ -738,7 +746,7 @@ func (x *CreateMintRequestPayload) SetRequirements(v *StringInterfaceMap) {
 
 func (x *CreateMintRequestPayload) SetSignatureRequirementType(v SignatureRequirementType) {
 	x.xxx_hidden_SignatureRequirementType = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 14)
 }
 
 func (x *CreateMintRequestPayload) SetTags(v []string) {
@@ -747,7 +755,12 @@ func (x *CreateMintRequestPayload) SetTags(v []string) {
 
 func (x *CreateMintRequestPayload) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 13)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 14)
+}
+
+func (x *CreateMintRequestPayload) SetAllowExpansion(v bool) {
+	x.xxx_hidden_AllowExpansion = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 14)
 }
 
 func (x *CreateMintRequestPayload) HasContractOfSale() bool {
@@ -827,6 +840,13 @@ func (x *CreateMintRequestPayload) HasTitle() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 12)
 }
 
+func (x *CreateMintRequestPayload) HasAllowExpansion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
+}
+
 func (x *CreateMintRequestPayload) ClearContractOfSale() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_ContractOfSale = nil
@@ -878,6 +898,11 @@ func (x *CreateMintRequestPayload) ClearTitle() {
 	x.xxx_hidden_Title = nil
 }
 
+func (x *CreateMintRequestPayload) ClearAllowExpansion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_AllowExpansion = false
+}
+
 type CreateMintRequestPayload_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -894,6 +919,7 @@ type CreateMintRequestPayload_builder struct {
 	SignatureRequirementType *SignatureRequirementType
 	Tags                     []string
 	Title                    *string
+	AllowExpansion           *bool
 }
 
 func (b0 CreateMintRequestPayload_builder) Build() *CreateMintRequestPayload {
@@ -902,37 +928,41 @@ func (b0 CreateMintRequestPayload_builder) Build() *CreateMintRequestPayload {
 	_, _ = b, x
 	x.xxx_hidden_AssetManagers = &b.AssetManagers
 	if b.ContractOfSale != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 14)
 		x.xxx_hidden_ContractOfSale = b.ContractOfSale
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 14)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.FeedUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 14)
 		x.xxx_hidden_FeedUrl = b.FeedUrl
 	}
 	if b.FractionCount != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 14)
 		x.xxx_hidden_FractionCount = *b.FractionCount
 	}
 	x.xxx_hidden_LockupOptions = b.LockupOptions
 	x.xxx_hidden_Metadata = b.Metadata
 	if b.MinSignatures != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 14)
 		x.xxx_hidden_MinSignatures = *b.MinSignatures
 	}
 	x.xxx_hidden_OwnerAddress = b.OwnerAddress
 	x.xxx_hidden_Requirements = b.Requirements
 	if b.SignatureRequirementType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 14)
 		x.xxx_hidden_SignatureRequirementType = *b.SignatureRequirementType
 	}
 	x.xxx_hidden_Tags = b.Tags
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 13)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 14)
 		x.xxx_hidden_Title = b.Title
+	}
+	if b.AllowExpansion != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 14)
+		x.xxx_hidden_AllowExpansion = *b.AllowExpansion
 	}
 	return m0
 }
@@ -1040,6 +1070,370 @@ func (b0 CreateMintResponse_builder) Build() *CreateMintResponse {
 	return m0
 }
 
+type ExpandMintRequest struct {
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Payload     *ExpandMintRequestPayload `protobuf:"bytes,1,opt,name=payload"`
+	xxx_hidden_PublicKey   *string                   `protobuf:"bytes,2,opt,name=public_key,json=publicKey"`
+	xxx_hidden_Signature   *string                   `protobuf:"bytes,3,opt,name=signature"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ExpandMintRequest) Reset() {
+	*x = ExpandMintRequest{}
+	mi := &file_mints_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExpandMintRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExpandMintRequest) ProtoMessage() {}
+
+func (x *ExpandMintRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_mints_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ExpandMintRequest) GetPayload() *ExpandMintRequestPayload {
+	if x != nil {
+		return x.xxx_hidden_Payload
+	}
+	return nil
+}
+
+func (x *ExpandMintRequest) GetPublicKey() string {
+	if x != nil {
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ExpandMintRequest) GetSignature() string {
+	if x != nil {
+		if x.xxx_hidden_Signature != nil {
+			return *x.xxx_hidden_Signature
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ExpandMintRequest) SetPayload(v *ExpandMintRequestPayload) {
+	x.xxx_hidden_Payload = v
+}
+
+func (x *ExpandMintRequest) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ExpandMintRequest) SetSignature(v string) {
+	x.xxx_hidden_Signature = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *ExpandMintRequest) HasPayload() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Payload != nil
+}
+
+func (x *ExpandMintRequest) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ExpandMintRequest) HasSignature() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *ExpandMintRequest) ClearPayload() {
+	x.xxx_hidden_Payload = nil
+}
+
+func (x *ExpandMintRequest) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *ExpandMintRequest) ClearSignature() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Signature = nil
+}
+
+type ExpandMintRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Payload   *ExpandMintRequestPayload
+	PublicKey *string
+	Signature *string
+}
+
+func (b0 ExpandMintRequest_builder) Build() *ExpandMintRequest {
+	m0 := &ExpandMintRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Payload = b.Payload
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	if b.Signature != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Signature = b.Signature
+	}
+	return m0
+}
+
+type ExpandMintRequestPayload struct {
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_MintHash         *Hash                  `protobuf:"bytes,1,opt,name=mint_hash,json=mintHash"`
+	xxx_hidden_AdditionalSupply int32                  `protobuf:"varint,2,opt,name=additional_supply,json=additionalSupply"`
+	xxx_hidden_OwnerAddress     *Address               `protobuf:"bytes,3,opt,name=owner_address,json=ownerAddress"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *ExpandMintRequestPayload) Reset() {
+	*x = ExpandMintRequestPayload{}
+	mi := &file_mints_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExpandMintRequestPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExpandMintRequestPayload) ProtoMessage() {}
+
+func (x *ExpandMintRequestPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_mints_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ExpandMintRequestPayload) GetMintHash() *Hash {
+	if x != nil {
+		return x.xxx_hidden_MintHash
+	}
+	return nil
+}
+
+func (x *ExpandMintRequestPayload) GetAdditionalSupply() int32 {
+	if x != nil {
+		return x.xxx_hidden_AdditionalSupply
+	}
+	return 0
+}
+
+func (x *ExpandMintRequestPayload) GetOwnerAddress() *Address {
+	if x != nil {
+		return x.xxx_hidden_OwnerAddress
+	}
+	return nil
+}
+
+func (x *ExpandMintRequestPayload) SetMintHash(v *Hash) {
+	x.xxx_hidden_MintHash = v
+}
+
+func (x *ExpandMintRequestPayload) SetAdditionalSupply(v int32) {
+	x.xxx_hidden_AdditionalSupply = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *ExpandMintRequestPayload) SetOwnerAddress(v *Address) {
+	x.xxx_hidden_OwnerAddress = v
+}
+
+func (x *ExpandMintRequestPayload) HasMintHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MintHash != nil
+}
+
+func (x *ExpandMintRequestPayload) HasAdditionalSupply() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ExpandMintRequestPayload) HasOwnerAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_OwnerAddress != nil
+}
+
+func (x *ExpandMintRequestPayload) ClearMintHash() {
+	x.xxx_hidden_MintHash = nil
+}
+
+func (x *ExpandMintRequestPayload) ClearAdditionalSupply() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_AdditionalSupply = 0
+}
+
+func (x *ExpandMintRequestPayload) ClearOwnerAddress() {
+	x.xxx_hidden_OwnerAddress = nil
+}
+
+type ExpandMintRequestPayload_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	MintHash         *Hash
+	AdditionalSupply *int32
+	OwnerAddress     *Address
+}
+
+func (b0 ExpandMintRequestPayload_builder) Build() *ExpandMintRequestPayload {
+	m0 := &ExpandMintRequestPayload{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_MintHash = b.MintHash
+	if b.AdditionalSupply != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_AdditionalSupply = *b.AdditionalSupply
+	}
+	x.xxx_hidden_OwnerAddress = b.OwnerAddress
+	return m0
+}
+
+type ExpandMintResponse struct {
+	state                             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_EncodedTransactionBody *string                `protobuf:"bytes,1,opt,name=encoded_transaction_body,json=encodedTransactionBody"`
+	xxx_hidden_ExpansionHash          *Hash                  `protobuf:"bytes,2,opt,name=expansion_hash,json=expansionHash"`
+	XXX_raceDetectHookData            protoimpl.RaceDetectHookData
+	XXX_presence                      [1]uint32
+	unknownFields                     protoimpl.UnknownFields
+	sizeCache                         protoimpl.SizeCache
+}
+
+func (x *ExpandMintResponse) Reset() {
+	*x = ExpandMintResponse{}
+	mi := &file_mints_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExpandMintResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExpandMintResponse) ProtoMessage() {}
+
+func (x *ExpandMintResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_mints_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ExpandMintResponse) GetEncodedTransactionBody() string {
+	if x != nil {
+		if x.xxx_hidden_EncodedTransactionBody != nil {
+			return *x.xxx_hidden_EncodedTransactionBody
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ExpandMintResponse) GetExpansionHash() *Hash {
+	if x != nil {
+		return x.xxx_hidden_ExpansionHash
+	}
+	return nil
+}
+
+func (x *ExpandMintResponse) SetEncodedTransactionBody(v string) {
+	x.xxx_hidden_EncodedTransactionBody = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ExpandMintResponse) SetExpansionHash(v *Hash) {
+	x.xxx_hidden_ExpansionHash = v
+}
+
+func (x *ExpandMintResponse) HasEncodedTransactionBody() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ExpandMintResponse) HasExpansionHash() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ExpansionHash != nil
+}
+
+func (x *ExpandMintResponse) ClearEncodedTransactionBody() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_EncodedTransactionBody = nil
+}
+
+func (x *ExpandMintResponse) ClearExpansionHash() {
+	x.xxx_hidden_ExpansionHash = nil
+}
+
+type ExpandMintResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	EncodedTransactionBody *string
+	ExpansionHash          *Hash
+}
+
+func (b0 ExpandMintResponse_builder) Build() *ExpandMintResponse {
+	m0 := &ExpandMintResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.EncodedTransactionBody != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_EncodedTransactionBody = b.EncodedTransactionBody
+	}
+	x.xxx_hidden_ExpansionHash = b.ExpansionHash
+	return m0
+}
+
 var File_mints_proto protoreflect.FileDescriptor
 
 const file_mints_proto_rawDesc = "" +
@@ -1061,7 +1455,7 @@ const file_mints_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v2..fractalengine.rpc.v1.CreateMintRequestPayloadR\apayload\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x1c\n" +
-	"\tsignature\x18\x03 \x01(\tR\tsignature\"\xf6\x05\n" +
+	"\tsignature\x18\x03 \x01(\tR\tsignature\"\x9f\x06\n" +
 	"\x18CreateMintRequestPayload\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12(\n" +
 	"\x10contract_of_sale\x18\x02 \x01(\tR\x0econtractOfSale\x12)\n" +
@@ -1076,12 +1470,25 @@ const file_mints_proto_rawDesc = "" +
 	" \x01(\v2(.fractalengine.rpc.v1.StringInterfaceMapR\frequirements\x12l\n" +
 	"\x1asignature_requirement_type\x18\v \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\f \x03(\tR\x04tags\x12\x1d\n" +
-	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\"~\n" +
+	"\x05title\x18\r \x01(\tB\a\xbaH\x04r\x02\x10\x01R\x05title\x12'\n" +
+	"\x0fallow_expansion\x18\x0e \x01(\bR\x0eallowExpansion\"~\n" +
 	"\x12CreateMintResponse\x128\n" +
 	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12.\n" +
-	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
+	"\x04hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"\x9a\x01\n" +
+	"\x11ExpandMintRequest\x12H\n" +
+	"\apayload\x18\x01 \x01(\v2..fractalengine.rpc.v1.ExpandMintRequestPayloadR\apayload\x12\x1d\n" +
+	"\n" +
+	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x1c\n" +
+	"\tsignature\x18\x03 \x01(\tR\tsignature\"\xcd\x01\n" +
+	"\x18ExpandMintRequestPayload\x127\n" +
+	"\tmint_hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x124\n" +
+	"\x11additional_supply\x18\x02 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x10additionalSupply\x12B\n" +
+	"\rowner_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\"\x91\x01\n" +
+	"\x12ExpandMintResponse\x128\n" +
+	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12A\n" +
+	"\x0eexpansion_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\rexpansionHashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
-var file_mints_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_mints_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_mints_proto_goTypes = []any{
 	(*GetMintsRequest)(nil),          // 0: fractalengine.rpc.v1.GetMintsRequest
 	(*GetMintRequest)(nil),           // 1: fractalengine.rpc.v1.GetMintRequest
@@ -1090,33 +1497,40 @@ var file_mints_proto_goTypes = []any{
 	(*CreateMintRequest)(nil),        // 4: fractalengine.rpc.v1.CreateMintRequest
 	(*CreateMintRequestPayload)(nil), // 5: fractalengine.rpc.v1.CreateMintRequestPayload
 	(*CreateMintResponse)(nil),       // 6: fractalengine.rpc.v1.CreateMintResponse
-	(*wrapperspb.Int32Value)(nil),    // 7: google.protobuf.Int32Value
-	(*Hash)(nil),                     // 8: fractalengine.rpc.v1.Hash
-	(*Mint)(nil),                     // 9: fractalengine.rpc.v1.Mint
-	(*AssetManager)(nil),             // 10: fractalengine.rpc.v1.AssetManager
-	(*StringInterfaceMap)(nil),       // 11: fractalengine.rpc.v1.StringInterfaceMap
-	(*Address)(nil),                  // 12: fractalengine.rpc.v1.Address
-	(SignatureRequirementType)(0),    // 13: fractalengine.rpc.v1.SignatureRequirementType
+	(*ExpandMintRequest)(nil),        // 7: fractalengine.rpc.v1.ExpandMintRequest
+	(*ExpandMintRequestPayload)(nil), // 8: fractalengine.rpc.v1.ExpandMintRequestPayload
+	(*ExpandMintResponse)(nil),       // 9: fractalengine.rpc.v1.ExpandMintResponse
+	(*wrapperspb.Int32Value)(nil),    // 10: google.protobuf.Int32Value
+	(*Hash)(nil),                     // 11: fractalengine.rpc.v1.Hash
+	(*Mint)(nil),                     // 12: fractalengine.rpc.v1.Mint
+	(*AssetManager)(nil),             // 13: fractalengine.rpc.v1.AssetManager
+	(*StringInterfaceMap)(nil),       // 14: fractalengine.rpc.v1.StringInterfaceMap
+	(*Address)(nil),                  // 15: fractalengine.rpc.v1.Address
+	(SignatureRequirementType)(0),    // 16: fractalengine.rpc.v1.SignatureRequirementType
 }
 var file_mints_proto_depIdxs = []int32{
-	7,  // 0: fractalengine.rpc.v1.GetMintsRequest.limit:type_name -> google.protobuf.Int32Value
-	7,  // 1: fractalengine.rpc.v1.GetMintsRequest.page:type_name -> google.protobuf.Int32Value
-	8,  // 2: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
-	9,  // 3: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
-	9,  // 4: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
+	10, // 0: fractalengine.rpc.v1.GetMintsRequest.limit:type_name -> google.protobuf.Int32Value
+	10, // 1: fractalengine.rpc.v1.GetMintsRequest.page:type_name -> google.protobuf.Int32Value
+	11, // 2: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
+	12, // 3: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
+	12, // 4: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
 	5,  // 5: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
-	10, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	11, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	11, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	12, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
-	11, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	13, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	8,  // 12: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	13, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
+	14, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	14, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	15, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	14, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	16, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	11, // 12: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	8,  // 13: fractalengine.rpc.v1.ExpandMintRequest.payload:type_name -> fractalengine.rpc.v1.ExpandMintRequestPayload
+	11, // 14: fractalengine.rpc.v1.ExpandMintRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	15, // 15: fractalengine.rpc.v1.ExpandMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	11, // 16: fractalengine.rpc.v1.ExpandMintResponse.expansion_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_mints_proto_init() }
@@ -1132,7 +1546,7 @@ func file_mints_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mints_proto_rawDesc), len(file_mints_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -147,6 +147,8 @@ type MintWithoutID struct {
 	SignatureRequirementType SignatureRequirementType `json:"signature_requirement_type"`
 	AssetManagers            AssetManagers            `json:"asset_managers"`
 	MinSignatures            int                      `json:"min_signatures"`
+	AllowExpansion           bool                     `json:"allow_expansion"`
+	CurrentSupply            int                      `json:"current_supply"`
 }
 
 type MintHash struct {
@@ -473,6 +475,41 @@ func (i *InvoiceSignature) Validate(mint Mint, invoice UnconfirmedInvoice) error
 	}
 
 	return nil
+}
+
+type UnconfirmedMintExpansion struct {
+	Id               string    `json:"id"`
+	Hash             string    `json:"hash"`
+	MintHash         string    `json:"mint_hash"`
+	AdditionalSupply int       `json:"additional_supply"`
+	OwnerAddress     string    `json:"owner_address"`
+	PublicKey        string    `json:"public_key"`
+	Signature        string    `json:"signature"`
+	CreatedAt        time.Time `json:"created_at"`
+}
+
+type MintExpansionHash struct {
+	MintHash         string `json:"mint_hash"`
+	AdditionalSupply int    `json:"additional_supply"`
+	OwnerAddress     string `json:"owner_address"`
+	PublicKey        string `json:"public_key"`
+}
+
+func (e *UnconfirmedMintExpansion) GenerateHash() (string, error) {
+	input := MintExpansionHash{
+		MintHash:         e.MintHash,
+		AdditionalSupply: e.AdditionalSupply,
+		OwnerAddress:     e.OwnerAddress,
+		PublicKey:        e.PublicKey,
+	}
+
+	jsonBytes, err := json.Marshal(input)
+	if err != nil {
+		return "", err
+	}
+
+	hash := sha256.Sum256(jsonBytes)
+	return hex.EncodeToString(hash[:]), nil
 }
 
 type TokenBalanceWithMint struct {

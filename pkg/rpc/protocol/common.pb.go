@@ -549,6 +549,8 @@ type Mint struct {
 	xxx_hidden_Tags                     []string                 `protobuf:"bytes,18,rep,name=tags"`
 	xxx_hidden_Title                    *string                  `protobuf:"bytes,19,opt,name=title"`
 	xxx_hidden_TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash"`
+	xxx_hidden_AllowExpansion           bool                     `protobuf:"varint,21,opt,name=allow_expansion,json=allowExpansion"`
+	xxx_hidden_CurrentSupply            int32                    `protobuf:"varint,22,opt,name=current_supply,json=currentSupply"`
 	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
 	XXX_presence                        [1]uint32
 	unknownFields                       protoimpl.UnknownFields
@@ -748,38 +750,52 @@ func (x *Mint) GetTransactionHash() *Hash {
 	return nil
 }
 
+func (x *Mint) GetAllowExpansion() bool {
+	if x != nil {
+		return x.xxx_hidden_AllowExpansion
+	}
+	return false
+}
+
+func (x *Mint) GetCurrentSupply() int32 {
+	if x != nil {
+		return x.xxx_hidden_CurrentSupply
+	}
+	return 0
+}
+
 func (x *Mint) SetAssetManagers(v []*AssetManager) {
 	x.xxx_hidden_AssetManagers = &v
 }
 
 func (x *Mint) SetBlockHeight(v int32) {
 	x.xxx_hidden_BlockHeight = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 22)
 }
 
 func (x *Mint) SetContractOfSale(v string) {
 	x.xxx_hidden_ContractOfSale = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 22)
 }
 
 func (x *Mint) SetCreatedAt(v string) {
 	x.xxx_hidden_CreatedAt = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 22)
 }
 
 func (x *Mint) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 22)
 }
 
 func (x *Mint) SetFeedUrl(v string) {
 	x.xxx_hidden_FeedUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 22)
 }
 
 func (x *Mint) SetFractionCount(v int32) {
 	x.xxx_hidden_FractionCount = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 22)
 }
 
 func (x *Mint) SetHash(v *Hash) {
@@ -788,7 +804,7 @@ func (x *Mint) SetHash(v *Hash) {
 
 func (x *Mint) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 22)
 }
 
 func (x *Mint) SetLockupOptions(v *StringInterfaceMap) {
@@ -801,7 +817,7 @@ func (x *Mint) SetMetadata(v *StringInterfaceMap) {
 
 func (x *Mint) SetMinSignatures(v int32) {
 	x.xxx_hidden_MinSignatures = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 22)
 }
 
 func (x *Mint) SetOwnerAddress(v *Address) {
@@ -810,7 +826,7 @@ func (x *Mint) SetOwnerAddress(v *Address) {
 
 func (x *Mint) SetPublicKey(v string) {
 	x.xxx_hidden_PublicKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 22)
 }
 
 func (x *Mint) SetRequirements(v *StringInterfaceMap) {
@@ -819,12 +835,12 @@ func (x *Mint) SetRequirements(v *StringInterfaceMap) {
 
 func (x *Mint) SetSignature(v string) {
 	x.xxx_hidden_Signature = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 22)
 }
 
 func (x *Mint) SetSignatureRequirementType(v SignatureRequirementType) {
 	x.xxx_hidden_SignatureRequirementType = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 22)
 }
 
 func (x *Mint) SetTags(v []string) {
@@ -833,11 +849,21 @@ func (x *Mint) SetTags(v []string) {
 
 func (x *Mint) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 22)
 }
 
 func (x *Mint) SetTransactionHash(v *Hash) {
 	x.xxx_hidden_TransactionHash = v
+}
+
+func (x *Mint) SetAllowExpansion(v bool) {
+	x.xxx_hidden_AllowExpansion = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 20, 22)
+}
+
+func (x *Mint) SetCurrentSupply(v int32) {
+	x.xxx_hidden_CurrentSupply = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 21, 22)
 }
 
 func (x *Mint) HasBlockHeight() bool {
@@ -966,6 +992,20 @@ func (x *Mint) HasTransactionHash() bool {
 	return x.xxx_hidden_TransactionHash != nil
 }
 
+func (x *Mint) HasAllowExpansion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 20)
+}
+
+func (x *Mint) HasCurrentSupply() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 21)
+}
+
 func (x *Mint) ClearBlockHeight() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_BlockHeight = 0
@@ -1050,6 +1090,16 @@ func (x *Mint) ClearTransactionHash() {
 	x.xxx_hidden_TransactionHash = nil
 }
 
+func (x *Mint) ClearAllowExpansion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 20)
+	x.xxx_hidden_AllowExpansion = false
+}
+
+func (x *Mint) ClearCurrentSupply() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 21)
+	x.xxx_hidden_CurrentSupply = 0
+}
+
 type Mint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1073,6 +1123,8 @@ type Mint_builder struct {
 	Tags                     []string
 	Title                    *string
 	TransactionHash          *Hash
+	AllowExpansion           *bool
+	CurrentSupply            *int32
 }
 
 func (b0 Mint_builder) Build() *Mint {
@@ -1081,60 +1133,68 @@ func (b0 Mint_builder) Build() *Mint {
 	_, _ = b, x
 	x.xxx_hidden_AssetManagers = &b.AssetManagers
 	if b.BlockHeight != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 22)
 		x.xxx_hidden_BlockHeight = *b.BlockHeight
 	}
 	if b.ContractOfSale != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 22)
 		x.xxx_hidden_ContractOfSale = b.ContractOfSale
 	}
 	if b.CreatedAt != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 22)
 		x.xxx_hidden_CreatedAt = b.CreatedAt
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 22)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.FeedUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 22)
 		x.xxx_hidden_FeedUrl = b.FeedUrl
 	}
 	if b.FractionCount != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 22)
 		x.xxx_hidden_FractionCount = *b.FractionCount
 	}
 	x.xxx_hidden_Hash = b.Hash
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 22)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_LockupOptions = b.LockupOptions
 	x.xxx_hidden_Metadata = b.Metadata
 	if b.MinSignatures != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 22)
 		x.xxx_hidden_MinSignatures = *b.MinSignatures
 	}
 	x.xxx_hidden_OwnerAddress = b.OwnerAddress
 	if b.PublicKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 22)
 		x.xxx_hidden_PublicKey = b.PublicKey
 	}
 	x.xxx_hidden_Requirements = b.Requirements
 	if b.Signature != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 22)
 		x.xxx_hidden_Signature = b.Signature
 	}
 	if b.SignatureRequirementType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 22)
 		x.xxx_hidden_SignatureRequirementType = *b.SignatureRequirementType
 	}
 	x.xxx_hidden_Tags = b.Tags
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 22)
 		x.xxx_hidden_Title = b.Title
 	}
 	x.xxx_hidden_TransactionHash = b.TransactionHash
+	if b.AllowExpansion != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 20, 22)
+		x.xxx_hidden_AllowExpansion = *b.AllowExpansion
+	}
+	if b.CurrentSupply != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 21, 22)
+		x.xxx_hidden_CurrentSupply = *b.CurrentSupply
+	}
 	return m0
 }
 
@@ -2660,7 +2720,7 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\"C\n" +
 	"\x12StringInterfaceMap\x12-\n" +
-	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xed\a\n" +
+	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xbd\b\n" +
 	"\x04Mint\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12!\n" +
 	"\fblock_height\x18\x02 \x01(\x05R\vblockHeight\x12(\n" +
@@ -2684,7 +2744,9 @@ const file_common_proto_rawDesc = "" +
 	"\x1asignature_requirement_type\x18\x11 \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x1c\n" +
 	"\x05title\x18\x13 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12E\n" +
-	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xc1\x05\n" +
+	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\x12'\n" +
+	"\x0fallow_expansion\x18\x15 \x01(\bR\x0eallowExpansion\x12%\n" +
+	"\x0ecurrent_supply\x18\x16 \x01(\x05R\rcurrentSupply\"\xc1\x05\n" +
 	"\aInvoice\x12!\n" +
 	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12B\n" +
 	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fbuyerAddress\x12\x1d\n" +
