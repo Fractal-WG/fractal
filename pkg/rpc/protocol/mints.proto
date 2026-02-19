@@ -69,7 +69,6 @@ message ExpandMintRequest {
 message ExpandMintRequestPayload {
   Hash mint_hash = 1;
   int32 additional_supply = 2 [(buf.validate.field).int32.gt = 0];
-  Address owner_address = 3;
 }
 
 message ExpandMintResponse {

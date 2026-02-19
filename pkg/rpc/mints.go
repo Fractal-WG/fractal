@@ -162,7 +162,7 @@ func (s *ConnectRpcService) ExpandMint(ctx context.Context, req *connect.Request
 	expansion := &store.UnconfirmedMintExpansion{
 		MintHash:         request.Payload.MintHash,
 		AdditionalSupply: request.Payload.AdditionalSupply,
-		OwnerAddress:     request.Payload.OwnerAddress,
+		OwnerAddress:     mint.OwnerAddress,
 		PublicKey:        request.PublicKey,
 		Signature:        request.Signature,
 		CreatedAt:        time.Now(),

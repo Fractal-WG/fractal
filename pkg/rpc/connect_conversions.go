@@ -134,7 +134,6 @@ func toExpandMintRequest(req *protocol.ExpandMintRequest) (*ExpandMintRequest, e
 		Payload: ExpandMintRequestPayload{
 			MintHash:         payload.GetMintHash().GetValue(),
 			AdditionalSupply: int(payload.GetAdditionalSupply()),
-			OwnerAddress:     payload.GetOwnerAddress().GetValue(),
 		},
 	}, nil
 }

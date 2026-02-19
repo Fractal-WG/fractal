@@ -655,13 +655,9 @@ func (c *TokenisationClient) MintExpansion(expand *rpc.ExpandMintRequest) (rpc.E
 	mintHashProto := &protocol.Hash{}
 	mintHashProto.SetValue(expand.Payload.MintHash)
 
-	ownerAddr := &protocol.Address{}
-	ownerAddr.SetValue(expand.Payload.OwnerAddress)
-
 	payload := &protocol.ExpandMintRequestPayload{}
 	payload.SetMintHash(mintHashProto)
 	payload.SetAdditionalSupply(int32(expand.Payload.AdditionalSupply))
-	payload.SetOwnerAddress(ownerAddr)
 
 	req := &protocol.ExpandMintRequest{}
 	req.SetPayload(payload)

@@ -538,7 +538,6 @@ func MintExpansion(stackConfig *StackConfig, mintHash string, additionalSupply i
 	expandPayload := rpc.ExpandMintRequestPayload{
 		MintHash:         mintHash,
 		AdditionalSupply: additionalSupply,
-		OwnerAddress:     stackConfig.Address,
 	}
 
 	expandRequest := rpc.ExpandMintRequest{

@@ -389,7 +389,6 @@ type ExpandMintRequest struct {
 type ExpandMintRequestPayload struct {
 	MintHash         string `json:"mint_hash"`
 	AdditionalSupply int    `json:"additional_supply"`
-	OwnerAddress     string `json:"owner_address"`
 }
 
 func (req *ExpandMintRequest) Validate() error {
@@ -401,19 +400,11 @@ func (req *ExpandMintRequest) Validate() error {
 		return err
 	}
 
-	if err := validation.ValidateAddress(req.Payload.OwnerAddress); err != nil {
-		return fmt.Errorf("invalid owner_address: %w", err)
-	}
-
 	if err := validation.ValidatePublicKey(req.PublicKey); err != nil {
 		return fmt.Errorf("invalid public_key: %w", err)
 	}
 
 	if err := doge.ValidateSignature(req.Payload, req.PublicKey, req.Signature); err != nil {
-		return err
-	}
-
-	if err := validation.ValidateAddressPublicKeyMatch(req.Payload.OwnerAddress, req.PublicKey); err != nil {
 		return err
 	}
 
