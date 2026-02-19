@@ -1270,7 +1270,6 @@ type ExpandMintRequestPayload struct {
 	state                       protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MintHash         *Hash                  `protobuf:"bytes,1,opt,name=mint_hash,json=mintHash"`
 	xxx_hidden_AdditionalSupply int32                  `protobuf:"varint,2,opt,name=additional_supply,json=additionalSupply"`
-	xxx_hidden_OwnerAddress     *Address               `protobuf:"bytes,3,opt,name=owner_address,json=ownerAddress"`
 	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
 	XXX_presence                [1]uint32
 	unknownFields               protoimpl.UnknownFields
@@ -1316,24 +1315,13 @@ func (x *ExpandMintRequestPayload) GetAdditionalSupply() int32 {
 	return 0
 }
 
-func (x *ExpandMintRequestPayload) GetOwnerAddress() *Address {
-	if x != nil {
-		return x.xxx_hidden_OwnerAddress
-	}
-	return nil
-}
-
 func (x *ExpandMintRequestPayload) SetMintHash(v *Hash) {
 	x.xxx_hidden_MintHash = v
 }
 
 func (x *ExpandMintRequestPayload) SetAdditionalSupply(v int32) {
 	x.xxx_hidden_AdditionalSupply = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
-}
-
-func (x *ExpandMintRequestPayload) SetOwnerAddress(v *Address) {
-	x.xxx_hidden_OwnerAddress = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *ExpandMintRequestPayload) HasMintHash() bool {
@@ -1350,13 +1338,6 @@ func (x *ExpandMintRequestPayload) HasAdditionalSupply() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *ExpandMintRequestPayload) HasOwnerAddress() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_OwnerAddress != nil
-}
-
 func (x *ExpandMintRequestPayload) ClearMintHash() {
 	x.xxx_hidden_MintHash = nil
 }
@@ -1366,16 +1347,11 @@ func (x *ExpandMintRequestPayload) ClearAdditionalSupply() {
 	x.xxx_hidden_AdditionalSupply = 0
 }
 
-func (x *ExpandMintRequestPayload) ClearOwnerAddress() {
-	x.xxx_hidden_OwnerAddress = nil
-}
-
 type ExpandMintRequestPayload_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	MintHash         *Hash
 	AdditionalSupply *int32
-	OwnerAddress     *Address
 }
 
 func (b0 ExpandMintRequestPayload_builder) Build() *ExpandMintRequestPayload {
@@ -1384,10 +1360,9 @@ func (b0 ExpandMintRequestPayload_builder) Build() *ExpandMintRequestPayload {
 	_, _ = b, x
 	x.xxx_hidden_MintHash = b.MintHash
 	if b.AdditionalSupply != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
 		x.xxx_hidden_AdditionalSupply = *b.AdditionalSupply
 	}
-	x.xxx_hidden_OwnerAddress = b.OwnerAddress
 	return m0
 }
 
@@ -1542,11 +1517,10 @@ const file_mints_proto_rawDesc = "" +
 	"\apayload\x18\x01 \x01(\v2..fractalengine.rpc.v1.ExpandMintRequestPayloadR\apayload\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x1c\n" +
-	"\tsignature\x18\x03 \x01(\tR\tsignature\"\xcd\x01\n" +
+	"\tsignature\x18\x03 \x01(\tR\tsignature\"\x89\x01\n" +
 	"\x18ExpandMintRequestPayload\x127\n" +
 	"\tmint_hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\bmintHash\x124\n" +
-	"\x11additional_supply\x18\x02 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x10additionalSupply\x12B\n" +
-	"\rowner_address\x18\x03 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fownerAddress\"\x91\x01\n" +
+	"\x11additional_supply\x18\x02 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\x10additionalSupply\"\x91\x01\n" +
 	"\x12ExpandMintResponse\x128\n" +
 	"\x18encoded_transaction_body\x18\x01 \x01(\tR\x16encodedTransactionBody\x12A\n" +
 	"\x0eexpansion_hash\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\rexpansionHashB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
@@ -1589,13 +1563,12 @@ var file_mints_proto_depIdxs = []int32{
 	12, // 13: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
 	8,  // 14: fractalengine.rpc.v1.ExpandMintRequest.payload:type_name -> fractalengine.rpc.v1.ExpandMintRequestPayload
 	12, // 15: fractalengine.rpc.v1.ExpandMintRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 16: fractalengine.rpc.v1.ExpandMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
-	12, // 17: fractalengine.rpc.v1.ExpandMintResponse.expansion_hash:type_name -> fractalengine.rpc.v1.Hash
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	12, // 16: fractalengine.rpc.v1.ExpandMintResponse.expansion_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_mints_proto_init() }
