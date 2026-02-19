@@ -23,11 +23,15 @@ const (
 )
 
 type GetMintsRequest struct {
-	state            protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Limit *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit"`
-	xxx_hidden_Page  *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state                         protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Limit              *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=limit"`
+	xxx_hidden_Page               *wrapperspb.Int32Value `protobuf:"bytes,2,opt,name=page"`
+	xxx_hidden_PublicKey          *string                `protobuf:"bytes,3,opt,name=public_key,json=publicKey"`
+	xxx_hidden_IncludeUnconfirmed *wrapperspb.BoolValue  `protobuf:"bytes,4,opt,name=include_unconfirmed,json=includeUnconfirmed"`
+	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
+	XXX_presence                  [1]uint32
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *GetMintsRequest) Reset() {
@@ -69,12 +73,38 @@ func (x *GetMintsRequest) GetPage() *wrapperspb.Int32Value {
 	return nil
 }
 
+func (x *GetMintsRequest) GetPublicKey() string {
+	if x != nil {
+		if x.xxx_hidden_PublicKey != nil {
+			return *x.xxx_hidden_PublicKey
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GetMintsRequest) GetIncludeUnconfirmed() *wrapperspb.BoolValue {
+	if x != nil {
+		return x.xxx_hidden_IncludeUnconfirmed
+	}
+	return nil
+}
+
 func (x *GetMintsRequest) SetLimit(v *wrapperspb.Int32Value) {
 	x.xxx_hidden_Limit = v
 }
 
 func (x *GetMintsRequest) SetPage(v *wrapperspb.Int32Value) {
 	x.xxx_hidden_Page = v
+}
+
+func (x *GetMintsRequest) SetPublicKey(v string) {
+	x.xxx_hidden_PublicKey = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *GetMintsRequest) SetIncludeUnconfirmed(v *wrapperspb.BoolValue) {
+	x.xxx_hidden_IncludeUnconfirmed = v
 }
 
 func (x *GetMintsRequest) HasLimit() bool {
@@ -91,6 +121,20 @@ func (x *GetMintsRequest) HasPage() bool {
 	return x.xxx_hidden_Page != nil
 }
 
+func (x *GetMintsRequest) HasPublicKey() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *GetMintsRequest) HasIncludeUnconfirmed() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_IncludeUnconfirmed != nil
+}
+
 func (x *GetMintsRequest) ClearLimit() {
 	x.xxx_hidden_Limit = nil
 }
@@ -99,11 +143,22 @@ func (x *GetMintsRequest) ClearPage() {
 	x.xxx_hidden_Page = nil
 }
 
+func (x *GetMintsRequest) ClearPublicKey() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_PublicKey = nil
+}
+
+func (x *GetMintsRequest) ClearIncludeUnconfirmed() {
+	x.xxx_hidden_IncludeUnconfirmed = nil
+}
+
 type GetMintsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Limit *wrapperspb.Int32Value
-	Page  *wrapperspb.Int32Value
+	Limit              *wrapperspb.Int32Value
+	Page               *wrapperspb.Int32Value
+	PublicKey          *string
+	IncludeUnconfirmed *wrapperspb.BoolValue
 }
 
 func (b0 GetMintsRequest_builder) Build() *GetMintsRequest {
@@ -112,6 +167,11 @@ func (b0 GetMintsRequest_builder) Build() *GetMintsRequest {
 	_, _ = b, x
 	x.xxx_hidden_Limit = b.Limit
 	x.xxx_hidden_Page = b.Page
+	if b.PublicKey != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_PublicKey = b.PublicKey
+	}
+	x.xxx_hidden_IncludeUnconfirmed = b.IncludeUnconfirmed
 	return m0
 }
 
@@ -1438,10 +1498,13 @@ var File_mints_proto protoreflect.FileDescriptor
 
 const file_mints_proto_rawDesc = "" +
 	"\n" +
-	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"u\n" +
+	"\vmints.proto\x12\x14fractalengine.rpc.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\fcommon.proto\x1a\vtypes.proto\"\xe1\x01\n" +
 	"\x0fGetMintsRequest\x121\n" +
 	"\x05limit\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueR\x05limit\x12/\n" +
-	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\"@\n" +
+	"\x04page\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueR\x04page\x12\x1d\n" +
+	"\n" +
+	"public_key\x18\x03 \x01(\tR\tpublicKey\x12K\n" +
+	"\x13include_unconfirmed\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x12includeUnconfirmed\"@\n" +
 	"\x0eGetMintRequest\x12.\n" +
 	"\x04hash\x18\x01 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x04hash\"\x84\x01\n" +
 	"\x10GetMintsResponse\x12\x14\n" +
@@ -1501,36 +1564,38 @@ var file_mints_proto_goTypes = []any{
 	(*ExpandMintRequestPayload)(nil), // 8: fractalengine.rpc.v1.ExpandMintRequestPayload
 	(*ExpandMintResponse)(nil),       // 9: fractalengine.rpc.v1.ExpandMintResponse
 	(*wrapperspb.Int32Value)(nil),    // 10: google.protobuf.Int32Value
-	(*Hash)(nil),                     // 11: fractalengine.rpc.v1.Hash
-	(*Mint)(nil),                     // 12: fractalengine.rpc.v1.Mint
-	(*AssetManager)(nil),             // 13: fractalengine.rpc.v1.AssetManager
-	(*StringInterfaceMap)(nil),       // 14: fractalengine.rpc.v1.StringInterfaceMap
-	(*Address)(nil),                  // 15: fractalengine.rpc.v1.Address
-	(SignatureRequirementType)(0),    // 16: fractalengine.rpc.v1.SignatureRequirementType
+	(*wrapperspb.BoolValue)(nil),     // 11: google.protobuf.BoolValue
+	(*Hash)(nil),                     // 12: fractalengine.rpc.v1.Hash
+	(*Mint)(nil),                     // 13: fractalengine.rpc.v1.Mint
+	(*AssetManager)(nil),             // 14: fractalengine.rpc.v1.AssetManager
+	(*StringInterfaceMap)(nil),       // 15: fractalengine.rpc.v1.StringInterfaceMap
+	(*Address)(nil),                  // 16: fractalengine.rpc.v1.Address
+	(SignatureRequirementType)(0),    // 17: fractalengine.rpc.v1.SignatureRequirementType
 }
 var file_mints_proto_depIdxs = []int32{
 	10, // 0: fractalengine.rpc.v1.GetMintsRequest.limit:type_name -> google.protobuf.Int32Value
 	10, // 1: fractalengine.rpc.v1.GetMintsRequest.page:type_name -> google.protobuf.Int32Value
-	11, // 2: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
-	12, // 3: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
-	12, // 4: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
-	5,  // 5: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
-	13, // 6: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	14, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	14, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	15, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
-	14, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	16, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	11, // 12: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
-	8,  // 13: fractalengine.rpc.v1.ExpandMintRequest.payload:type_name -> fractalengine.rpc.v1.ExpandMintRequestPayload
-	11, // 14: fractalengine.rpc.v1.ExpandMintRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 15: fractalengine.rpc.v1.ExpandMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
-	11, // 16: fractalengine.rpc.v1.ExpandMintResponse.expansion_hash:type_name -> fractalengine.rpc.v1.Hash
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	11, // 2: fractalengine.rpc.v1.GetMintsRequest.include_unconfirmed:type_name -> google.protobuf.BoolValue
+	12, // 3: fractalengine.rpc.v1.GetMintRequest.hash:type_name -> fractalengine.rpc.v1.Hash
+	13, // 4: fractalengine.rpc.v1.GetMintsResponse.mints:type_name -> fractalengine.rpc.v1.Mint
+	13, // 5: fractalengine.rpc.v1.GetMintResponse.mint:type_name -> fractalengine.rpc.v1.Mint
+	5,  // 6: fractalengine.rpc.v1.CreateMintRequest.payload:type_name -> fractalengine.rpc.v1.CreateMintRequestPayload
+	14, // 7: fractalengine.rpc.v1.CreateMintRequestPayload.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
+	15, // 8: fractalengine.rpc.v1.CreateMintRequestPayload.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	15, // 9: fractalengine.rpc.v1.CreateMintRequestPayload.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	16, // 10: fractalengine.rpc.v1.CreateMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	15, // 11: fractalengine.rpc.v1.CreateMintRequestPayload.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	17, // 12: fractalengine.rpc.v1.CreateMintRequestPayload.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	12, // 13: fractalengine.rpc.v1.CreateMintResponse.hash:type_name -> fractalengine.rpc.v1.Hash
+	8,  // 14: fractalengine.rpc.v1.ExpandMintRequest.payload:type_name -> fractalengine.rpc.v1.ExpandMintRequestPayload
+	12, // 15: fractalengine.rpc.v1.ExpandMintRequestPayload.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 16: fractalengine.rpc.v1.ExpandMintRequestPayload.owner_address:type_name -> fractalengine.rpc.v1.Address
+	12, // 17: fractalengine.rpc.v1.ExpandMintResponse.expansion_hash:type_name -> fractalengine.rpc.v1.Hash
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_mints_proto_init() }

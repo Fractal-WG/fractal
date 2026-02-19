@@ -13,6 +13,8 @@ option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
 message GetMintsRequest {
   google.protobuf.Int32Value limit = 1;
   google.protobuf.Int32Value page = 2;
+  string public_key = 3;
+  google.protobuf.BoolValue include_unconfirmed = 4;
 }
 
 message GetMintRequest {
