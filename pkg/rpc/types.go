@@ -119,6 +119,11 @@ type CreateMintResponse struct {
 	EncodedTransactionBody string `json:"encoded_transaction_body"`
 }
 
+type ExpandMintResponse struct {
+	ExpansionHash          string `json:"expansion_hash"`
+	EncodedTransactionBody string `json:"encoded_transaction_body"`
+}
+
 type GetTokenBalanceResponse struct {
 	MintHash string `json:"mint_hash"`
 	Balance  int    `json:"balance"`

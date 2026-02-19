@@ -646,6 +646,39 @@ func (c *TokenisationClient) Mint(mint *rpc.CreateMintRequest) (rpc.CreateMintRe
 	}, nil
 }
 
+func (c *TokenisationClient) MintExpansion(expand *rpc.ExpandMintRequest) (rpc.ExpandMintResponse, error) {
+	signature, err := doge.SignPayload(expand.Payload, c.privHex, c.pubHex)
+	if err != nil {
+		return rpc.ExpandMintResponse{}, err
+	}
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(expand.Payload.MintHash)
+
+	ownerAddr := &protocol.Address{}
+	ownerAddr.SetValue(expand.Payload.OwnerAddress)
+
+	payload := &protocol.ExpandMintRequestPayload{}
+	payload.SetMintHash(mintHashProto)
+	payload.SetAdditionalSupply(int32(expand.Payload.AdditionalSupply))
+	payload.SetOwnerAddress(ownerAddr)
+
+	req := &protocol.ExpandMintRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.ExpandMint(context.Background(), connect.NewRequest(req))
+	if err != nil {
+		return rpc.ExpandMintResponse{}, err
+	}
+
+	return rpc.ExpandMintResponse{
+		ExpansionHash:          resp.Msg.GetExpansionHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
+	}, nil
+}
+
 func (c *TokenisationClient) GetTokenBalance(address string, mintHash string) ([]store.TokenBalance, error) {
 	addr := &protocol.Address{}
 	addr.SetValue(address)

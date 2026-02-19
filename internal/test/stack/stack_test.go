@@ -87,3 +87,37 @@ func TestSimpleFlow(t *testing.T) {
 	log.Println("Invoice: ", invoiceHash)
 	log.Println("Payment Trxn: ", paymentTrxn)
 }
+
+func TestMintExpansion(t *testing.T) {
+	stacks := makeStackConfigsAndPeer(1)
+	seller := stacks[0]
+	mintQty := 100
+	expansionQty := 50
+
+	// Checking for Seller Balance
+	Retry(t, func() bool {
+		fmt.Printf("Checking balance for %s\n", seller.Address)
+		balance, err := seller.IndexerClient.GetBalance(seller.Address)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return balance.Available >= 1
+	}, 20, 3*time.Second)
+	fmt.Println("Doge Balance confirmed")
+
+	// Mint token with allow_expansion=true
+	mintHash := MintExpandable(seller)
+	AssertEqualWithRetry(t, func() interface{} {
+		return GetTokenBalance(seller, mintHash)
+	}, mintQty, 10, 3*time.Second)
+	fmt.Println("Mint confirmed")
+
+	// Expand the mint
+	expansionHash := MintExpansion(seller, mintHash, expansionQty)
+	AssertEqualWithRetry(t, func() interface{} {
+		return GetTokenBalance(seller, mintHash)
+	}, mintQty+expansionQty, 10, 3*time.Second)
+
+	log.Println("Mint: ", mintHash)
+	log.Println("Expansion: ", expansionHash)
+}

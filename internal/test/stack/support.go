@@ -484,6 +484,92 @@ func Mint(stackConfig *StackConfig) string {
 	return res.Hash
 }
 
+func MintExpandable(stackConfig *StackConfig) string {
+	mintPayload := rpc.CreateMintRequestPayload{
+		Title:                    "Super Lambo",
+		FractionCount:            100,
+		Description:              "Fast Car",
+		ContractOfSale:           "contract of sale",
+		Tags:                     []string{"car"},
+		FeedURL:                  "https://example.com/feed",
+		OwnerAddress:             stackConfig.Address,
+		SignatureRequirementType: store.SignatureRequirementType_ALL_SIGNATURES,
+		AssetManagers: []store.AssetManager{
+			{
+				Name:      "asset manager",
+				PublicKey: stackConfig.AssetManagerPubKey,
+				URL:       "https://example.com/assetManager",
+			},
+		},
+		MinSignatures:  1,
+		AllowExpansion: true,
+	}
+
+	mintRequest := rpc.CreateMintRequest{
+		Payload: mintPayload,
+		SignedRequest: rpc.SignedRequest{
+			PublicKey: stackConfig.PubKey,
+		},
+	}
+
+	signature, err := doge.SignPayload(mintPayload, stackConfig.PrivKey, stackConfig.PubKey)
+	if err != nil {
+		panic(err)
+	}
+
+	mintRequest.Signature = signature
+
+	res, err := stackConfig.TokenisationClient.Mint(&mintRequest)
+	if err != nil {
+		panic(err)
+	}
+
+	envelope := protocol.NewMintTransactionEnvelope(res.Hash, protocol.ACTION_MINT)
+	encodedTransactionBody := envelope.Serialize()
+
+	WriteToBlockchain(stackConfig, stackConfig.Address, hex.EncodeToString(encodedTransactionBody), 5)
+
+	ConfirmBlocks(stackConfig)
+
+	return res.Hash
+}
+
+func MintExpansion(stackConfig *StackConfig, mintHash string, additionalSupply int) string {
+	expandPayload := rpc.ExpandMintRequestPayload{
+		MintHash:         mintHash,
+		AdditionalSupply: additionalSupply,
+		OwnerAddress:     stackConfig.Address,
+	}
+
+	expandRequest := rpc.ExpandMintRequest{
+		SignedRequest: rpc.SignedRequest{
+			PublicKey: stackConfig.PubKey,
+		},
+		Payload: expandPayload,
+	}
+
+	signature, err := doge.SignPayload(expandPayload, stackConfig.PrivKey, stackConfig.PubKey)
+	if err != nil {
+		panic(err)
+	}
+
+	expandRequest.Signature = signature
+
+	res, err := stackConfig.TokenisationClient.MintExpansion(&expandRequest)
+	if err != nil {
+		panic(err)
+	}
+
+	envelope := protocol.NewMintExpansionTransactionEnvelope(mintHash, res.ExpansionHash, int32(additionalSupply))
+	encodedTransactionBody := envelope.Serialize()
+
+	WriteToBlockchain(stackConfig, stackConfig.Address, hex.EncodeToString(encodedTransactionBody), 5)
+
+	ConfirmBlocks(stackConfig)
+
+	return res.ExpansionHash
+}
+
 func makeStackConfigsAndPeer(stackCount int) []*StackConfig {
 	var stacks []*StackConfig
 	for i := 0; i < stackCount; i++ {
