@@ -127,6 +127,15 @@ func (s *TokenisationStore) ChooseMint(ctx context.Context) (Mint, error) {
 	return m, nil
 }
 
+func (s *TokenisationStore) ChooseMintExpansion(ctx context.Context) (UnconfirmedMintExpansion, error) {
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, mint_hash, additional_supply, owner_address, public_key, signature, created_at FROM unconfirmed_mint_expansions WHERE id IN (SELECT id FROM unconfirmed_mint_expansions ORDER BY RANDOM() LIMIT 1)")
+	var e UnconfirmedMintExpansion
+	if err := row.Scan(&e.Id, &e.Hash, &e.MintHash, &e.AdditionalSupply, &e.OwnerAddress, &e.PublicKey, &e.Signature, &e.CreatedAt); err != nil {
+		return UnconfirmedMintExpansion{}, err
+	}
+	return e, nil
+}
+
 func (s *TokenisationStore) GetMints(ctx context.Context, offset int, limit int) ([]Mint, error) {
 	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply FROM mints LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {

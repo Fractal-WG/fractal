@@ -178,6 +178,10 @@ func (s *ConnectRpcService) ExpandMint(ctx context.Context, req *connect.Request
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
+	if err := s.gossipClient.GossipMintExpansion(*expansion); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	envelope := engineprotocol.NewMintExpansionTransactionEnvelope(expansion.MintHash, expansion.Hash, int32(expansion.AdditionalSupply))
 	encodedTransactionBody := envelope.Serialize()
 

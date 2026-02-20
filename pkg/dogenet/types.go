@@ -10,6 +10,7 @@ var TagInvoice = dnet.NewTag("Invo")
 var TagInvoiceSignature = dnet.NewTag("Sign")
 var TagDeleteBuyOffer = dnet.NewTag("DBuyO")
 var TagDeleteSellOffer = dnet.NewTag("DSell")
+var TagMintExpansion = dnet.NewTag("MExp")
 
 type GossipMessage struct {
 	Topic string `json:"topic"`
