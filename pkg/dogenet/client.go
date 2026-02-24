@@ -232,6 +232,7 @@ func (c *DogeNetClient) Run() {
 	go c.gossipRandomInvoices(c.dogeNetCtx)
 	go c.gossipRandomInvoiceSignatures(c.dogeNetCtx)
 	go c.gossipRandomMintExpansions(c.dogeNetCtx)
+	go c.gossipRandomTokenBurns(c.dogeNetCtx)
 
 	for !c.Stopping {
 		msg, err := dnet.ReadMessage(reader)
@@ -400,6 +401,33 @@ func (s *DogeNetClient) gossipRandomInvoiceSignatures(ctx context.Context) {
 		err = s.GossipInvoiceSignature(unconfirmedInvoiceSignature)
 		if err != nil {
 			log.Printf("[FE] cannot gossip invoice: %v", err)
+		}
+	}
+}
+
+func (s *DogeNetClient) gossipRandomTokenBurns(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
+		time.Sleep(GossipInterval)
+
+		burn, err := s.store.ChooseTokenBurn(ctx)
+		if err != nil {
+			log.Printf("[FE] cannot choose token burn: %v", err)
+			continue
+		}
+
+		log.Printf("[FE] Gossiping random token burn\n")
+
+		err = s.GossipTokenBurn(burn)
+		if err != nil {
+			log.Printf("[FE] cannot gossip token burn: %v", err)
 		}
 	}
 }

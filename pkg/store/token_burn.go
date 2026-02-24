@@ -24,6 +24,15 @@ func (s *TokenisationStore) SaveUnconfirmedTokenBurn(ctx context.Context, burn *
 	return id, nil
 }
 
+func (s *TokenisationStore) ChooseTokenBurn(ctx context.Context) (UnconfirmedTokenBurn, error) {
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, mint_hash, burn_quantity, burner_address, public_key, signature, created_at FROM unconfirmed_token_burns WHERE id IN (SELECT id FROM unconfirmed_token_burns ORDER BY RANDOM() LIMIT 1)")
+	var b UnconfirmedTokenBurn
+	if err := row.Scan(&b.Id, &b.Hash, &b.MintHash, &b.BurnQuantity, &b.BurnerAddress, &b.PublicKey, &b.Signature, &b.CreatedAt); err != nil {
+		return UnconfirmedTokenBurn{}, err
+	}
+	return b, nil
+}
+
 func (s *TokenisationStore) MatchUnconfirmedTokenBurn(ctx context.Context, onchainTransaction OnChainTransaction) error {
 	if onchainTransaction.ActionType != protocol.ACTION_TOKEN_BURN {
 		return fmt.Errorf("action type is not token burn: %d", onchainTransaction.ActionType)
