@@ -72,6 +72,33 @@ func (s *TokenisationStore) MatchUnconfirmedTokenBurn(ctx context.Context, oncha
 		return fmt.Errorf("burn quantity mismatch: expected %d got %d", onchainMessage.BurnQuantity, burn.BurnQuantity)
 	}
 
+	// Fetch the mint to validate burn authority
+	var mintOwnerAddress string
+	var burnAuthority BurnAuthorityType
+	mintRow := tx.QueryRowContext(ctx,
+		"SELECT owner_address, burn_authority FROM mints WHERE hash = $1",
+		burn.MintHash,
+	)
+	if err := mintRow.Scan(&mintOwnerAddress, &burnAuthority); err != nil {
+		return fmt.Errorf("failed to fetch mint for hash %s: %w", burn.MintHash, err)
+	}
+
+	isOwner := burn.BurnerAddress == mintOwnerAddress
+	switch burnAuthority {
+	case BurnAuthorityOwnerOnly:
+		if !isOwner {
+			return fmt.Errorf("burn authority violation: only the mint owner can burn tokens for this mint")
+		}
+	case BurnAuthorityHolderOnly:
+		if isOwner {
+			return fmt.Errorf("burn authority violation: only token holders (not the mint owner) can burn tokens for this mint")
+		}
+	case BurnAuthorityOwnerOrHolder:
+		// either is permitted; balance check below will enforce the holder has tokens
+	default:
+		return fmt.Errorf("unknown burn authority type: %s", burnAuthority)
+	}
+
 	// Compute net available balance
 	var tokenBalance int
 	balRow := tx.QueryRowContext(ctx,
