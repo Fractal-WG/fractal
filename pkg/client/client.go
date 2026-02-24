@@ -96,6 +96,18 @@ func protoMintToStore(m *protocol.Mint) (store.Mint, error) {
 		sigReqType = store.SignatureRequirementType_NONE
 	}
 
+	var burnAuthority store.BurnAuthorityType
+	switch m.GetBurnAuthority() {
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY:
+		burnAuthority = store.BurnAuthorityOwnerOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY:
+		burnAuthority = store.BurnAuthorityHolderOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER:
+		burnAuthority = store.BurnAuthorityOwnerOrHolder
+	default:
+		burnAuthority = store.BurnAuthorityOwnerOnly
+	}
+
 	return store.Mint{
 		MintWithoutID: store.MintWithoutID{
 			Hash:                     m.GetHash().GetValue(),
@@ -119,6 +131,8 @@ func protoMintToStore(m *protocol.Mint) (store.Mint, error) {
 			MinSignatures:            int(m.GetMinSignatures()),
 			AllowExpansion:           m.GetAllowExpansion(),
 			CurrentSupply:            int(m.GetCurrentSupply()),
+			Burnable:                 m.GetBurnable(),
+			BurnAuthority:            burnAuthority,
 		},
 		Id: m.GetId(),
 	}, nil
@@ -629,6 +643,20 @@ func (c *TokenisationClient) Mint(mint *rpc.CreateMintRequest) (rpc.CreateMintRe
 	payload.SetAssetManagers(assetManagers)
 	payload.SetMinSignatures(int32(mint.Payload.MinSignatures))
 	payload.SetAllowExpansion(mint.Payload.AllowExpansion)
+	payload.SetBurnable(mint.Payload.Burnable)
+
+	var protoBurnAuthority protocol.BurnAuthorityType
+	switch mint.Payload.BurnAuthority {
+	case store.BurnAuthorityOwnerOnly:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY
+	case store.BurnAuthorityHolderOnly:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY
+	case store.BurnAuthorityOwnerOrHolder:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER
+	default:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_UNSPECIFIED
+	}
+	payload.SetBurnAuthority(protoBurnAuthority)
 
 	req := &protocol.CreateMintRequest{}
 	req.SetPayload(payload)
@@ -803,6 +831,35 @@ func (c *TokenisationClient) GetMints(page int, limit int, publicKey string, inc
 		Total: int(resp.Msg.GetTotal()),
 		Page:  int(resp.Msg.GetPage()),
 		Limit: int(resp.Msg.GetLimit()),
+	}, nil
+}
+
+func (c *TokenisationClient) BurnTokens(burn *rpc.BurnTokensRequest) (rpc.BurnTokensResponse, error) {
+	signature, err := doge.SignPayload(burn.Payload, c.privHex, c.pubHex)
+	if err != nil {
+		return rpc.BurnTokensResponse{}, err
+	}
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(burn.Payload.MintHash)
+
+	payload := &protocol.BurnTokensRequestPayload{}
+	payload.SetMintHash(mintHashProto)
+	payload.SetBurnQuantity(int32(burn.Payload.BurnQuantity))
+
+	req := &protocol.BurnTokensRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.BurnTokens(context.Background(), connect.NewRequest(req))
+	if err != nil {
+		return rpc.BurnTokensResponse{}, err
+	}
+
+	return rpc.BurnTokensResponse{
+		BurnHash:               resp.Msg.GetBurnHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
 	}, nil
 }
 

@@ -26,7 +26,7 @@ var File_rpc_proto protoreflect.FileDescriptor
 const file_rpc_proto_rawDesc = "" +
 	"\n" +
 	"\trpc.proto\x12\x14fractalengine.rpc.v1\x1a\n" +
-	"doge.proto\x1a\fhealth.proto\x1a\x0einvoices.proto\x1a\vmints.proto\x1a\foffers.proto\x1a\x0epayments.proto\x1a\vstats.proto\x1a\ftokens.proto\x1a$gnostic/openapi/v3/annotations.proto2\xc3\x17\n" +
+	"doge.proto\x1a\fhealth.proto\x1a\x0einvoices.proto\x1a\vmints.proto\x1a\foffers.proto\x1a\x0epayments.proto\x1a\vstats.proto\x1a\x10token_burn.proto\x1a\ftokens.proto\x1a$gnostic/openapi/v3/annotations.proto2\xbd\x18\n" +
 	"\x17FractalEngineRpcService\x12v\n" +
 	"\vDogeConfirm\x12(.fractalengine.rpc.v1.DogeConfirmRequest\x1a).fractalengine.rpc.v1.DogeConfirmResponse\"\x12\xbaG\x0f\n" +
 	"\x04Doge\x12\aConfirm\x12j\n" +
@@ -56,7 +56,10 @@ const file_rpc_proto_rawDesc = "" +
 	"\x05Mints\x12\vCreate Mint\x12x\n" +
 	"\n" +
 	"ExpandMint\x12'.fractalengine.rpc.v1.ExpandMintRequest\x1a(.fractalengine.rpc.v1.ExpandMintResponse\"\x17\xbaG\x14\n" +
-	"\x05Mints\x12\vExpand Mint\x12\x90\x01\n" +
+	"\x05Mints\x12\vExpand Mint\x12x\n" +
+	"\n" +
+	"BurnTokens\x12'.fractalengine.rpc.v1.BurnTokensRequest\x1a(.fractalengine.rpc.v1.BurnTokensResponse\"\x17\xbaG\x14\n" +
+	"\x05Mints\x12\vBurn Tokens\x12\x90\x01\n" +
 	"\x10CreateNewPayment\x12-.fractalengine.rpc.v1.CreateNewPaymentRequest\x1a..fractalengine.rpc.v1.CreateNewPaymentResponse\"\x1d\xbaG\x1a\n" +
 	"\bPayments\x12\x0eCreate Payment\x12\xb7\x01\n" +
 	"\x17GetPendingTokenBalances\x124.fractalengine.rpc.v1.GetPendingTokenBalancesRequest\x1a5.fractalengine.rpc.v1.GetPendingTokenBalancesResponse\"/\xbaG,\n" +
@@ -93,37 +96,39 @@ var file_rpc_proto_goTypes = []any{
 	(*GetMintRequest)(nil),                  // 10: fractalengine.rpc.v1.GetMintRequest
 	(*CreateMintRequest)(nil),               // 11: fractalengine.rpc.v1.CreateMintRequest
 	(*ExpandMintRequest)(nil),               // 12: fractalengine.rpc.v1.ExpandMintRequest
-	(*CreateNewPaymentRequest)(nil),         // 13: fractalengine.rpc.v1.CreateNewPaymentRequest
-	(*GetPendingTokenBalancesRequest)(nil),  // 14: fractalengine.rpc.v1.GetPendingTokenBalancesRequest
-	(*GetTokenBalancesRequest)(nil),         // 15: fractalengine.rpc.v1.GetTokenBalancesRequest
-	(*GetSellOffersRequest)(nil),            // 16: fractalengine.rpc.v1.GetSellOffersRequest
-	(*CreateSellOfferRequest)(nil),          // 17: fractalengine.rpc.v1.CreateSellOfferRequest
-	(*DeleteSellOfferRequest)(nil),          // 18: fractalengine.rpc.v1.DeleteSellOfferRequest
-	(*GetBuyOffersRequest)(nil),             // 19: fractalengine.rpc.v1.GetBuyOffersRequest
-	(*CreateBuyOfferRequest)(nil),           // 20: fractalengine.rpc.v1.CreateBuyOfferRequest
-	(*DeleteBuyOfferRequest)(nil),           // 21: fractalengine.rpc.v1.DeleteBuyOfferRequest
-	(*DogeConfirmResponse)(nil),             // 22: fractalengine.rpc.v1.DogeConfirmResponse
-	(*DogeSendResponse)(nil),                // 23: fractalengine.rpc.v1.DogeSendResponse
-	(*DogeTopUpResponse)(nil),               // 24: fractalengine.rpc.v1.DogeTopUpResponse
-	(*GetHealthResponse)(nil),               // 25: fractalengine.rpc.v1.GetHealthResponse
-	(*GetStatsResponse)(nil),                // 26: fractalengine.rpc.v1.GetStatsResponse
-	(*GetInvoicesResponse)(nil),             // 27: fractalengine.rpc.v1.GetInvoicesResponse
-	(*GetAllInvoicesResponse)(nil),          // 28: fractalengine.rpc.v1.GetAllInvoicesResponse
-	(*CreateInvoiceResponse)(nil),           // 29: fractalengine.rpc.v1.CreateInvoiceResponse
-	(*CreateInvoiceSignatureResponse)(nil),  // 30: fractalengine.rpc.v1.CreateInvoiceSignatureResponse
-	(*GetMintsResponse)(nil),                // 31: fractalengine.rpc.v1.GetMintsResponse
-	(*GetMintResponse)(nil),                 // 32: fractalengine.rpc.v1.GetMintResponse
-	(*CreateMintResponse)(nil),              // 33: fractalengine.rpc.v1.CreateMintResponse
-	(*ExpandMintResponse)(nil),              // 34: fractalengine.rpc.v1.ExpandMintResponse
-	(*CreateNewPaymentResponse)(nil),        // 35: fractalengine.rpc.v1.CreateNewPaymentResponse
-	(*GetPendingTokenBalancesResponse)(nil), // 36: fractalengine.rpc.v1.GetPendingTokenBalancesResponse
-	(*GetTokenBalancesResponse)(nil),        // 37: fractalengine.rpc.v1.GetTokenBalancesResponse
-	(*GetSellOffersResponse)(nil),           // 38: fractalengine.rpc.v1.GetSellOffersResponse
-	(*CreateSellOfferResponse)(nil),         // 39: fractalengine.rpc.v1.CreateSellOfferResponse
-	(*DeleteSellOfferResponse)(nil),         // 40: fractalengine.rpc.v1.DeleteSellOfferResponse
-	(*GetBuyOffersResponse)(nil),            // 41: fractalengine.rpc.v1.GetBuyOffersResponse
-	(*CreateBuyOfferResponse)(nil),          // 42: fractalengine.rpc.v1.CreateBuyOfferResponse
-	(*DeleteBuyOfferResponse)(nil),          // 43: fractalengine.rpc.v1.DeleteBuyOfferResponse
+	(*BurnTokensRequest)(nil),               // 13: fractalengine.rpc.v1.BurnTokensRequest
+	(*CreateNewPaymentRequest)(nil),         // 14: fractalengine.rpc.v1.CreateNewPaymentRequest
+	(*GetPendingTokenBalancesRequest)(nil),  // 15: fractalengine.rpc.v1.GetPendingTokenBalancesRequest
+	(*GetTokenBalancesRequest)(nil),         // 16: fractalengine.rpc.v1.GetTokenBalancesRequest
+	(*GetSellOffersRequest)(nil),            // 17: fractalengine.rpc.v1.GetSellOffersRequest
+	(*CreateSellOfferRequest)(nil),          // 18: fractalengine.rpc.v1.CreateSellOfferRequest
+	(*DeleteSellOfferRequest)(nil),          // 19: fractalengine.rpc.v1.DeleteSellOfferRequest
+	(*GetBuyOffersRequest)(nil),             // 20: fractalengine.rpc.v1.GetBuyOffersRequest
+	(*CreateBuyOfferRequest)(nil),           // 21: fractalengine.rpc.v1.CreateBuyOfferRequest
+	(*DeleteBuyOfferRequest)(nil),           // 22: fractalengine.rpc.v1.DeleteBuyOfferRequest
+	(*DogeConfirmResponse)(nil),             // 23: fractalengine.rpc.v1.DogeConfirmResponse
+	(*DogeSendResponse)(nil),                // 24: fractalengine.rpc.v1.DogeSendResponse
+	(*DogeTopUpResponse)(nil),               // 25: fractalengine.rpc.v1.DogeTopUpResponse
+	(*GetHealthResponse)(nil),               // 26: fractalengine.rpc.v1.GetHealthResponse
+	(*GetStatsResponse)(nil),                // 27: fractalengine.rpc.v1.GetStatsResponse
+	(*GetInvoicesResponse)(nil),             // 28: fractalengine.rpc.v1.GetInvoicesResponse
+	(*GetAllInvoicesResponse)(nil),          // 29: fractalengine.rpc.v1.GetAllInvoicesResponse
+	(*CreateInvoiceResponse)(nil),           // 30: fractalengine.rpc.v1.CreateInvoiceResponse
+	(*CreateInvoiceSignatureResponse)(nil),  // 31: fractalengine.rpc.v1.CreateInvoiceSignatureResponse
+	(*GetMintsResponse)(nil),                // 32: fractalengine.rpc.v1.GetMintsResponse
+	(*GetMintResponse)(nil),                 // 33: fractalengine.rpc.v1.GetMintResponse
+	(*CreateMintResponse)(nil),              // 34: fractalengine.rpc.v1.CreateMintResponse
+	(*ExpandMintResponse)(nil),              // 35: fractalengine.rpc.v1.ExpandMintResponse
+	(*BurnTokensResponse)(nil),              // 36: fractalengine.rpc.v1.BurnTokensResponse
+	(*CreateNewPaymentResponse)(nil),        // 37: fractalengine.rpc.v1.CreateNewPaymentResponse
+	(*GetPendingTokenBalancesResponse)(nil), // 38: fractalengine.rpc.v1.GetPendingTokenBalancesResponse
+	(*GetTokenBalancesResponse)(nil),        // 39: fractalengine.rpc.v1.GetTokenBalancesResponse
+	(*GetSellOffersResponse)(nil),           // 40: fractalengine.rpc.v1.GetSellOffersResponse
+	(*CreateSellOfferResponse)(nil),         // 41: fractalengine.rpc.v1.CreateSellOfferResponse
+	(*DeleteSellOfferResponse)(nil),         // 42: fractalengine.rpc.v1.DeleteSellOfferResponse
+	(*GetBuyOffersResponse)(nil),            // 43: fractalengine.rpc.v1.GetBuyOffersResponse
+	(*CreateBuyOfferResponse)(nil),          // 44: fractalengine.rpc.v1.CreateBuyOfferResponse
+	(*DeleteBuyOfferResponse)(nil),          // 45: fractalengine.rpc.v1.DeleteBuyOfferResponse
 }
 var file_rpc_proto_depIdxs = []int32{
 	0,  // 0: fractalengine.rpc.v1.FractalEngineRpcService.DogeConfirm:input_type -> fractalengine.rpc.v1.DogeConfirmRequest
@@ -139,39 +144,41 @@ var file_rpc_proto_depIdxs = []int32{
 	10, // 10: fractalengine.rpc.v1.FractalEngineRpcService.GetMint:input_type -> fractalengine.rpc.v1.GetMintRequest
 	11, // 11: fractalengine.rpc.v1.FractalEngineRpcService.CreateMint:input_type -> fractalengine.rpc.v1.CreateMintRequest
 	12, // 12: fractalengine.rpc.v1.FractalEngineRpcService.ExpandMint:input_type -> fractalengine.rpc.v1.ExpandMintRequest
-	13, // 13: fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment:input_type -> fractalengine.rpc.v1.CreateNewPaymentRequest
-	14, // 14: fractalengine.rpc.v1.FractalEngineRpcService.GetPendingTokenBalances:input_type -> fractalengine.rpc.v1.GetPendingTokenBalancesRequest
-	15, // 15: fractalengine.rpc.v1.FractalEngineRpcService.GetTokenBalances:input_type -> fractalengine.rpc.v1.GetTokenBalancesRequest
-	16, // 16: fractalengine.rpc.v1.FractalEngineRpcService.GetSellOffers:input_type -> fractalengine.rpc.v1.GetSellOffersRequest
-	17, // 17: fractalengine.rpc.v1.FractalEngineRpcService.CreateSellOffer:input_type -> fractalengine.rpc.v1.CreateSellOfferRequest
-	18, // 18: fractalengine.rpc.v1.FractalEngineRpcService.DeleteSellOffer:input_type -> fractalengine.rpc.v1.DeleteSellOfferRequest
-	19, // 19: fractalengine.rpc.v1.FractalEngineRpcService.GetBuyOffers:input_type -> fractalengine.rpc.v1.GetBuyOffersRequest
-	20, // 20: fractalengine.rpc.v1.FractalEngineRpcService.CreateBuyOffer:input_type -> fractalengine.rpc.v1.CreateBuyOfferRequest
-	21, // 21: fractalengine.rpc.v1.FractalEngineRpcService.DeleteBuyOffer:input_type -> fractalengine.rpc.v1.DeleteBuyOfferRequest
-	22, // 22: fractalengine.rpc.v1.FractalEngineRpcService.DogeConfirm:output_type -> fractalengine.rpc.v1.DogeConfirmResponse
-	23, // 23: fractalengine.rpc.v1.FractalEngineRpcService.DogeSend:output_type -> fractalengine.rpc.v1.DogeSendResponse
-	24, // 24: fractalengine.rpc.v1.FractalEngineRpcService.DogeTopUp:output_type -> fractalengine.rpc.v1.DogeTopUpResponse
-	25, // 25: fractalengine.rpc.v1.FractalEngineRpcService.GetHealth:output_type -> fractalengine.rpc.v1.GetHealthResponse
-	26, // 26: fractalengine.rpc.v1.FractalEngineRpcService.GetStats:output_type -> fractalengine.rpc.v1.GetStatsResponse
-	27, // 27: fractalengine.rpc.v1.FractalEngineRpcService.GetInvoices:output_type -> fractalengine.rpc.v1.GetInvoicesResponse
-	28, // 28: fractalengine.rpc.v1.FractalEngineRpcService.GetAllInvoices:output_type -> fractalengine.rpc.v1.GetAllInvoicesResponse
-	29, // 29: fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoice:output_type -> fractalengine.rpc.v1.CreateInvoiceResponse
-	30, // 30: fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoiceSignature:output_type -> fractalengine.rpc.v1.CreateInvoiceSignatureResponse
-	31, // 31: fractalengine.rpc.v1.FractalEngineRpcService.GetMints:output_type -> fractalengine.rpc.v1.GetMintsResponse
-	32, // 32: fractalengine.rpc.v1.FractalEngineRpcService.GetMint:output_type -> fractalengine.rpc.v1.GetMintResponse
-	33, // 33: fractalengine.rpc.v1.FractalEngineRpcService.CreateMint:output_type -> fractalengine.rpc.v1.CreateMintResponse
-	34, // 34: fractalengine.rpc.v1.FractalEngineRpcService.ExpandMint:output_type -> fractalengine.rpc.v1.ExpandMintResponse
-	35, // 35: fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment:output_type -> fractalengine.rpc.v1.CreateNewPaymentResponse
-	36, // 36: fractalengine.rpc.v1.FractalEngineRpcService.GetPendingTokenBalances:output_type -> fractalengine.rpc.v1.GetPendingTokenBalancesResponse
-	37, // 37: fractalengine.rpc.v1.FractalEngineRpcService.GetTokenBalances:output_type -> fractalengine.rpc.v1.GetTokenBalancesResponse
-	38, // 38: fractalengine.rpc.v1.FractalEngineRpcService.GetSellOffers:output_type -> fractalengine.rpc.v1.GetSellOffersResponse
-	39, // 39: fractalengine.rpc.v1.FractalEngineRpcService.CreateSellOffer:output_type -> fractalengine.rpc.v1.CreateSellOfferResponse
-	40, // 40: fractalengine.rpc.v1.FractalEngineRpcService.DeleteSellOffer:output_type -> fractalengine.rpc.v1.DeleteSellOfferResponse
-	41, // 41: fractalengine.rpc.v1.FractalEngineRpcService.GetBuyOffers:output_type -> fractalengine.rpc.v1.GetBuyOffersResponse
-	42, // 42: fractalengine.rpc.v1.FractalEngineRpcService.CreateBuyOffer:output_type -> fractalengine.rpc.v1.CreateBuyOfferResponse
-	43, // 43: fractalengine.rpc.v1.FractalEngineRpcService.DeleteBuyOffer:output_type -> fractalengine.rpc.v1.DeleteBuyOfferResponse
-	22, // [22:44] is the sub-list for method output_type
-	0,  // [0:22] is the sub-list for method input_type
+	13, // 13: fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens:input_type -> fractalengine.rpc.v1.BurnTokensRequest
+	14, // 14: fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment:input_type -> fractalengine.rpc.v1.CreateNewPaymentRequest
+	15, // 15: fractalengine.rpc.v1.FractalEngineRpcService.GetPendingTokenBalances:input_type -> fractalengine.rpc.v1.GetPendingTokenBalancesRequest
+	16, // 16: fractalengine.rpc.v1.FractalEngineRpcService.GetTokenBalances:input_type -> fractalengine.rpc.v1.GetTokenBalancesRequest
+	17, // 17: fractalengine.rpc.v1.FractalEngineRpcService.GetSellOffers:input_type -> fractalengine.rpc.v1.GetSellOffersRequest
+	18, // 18: fractalengine.rpc.v1.FractalEngineRpcService.CreateSellOffer:input_type -> fractalengine.rpc.v1.CreateSellOfferRequest
+	19, // 19: fractalengine.rpc.v1.FractalEngineRpcService.DeleteSellOffer:input_type -> fractalengine.rpc.v1.DeleteSellOfferRequest
+	20, // 20: fractalengine.rpc.v1.FractalEngineRpcService.GetBuyOffers:input_type -> fractalengine.rpc.v1.GetBuyOffersRequest
+	21, // 21: fractalengine.rpc.v1.FractalEngineRpcService.CreateBuyOffer:input_type -> fractalengine.rpc.v1.CreateBuyOfferRequest
+	22, // 22: fractalengine.rpc.v1.FractalEngineRpcService.DeleteBuyOffer:input_type -> fractalengine.rpc.v1.DeleteBuyOfferRequest
+	23, // 23: fractalengine.rpc.v1.FractalEngineRpcService.DogeConfirm:output_type -> fractalengine.rpc.v1.DogeConfirmResponse
+	24, // 24: fractalengine.rpc.v1.FractalEngineRpcService.DogeSend:output_type -> fractalengine.rpc.v1.DogeSendResponse
+	25, // 25: fractalengine.rpc.v1.FractalEngineRpcService.DogeTopUp:output_type -> fractalengine.rpc.v1.DogeTopUpResponse
+	26, // 26: fractalengine.rpc.v1.FractalEngineRpcService.GetHealth:output_type -> fractalengine.rpc.v1.GetHealthResponse
+	27, // 27: fractalengine.rpc.v1.FractalEngineRpcService.GetStats:output_type -> fractalengine.rpc.v1.GetStatsResponse
+	28, // 28: fractalengine.rpc.v1.FractalEngineRpcService.GetInvoices:output_type -> fractalengine.rpc.v1.GetInvoicesResponse
+	29, // 29: fractalengine.rpc.v1.FractalEngineRpcService.GetAllInvoices:output_type -> fractalengine.rpc.v1.GetAllInvoicesResponse
+	30, // 30: fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoice:output_type -> fractalengine.rpc.v1.CreateInvoiceResponse
+	31, // 31: fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoiceSignature:output_type -> fractalengine.rpc.v1.CreateInvoiceSignatureResponse
+	32, // 32: fractalengine.rpc.v1.FractalEngineRpcService.GetMints:output_type -> fractalengine.rpc.v1.GetMintsResponse
+	33, // 33: fractalengine.rpc.v1.FractalEngineRpcService.GetMint:output_type -> fractalengine.rpc.v1.GetMintResponse
+	34, // 34: fractalengine.rpc.v1.FractalEngineRpcService.CreateMint:output_type -> fractalengine.rpc.v1.CreateMintResponse
+	35, // 35: fractalengine.rpc.v1.FractalEngineRpcService.ExpandMint:output_type -> fractalengine.rpc.v1.ExpandMintResponse
+	36, // 36: fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens:output_type -> fractalengine.rpc.v1.BurnTokensResponse
+	37, // 37: fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment:output_type -> fractalengine.rpc.v1.CreateNewPaymentResponse
+	38, // 38: fractalengine.rpc.v1.FractalEngineRpcService.GetPendingTokenBalances:output_type -> fractalengine.rpc.v1.GetPendingTokenBalancesResponse
+	39, // 39: fractalengine.rpc.v1.FractalEngineRpcService.GetTokenBalances:output_type -> fractalengine.rpc.v1.GetTokenBalancesResponse
+	40, // 40: fractalengine.rpc.v1.FractalEngineRpcService.GetSellOffers:output_type -> fractalengine.rpc.v1.GetSellOffersResponse
+	41, // 41: fractalengine.rpc.v1.FractalEngineRpcService.CreateSellOffer:output_type -> fractalengine.rpc.v1.CreateSellOfferResponse
+	42, // 42: fractalengine.rpc.v1.FractalEngineRpcService.DeleteSellOffer:output_type -> fractalengine.rpc.v1.DeleteSellOfferResponse
+	43, // 43: fractalengine.rpc.v1.FractalEngineRpcService.GetBuyOffers:output_type -> fractalengine.rpc.v1.GetBuyOffersResponse
+	44, // 44: fractalengine.rpc.v1.FractalEngineRpcService.CreateBuyOffer:output_type -> fractalengine.rpc.v1.CreateBuyOfferResponse
+	45, // 45: fractalengine.rpc.v1.FractalEngineRpcService.DeleteBuyOffer:output_type -> fractalengine.rpc.v1.DeleteBuyOfferResponse
+	23, // [23:46] is the sub-list for method output_type
+	0,  // [0:23] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -189,6 +196,7 @@ func file_rpc_proto_init() {
 	file_offers_proto_init()
 	file_payments_proto_init()
 	file_stats_proto_init()
+	file_token_burn_proto_init()
 	file_tokens_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

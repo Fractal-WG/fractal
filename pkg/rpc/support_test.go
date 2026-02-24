@@ -22,6 +22,8 @@ type FakeGossipClient struct {
 	mints             []store.Mint
 	invoices          []store.UnconfirmedInvoice
 	invoiceSignatures []store.InvoiceSignature
+	mintExpansions    []store.UnconfirmedMintExpansion
+	tokenBurns        []store.UnconfirmedTokenBurn
 }
 
 func (g *FakeGossipClient) GossipBuyOffer(offer store.BuyOffer) error {
@@ -70,6 +72,16 @@ func (g *FakeGossipClient) GossipDeleteSellOffer(hash string, publicKey string, 
 
 func (g *FakeGossipClient) GossipInvoiceSignature(invoiceSignature store.InvoiceSignature) error {
 	g.invoiceSignatures = append(g.invoiceSignatures, invoiceSignature)
+	return nil
+}
+
+func (g *FakeGossipClient) GossipMintExpansion(expansion store.UnconfirmedMintExpansion) error {
+	g.mintExpansions = append(g.mintExpansions, expansion)
+	return nil
+}
+
+func (g *FakeGossipClient) GossipTokenBurn(burn store.UnconfirmedTokenBurn) error {
+	g.tokenBurns = append(g.tokenBurns, burn)
 	return nil
 }
 

@@ -127,6 +127,14 @@ const (
 	SignatureRequirementType_NONE           SignatureRequirementType = "NONE"
 )
 
+type BurnAuthorityType string
+
+const (
+	BurnAuthorityOwnerOnly     BurnAuthorityType = "owner_only"
+	BurnAuthorityHolderOnly    BurnAuthorityType = "holder_only"
+	BurnAuthorityOwnerOrHolder BurnAuthorityType = "owner_or_holder"
+)
+
 type MintWithoutID struct {
 	Hash                     string                   `json:"hash"`
 	Title                    string                   `json:"title"`
@@ -149,6 +157,8 @@ type MintWithoutID struct {
 	MinSignatures            int                      `json:"min_signatures"`
 	AllowExpansion           bool                     `json:"allow_expansion"`
 	CurrentSupply            int                      `json:"current_supply"`
+	Burnable                 bool                     `json:"burnable"`
+	BurnAuthority            BurnAuthorityType        `json:"burn_authority"`
 }
 
 type MintHash struct {
@@ -475,6 +485,41 @@ func (i *InvoiceSignature) Validate(mint Mint, invoice UnconfirmedInvoice) error
 	}
 
 	return nil
+}
+
+type UnconfirmedTokenBurn struct {
+	Id            string    `json:"id"`
+	Hash          string    `json:"hash"`
+	MintHash      string    `json:"mint_hash"`
+	BurnQuantity  int       `json:"burn_quantity"`
+	BurnerAddress string    `json:"burner_address"`
+	PublicKey     string    `json:"public_key"`
+	Signature     string    `json:"signature"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
+type TokenBurnHash struct {
+	MintHash      string `json:"mint_hash"`
+	BurnQuantity  int    `json:"burn_quantity"`
+	BurnerAddress string `json:"burner_address"`
+	PublicKey     string `json:"public_key"`
+}
+
+func (b *UnconfirmedTokenBurn) GenerateHash() (string, error) {
+	input := TokenBurnHash{
+		MintHash:      b.MintHash,
+		BurnQuantity:  b.BurnQuantity,
+		BurnerAddress: b.BurnerAddress,
+		PublicKey:     b.PublicKey,
+	}
+
+	jsonBytes, err := json.Marshal(input)
+	if err != nil {
+		return "", err
+	}
+
+	hash := sha256.Sum256(jsonBytes)
+	return hex.EncodeToString(hash[:]), nil
 }
 
 type UnconfirmedMintExpansion struct {

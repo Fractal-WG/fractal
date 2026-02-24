@@ -23,6 +23,7 @@ const (
 	ACTION_DELETE_SELL_OFFER  = 0x07
 	ACTION_INVOICE_SIGNATURE  = 0x08
 	ACTION_MINT_EXPANSION     = 0x09
+	ACTION_TOKEN_BURN         = 0x0A
 )
 
 type MessageEnvelope struct {

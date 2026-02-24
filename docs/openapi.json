@@ -2,6 +2,65 @@
   "openapi": "3.1.0",
   "info": {},
   "paths": {
+    "/fractalengine.rpc.v1.FractalEngineRpcService/BurnTokens": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Burn Tokens",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/fractalengine.rpc.v1.FractalEngineRpcService/CreateBuyOffer": {
       "post": {
         "tags": [
@@ -1422,6 +1481,66 @@
         "title": "AssetManager",
         "additionalProperties": false
       },
+      "fractalengine.rpc.v1.BurnAuthorityType": {
+        "type": "string",
+        "title": "BurnAuthorityType",
+        "enum": [
+          "BURN_AUTHORITY_TYPE_UNSPECIFIED",
+          "BURN_AUTHORITY_TYPE_OWNER_ONLY",
+          "BURN_AUTHORITY_TYPE_HOLDER_ONLY",
+          "BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER"
+        ]
+      },
+      "fractalengine.rpc.v1.BurnTokensRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "BurnTokensRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BurnTokensRequestPayload": {
+        "type": "object",
+        "properties": {
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "burnQuantity": {
+            "type": "integer",
+            "title": "burn_quantity",
+            "format": "int32"
+          }
+        },
+        "title": "BurnTokensRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BurnTokensResponse": {
+        "type": "object",
+        "properties": {
+          "encodedTransactionBody": {
+            "type": "string",
+            "title": "encoded_transaction_body"
+          },
+          "burnHash": {
+            "title": "burn_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "BurnTokensResponse",
+        "additionalProperties": false
+      },
       "fractalengine.rpc.v1.BuyOffer": {
         "type": "object",
         "properties": {
@@ -1742,6 +1861,14 @@
           "allowExpansion": {
             "type": "boolean",
             "title": "allow_expansion"
+          },
+          "burnable": {
+            "type": "boolean",
+            "title": "burnable"
+          },
+          "burnAuthority": {
+            "title": "burn_authority",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnAuthorityType"
           }
         },
         "title": "CreateMintRequestPayload",
@@ -2674,6 +2801,14 @@
             "type": "integer",
             "title": "current_supply",
             "format": "int32"
+          },
+          "burnable": {
+            "type": "boolean",
+            "title": "burnable"
+          },
+          "burnAuthority": {
+            "title": "burn_authority",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnAuthorityType"
           }
         },
         "title": "Mint",

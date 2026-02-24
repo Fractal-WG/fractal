@@ -11,6 +11,7 @@ import "mints.proto";
 import "offers.proto";
 import "payments.proto";
 import "stats.proto";
+import "token_burn.proto";
 import "tokens.proto";
 import "gnostic/openapi/v3/annotations.proto";
 
@@ -95,6 +96,12 @@ service FractalEngineRpcService {
     option (gnostic.openapi.v3.operation) = {
       tags: ["Mints"]
       summary: "Expand Mint"
+    };
+  }
+  rpc BurnTokens(BurnTokensRequest) returns (BurnTokensResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Mints"]
+      summary: "Burn Tokens"
     };
   }
 

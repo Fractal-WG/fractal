@@ -66,6 +66,13 @@ func (p *FractalEngineProcessor) Process() error {
 				} else {
 					log.Println("Matched mint expansion:", tx.TxHash)
 				}
+			} else if tx.ActionType == protocol.ACTION_TOKEN_BURN {
+				err = p.store.MatchUnconfirmedTokenBurn(ctx, tx)
+				if err != nil {
+					log.Println("Error processing token burn:", err)
+				} else {
+					log.Println("Matched token burn:", tx.TxHash)
+				}
 			}
 		}
 

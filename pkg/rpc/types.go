@@ -96,6 +96,8 @@ type CreateMintRequestPayload struct {
 	AssetManagers            []store.AssetManager           `json:"asset_managers,omitempty"`
 	MinSignatures            int                            `json:"min_signatures,omitempty"`
 	AllowExpansion           bool                           `json:"allow_expansion,omitempty"`
+	Burnable                 bool                           `json:"burnable,omitempty"`
+	BurnAuthority            store.BurnAuthorityType        `json:"burn_authority,omitempty"`
 }
 
 func (req *CreateMintRequest) Validate() error {
@@ -409,6 +411,41 @@ func (req *ExpandMintRequest) Validate() error {
 	}
 
 	return nil
+}
+
+type BurnTokensRequest struct {
+	SignedRequest
+	Payload BurnTokensRequestPayload `json:"payload"`
+}
+
+type BurnTokensRequestPayload struct {
+	MintHash     string `json:"mint_hash"`
+	BurnQuantity int    `json:"burn_quantity"`
+}
+
+func (req *BurnTokensRequest) Validate() error {
+	if err := validation.ValidateHash(req.Payload.MintHash); err != nil {
+		return fmt.Errorf("invalid mint_hash: %w", err)
+	}
+
+	if err := validation.ValidateQuantity("burn_quantity", req.Payload.BurnQuantity); err != nil {
+		return err
+	}
+
+	if err := validation.ValidatePublicKey(req.PublicKey); err != nil {
+		return fmt.Errorf("invalid public_key: %w", err)
+	}
+
+	if err := doge.ValidateSignature(req.Payload, req.PublicKey, req.Signature); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type BurnTokensResponse struct {
+	BurnHash               string `json:"burn_hash"`
+	EncodedTransactionBody string `json:"encoded_transaction_body"`
 }
 
 type SignTxRequest struct {

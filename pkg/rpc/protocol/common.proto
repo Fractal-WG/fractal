@@ -27,6 +27,13 @@ message AssetManager {
   string url = 3;
 }
 
+enum BurnAuthorityType {
+  BURN_AUTHORITY_TYPE_UNSPECIFIED = 0;
+  BURN_AUTHORITY_TYPE_OWNER_ONLY = 1;
+  BURN_AUTHORITY_TYPE_HOLDER_ONLY = 2;
+  BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER = 3;
+}
+
 enum SignatureRequirementType {
   SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED = 0;
   SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES = 1;
@@ -62,6 +69,8 @@ message Mint {
   Hash transaction_hash = 20;
   bool allow_expansion = 21;
   int32 current_supply = 22;
+  bool burnable = 23;
+  BurnAuthorityType burn_authority = 24;
 }
 
 message Invoice {

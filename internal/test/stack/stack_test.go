@@ -5,6 +5,8 @@ import (
 	"log"
 	"testing"
 	"time"
+
+	"dogecoin.org/fractal-engine/pkg/store"
 )
 
 func TestSimpleFlow(t *testing.T) {
@@ -120,4 +122,39 @@ func TestMintExpansion(t *testing.T) {
 
 	log.Println("Mint: ", mintHash)
 	log.Println("Expansion: ", expansionHash)
+}
+
+func TestTokenBurn(t *testing.T) {
+	stacks := makeStackConfigsAndPeer(1)
+	seller := stacks[0]
+	mintQty := 100
+	burnQty := 30
+
+	// Checking for Seller Balance
+	Retry(t, func() bool {
+		fmt.Printf("Checking balance for %s\n", seller.Address)
+		balance, err := seller.IndexerClient.GetBalance(seller.Address)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return balance.Available >= 1
+	}, 20, 3*time.Second)
+	fmt.Println("Doge Balance confirmed")
+
+	// Mint a burnable token (owner-only burn authority)
+	mintHash := MintBurnable(seller, store.BurnAuthorityOwnerOnly)
+	AssertEqualWithRetry(t, func() interface{} {
+		return GetTokenBalance(seller, mintHash)
+	}, mintQty, 10, 3*time.Second)
+	fmt.Println("Mint confirmed")
+
+	// Burn some tokens
+	burnHash := BurnTokens(seller, mintHash, burnQty)
+	AssertEqualWithRetry(t, func() interface{} {
+		return GetTokenBalance(seller, mintHash)
+	}, mintQty-burnQty, 10, 3*time.Second)
+	fmt.Println("Burn confirmed")
+
+	log.Println("Mint: ", mintHash)
+	log.Println("Burn: ", burnHash)
 }

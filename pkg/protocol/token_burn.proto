@@ -1,0 +1,29 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package fractalengine;
+
+option go_package = "pkg/protocol";
+
+// This is what gets written to the OP_RETURN on the L1
+message OnChainTokenBurnMessage {
+    bytes mint_hash = 1;
+    int32 burn_quantity = 2;
+    bytes burn_hash = 3;
+}
+
+message TokenBurnMessage {
+    string hash = 1;
+    string mint_hash = 2;
+    int32 burn_quantity = 3;
+    string burner_address = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message TokenBurnMessageEnvelope {
+    int32 type = 1;
+    int32 version = 2;
+    TokenBurnMessage payload = 3;
+    string public_key = 4;
+    string signature = 5;
+}

@@ -102,6 +102,8 @@ func (s *ConnectRpcService) CreateMint(ctx context.Context, req *connect.Request
 		AssetManagers:            request.Payload.AssetManagers,
 		MinSignatures:            request.Payload.MinSignatures,
 		AllowExpansion:           request.Payload.AllowExpansion,
+		Burnable:                 request.Payload.Burnable,
+		BurnAuthority:            request.Payload.BurnAuthority,
 	}
 
 	newMintWithoutId.Hash, err = newMintWithoutId.GenerateHash()

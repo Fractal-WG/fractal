@@ -53,6 +53,8 @@ message CreateMintRequestPayload {
   repeated string tags = 12;
   string title = 13 [(buf.validate.field).string.min_len = 1];
   bool allow_expansion = 14;
+  bool burnable = 15;
+  BurnAuthorityType burn_authority = 16;
 }
 
 message CreateMintResponse {

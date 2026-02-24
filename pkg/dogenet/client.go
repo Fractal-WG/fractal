@@ -46,6 +46,7 @@ type GossipClient interface {
 	GossipUnconfirmedInvoice(record store.UnconfirmedInvoice) error
 	GossipInvoiceSignature(record store.InvoiceSignature) error
 	GossipMintExpansion(record store.UnconfirmedMintExpansion) error
+	GossipTokenBurn(record store.UnconfirmedTokenBurn) error
 	GetNodes() (GetNodesResponse, error)
 	AddPeer(addPeer AddPeer) error
 	CheckRunning() error
@@ -271,6 +272,8 @@ func (c *DogeNetClient) Run() {
 			c.recvInvoiceSignature(msg)
 		case TagMintExpansion:
 			c.recvMintExpansion(msg)
+		case TagTokenBurn:
+			c.recvTokenBurn(msg)
 		default:
 			log.Printf("[FE] unknown message: [%s][%s]", msg.Chan, msg.Tag)
 		}

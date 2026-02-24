@@ -72,6 +72,9 @@ const (
 	// FractalEngineRpcServiceExpandMintProcedure is the fully-qualified name of the
 	// FractalEngineRpcService's ExpandMint RPC.
 	FractalEngineRpcServiceExpandMintProcedure = "/fractalengine.rpc.v1.FractalEngineRpcService/ExpandMint"
+	// FractalEngineRpcServiceBurnTokensProcedure is the fully-qualified name of the
+	// FractalEngineRpcService's BurnTokens RPC.
+	FractalEngineRpcServiceBurnTokensProcedure = "/fractalengine.rpc.v1.FractalEngineRpcService/BurnTokens"
 	// FractalEngineRpcServiceCreateNewPaymentProcedure is the fully-qualified name of the
 	// FractalEngineRpcService's CreateNewPayment RPC.
 	FractalEngineRpcServiceCreateNewPaymentProcedure = "/fractalengine.rpc.v1.FractalEngineRpcService/CreateNewPayment"
@@ -117,6 +120,7 @@ type FractalEngineRpcServiceClient interface {
 	GetMint(context.Context, *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error)
 	CreateMint(context.Context, *connect.Request[protocol.CreateMintRequest]) (*connect.Response[protocol.CreateMintResponse], error)
 	ExpandMint(context.Context, *connect.Request[protocol.ExpandMintRequest]) (*connect.Response[protocol.ExpandMintResponse], error)
+	BurnTokens(context.Context, *connect.Request[protocol.BurnTokensRequest]) (*connect.Response[protocol.BurnTokensResponse], error)
 	CreateNewPayment(context.Context, *connect.Request[protocol.CreateNewPaymentRequest]) (*connect.Response[protocol.CreateNewPaymentResponse], error)
 	GetPendingTokenBalances(context.Context, *connect.Request[protocol.GetPendingTokenBalancesRequest]) (*connect.Response[protocol.GetPendingTokenBalancesResponse], error)
 	GetTokenBalances(context.Context, *connect.Request[protocol.GetTokenBalancesRequest]) (*connect.Response[protocol.GetTokenBalancesResponse], error)
@@ -218,6 +222,12 @@ func NewFractalEngineRpcServiceClient(httpClient connect.HTTPClient, baseURL str
 			connect.WithSchema(fractalEngineRpcServiceMethods.ByName("ExpandMint")),
 			connect.WithClientOptions(opts...),
 		),
+		burnTokens: connect.NewClient[protocol.BurnTokensRequest, protocol.BurnTokensResponse](
+			httpClient,
+			baseURL+FractalEngineRpcServiceBurnTokensProcedure,
+			connect.WithSchema(fractalEngineRpcServiceMethods.ByName("BurnTokens")),
+			connect.WithClientOptions(opts...),
+		),
 		createNewPayment: connect.NewClient[protocol.CreateNewPaymentRequest, protocol.CreateNewPaymentResponse](
 			httpClient,
 			baseURL+FractalEngineRpcServiceCreateNewPaymentProcedure,
@@ -290,6 +300,7 @@ type fractalEngineRpcServiceClient struct {
 	getMint                 *connect.Client[protocol.GetMintRequest, protocol.GetMintResponse]
 	createMint              *connect.Client[protocol.CreateMintRequest, protocol.CreateMintResponse]
 	expandMint              *connect.Client[protocol.ExpandMintRequest, protocol.ExpandMintResponse]
+	burnTokens              *connect.Client[protocol.BurnTokensRequest, protocol.BurnTokensResponse]
 	createNewPayment        *connect.Client[protocol.CreateNewPaymentRequest, protocol.CreateNewPaymentResponse]
 	getPendingTokenBalances *connect.Client[protocol.GetPendingTokenBalancesRequest, protocol.GetPendingTokenBalancesResponse]
 	getTokenBalances        *connect.Client[protocol.GetTokenBalancesRequest, protocol.GetTokenBalancesResponse]
@@ -366,6 +377,11 @@ func (c *fractalEngineRpcServiceClient) ExpandMint(ctx context.Context, req *con
 	return c.expandMint.CallUnary(ctx, req)
 }
 
+// BurnTokens calls fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens.
+func (c *fractalEngineRpcServiceClient) BurnTokens(ctx context.Context, req *connect.Request[protocol.BurnTokensRequest]) (*connect.Response[protocol.BurnTokensResponse], error) {
+	return c.burnTokens.CallUnary(ctx, req)
+}
+
 // CreateNewPayment calls fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment.
 func (c *fractalEngineRpcServiceClient) CreateNewPayment(ctx context.Context, req *connect.Request[protocol.CreateNewPaymentRequest]) (*connect.Response[protocol.CreateNewPaymentResponse], error) {
 	return c.createNewPayment.CallUnary(ctx, req)
@@ -428,6 +444,7 @@ type FractalEngineRpcServiceHandler interface {
 	GetMint(context.Context, *connect.Request[protocol.GetMintRequest]) (*connect.Response[protocol.GetMintResponse], error)
 	CreateMint(context.Context, *connect.Request[protocol.CreateMintRequest]) (*connect.Response[protocol.CreateMintResponse], error)
 	ExpandMint(context.Context, *connect.Request[protocol.ExpandMintRequest]) (*connect.Response[protocol.ExpandMintResponse], error)
+	BurnTokens(context.Context, *connect.Request[protocol.BurnTokensRequest]) (*connect.Response[protocol.BurnTokensResponse], error)
 	CreateNewPayment(context.Context, *connect.Request[protocol.CreateNewPaymentRequest]) (*connect.Response[protocol.CreateNewPaymentResponse], error)
 	GetPendingTokenBalances(context.Context, *connect.Request[protocol.GetPendingTokenBalancesRequest]) (*connect.Response[protocol.GetPendingTokenBalancesResponse], error)
 	GetTokenBalances(context.Context, *connect.Request[protocol.GetTokenBalancesRequest]) (*connect.Response[protocol.GetTokenBalancesResponse], error)
@@ -524,6 +541,12 @@ func NewFractalEngineRpcServiceHandler(svc FractalEngineRpcServiceHandler, opts 
 		connect.WithSchema(fractalEngineRpcServiceMethods.ByName("ExpandMint")),
 		connect.WithHandlerOptions(opts...),
 	)
+	fractalEngineRpcServiceBurnTokensHandler := connect.NewUnaryHandler(
+		FractalEngineRpcServiceBurnTokensProcedure,
+		svc.BurnTokens,
+		connect.WithSchema(fractalEngineRpcServiceMethods.ByName("BurnTokens")),
+		connect.WithHandlerOptions(opts...),
+	)
 	fractalEngineRpcServiceCreateNewPaymentHandler := connect.NewUnaryHandler(
 		FractalEngineRpcServiceCreateNewPaymentProcedure,
 		svc.CreateNewPayment,
@@ -606,6 +629,8 @@ func NewFractalEngineRpcServiceHandler(svc FractalEngineRpcServiceHandler, opts 
 			fractalEngineRpcServiceCreateMintHandler.ServeHTTP(w, r)
 		case FractalEngineRpcServiceExpandMintProcedure:
 			fractalEngineRpcServiceExpandMintHandler.ServeHTTP(w, r)
+		case FractalEngineRpcServiceBurnTokensProcedure:
+			fractalEngineRpcServiceBurnTokensHandler.ServeHTTP(w, r)
 		case FractalEngineRpcServiceCreateNewPaymentProcedure:
 			fractalEngineRpcServiceCreateNewPaymentHandler.ServeHTTP(w, r)
 		case FractalEngineRpcServiceGetPendingTokenBalancesProcedure:
@@ -683,6 +708,10 @@ func (UnimplementedFractalEngineRpcServiceHandler) CreateMint(context.Context, *
 
 func (UnimplementedFractalEngineRpcServiceHandler) ExpandMint(context.Context, *connect.Request[protocol.ExpandMintRequest]) (*connect.Response[protocol.ExpandMintResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("fractalengine.rpc.v1.FractalEngineRpcService.ExpandMint is not implemented"))
+}
+
+func (UnimplementedFractalEngineRpcServiceHandler) BurnTokens(context.Context, *connect.Request[protocol.BurnTokensRequest]) (*connect.Response[protocol.BurnTokensResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens is not implemented"))
 }
 
 func (UnimplementedFractalEngineRpcServiceHandler) CreateNewPayment(context.Context, *connect.Request[protocol.CreateNewPaymentRequest]) (*connect.Response[protocol.CreateNewPaymentResponse], error) {
