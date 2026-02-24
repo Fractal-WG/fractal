@@ -146,6 +146,17 @@ func TestRecvMintExpansionViaStartWithConn(t *testing.T) {
 	assert.NilError(t, err)
 
 	mintHash := test_support.GenerateRandomHash()
+
+	mint := &store.MintWithoutID{
+		Hash:           mintHash,
+		Title:          "Test Mint",
+		FractionCount:  1000,
+		AllowExpansion: true,
+		PublicKey:      dogePubKey,
+	}
+	_, err = tokenStore.SaveMint(ctx, mint, dogeAddress)
+	assert.NilError(t, err)
+
 	const additionalSupply = 250
 
 	sigPayload := mintExpansionSigPayload{
@@ -155,7 +166,15 @@ func TestRecvMintExpansionViaStartWithConn(t *testing.T) {
 	signature, err := doge.SignPayload(sigPayload, privKey, dogePubKey)
 	assert.NilError(t, err)
 
-	expansionHash := test_support.GenerateRandomHash()
+	expansionForHash := &store.UnconfirmedMintExpansion{
+		MintHash:         mintHash,
+		AdditionalSupply: additionalSupply,
+		OwnerAddress:     dogeAddress,
+		PublicKey:        dogePubKey,
+	}
+	expansionHash, err := expansionForHash.GenerateHash()
+	assert.NilError(t, err)
+
 	expansionMessage := &protocol.MintExpansionMessage{
 		Hash:             expansionHash,
 		MintHash:         mintHash,

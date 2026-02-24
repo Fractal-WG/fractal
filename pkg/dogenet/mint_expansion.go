@@ -97,6 +97,22 @@ func (c *DogeNetClient) recvMintExpansion(msg dnet.Message) {
 		return
 	}
 
+	mint, err := c.store.GetMintByHash(ctx, expansion.MintHash)
+	if err != nil || mint.Hash == "" {
+		log.Println("Mint not found for expansion:", expansion.MintHash)
+		return
+	}
+
+	if !mint.AllowExpansion {
+		log.Println("Mint does not allow expansion:", expansion.MintHash)
+		return
+	}
+
+	if mint.OwnerAddress != expansion.OwnerAddress {
+		log.Println("Mint expansion owner address does not match mint owner")
+		return
+	}
+
 	record := &store.UnconfirmedMintExpansion{
 		Hash:             expansion.Hash,
 		MintHash:         expansion.MintHash,
@@ -105,6 +121,16 @@ func (c *DogeNetClient) recvMintExpansion(msg dnet.Message) {
 		PublicKey:        envelope.PublicKey,
 		Signature:        envelope.Signature,
 		CreatedAt:        expansion.CreatedAt.AsTime(),
+	}
+
+	expectedHash, err := record.GenerateHash()
+	if err != nil {
+		log.Println("Error generating mint expansion hash:", err)
+		return
+	}
+	if record.Hash != expectedHash {
+		log.Println("Mint expansion hash mismatch")
+		return
 	}
 
 	id, err := c.store.SaveUnconfirmedMintExpansion(ctx, record)
