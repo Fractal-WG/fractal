@@ -45,6 +45,8 @@ type GossipClient interface {
 	GossipDeleteSellOffer(hash string, publicKey string, signature string) error
 	GossipUnconfirmedInvoice(record store.UnconfirmedInvoice) error
 	GossipInvoiceSignature(record store.InvoiceSignature) error
+	GossipMintExpansion(record store.UnconfirmedMintExpansion) error
+	GossipTokenBurn(record store.UnconfirmedTokenBurn) error
 	GetNodes() (GetNodesResponse, error)
 	AddPeer(addPeer AddPeer) error
 	CheckRunning() error
@@ -229,6 +231,8 @@ func (c *DogeNetClient) Run() {
 	go c.gossipRandomMints(c.dogeNetCtx)
 	go c.gossipRandomInvoices(c.dogeNetCtx)
 	go c.gossipRandomInvoiceSignatures(c.dogeNetCtx)
+	go c.gossipRandomMintExpansions(c.dogeNetCtx)
+	go c.gossipRandomTokenBurns(c.dogeNetCtx)
 
 	for !c.Stopping {
 		msg, err := dnet.ReadMessage(reader)
@@ -267,6 +271,10 @@ func (c *DogeNetClient) Run() {
 			c.recvDeleteSellOffer(msg)
 		case TagInvoiceSignature:
 			c.recvInvoiceSignature(msg)
+		case TagMintExpansion:
+			c.recvMintExpansion(msg)
+		case TagTokenBurn:
+			c.recvTokenBurn(msg)
 		default:
 			log.Printf("[FE] unknown message: [%s][%s]", msg.Chan, msg.Tag)
 		}
@@ -393,6 +401,61 @@ func (s *DogeNetClient) gossipRandomInvoiceSignatures(ctx context.Context) {
 		err = s.GossipInvoiceSignature(unconfirmedInvoiceSignature)
 		if err != nil {
 			log.Printf("[FE] cannot gossip invoice: %v", err)
+		}
+	}
+}
+
+func (s *DogeNetClient) gossipRandomTokenBurns(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
+		time.Sleep(GossipInterval)
+
+		burn, err := s.store.ChooseTokenBurn(ctx)
+		if err != nil {
+			log.Printf("[FE] cannot choose token burn: %v", err)
+			continue
+		}
+
+		log.Printf("[FE] Gossiping random token burn\n")
+
+		err = s.GossipTokenBurn(burn)
+		if err != nil {
+			log.Printf("[FE] cannot gossip token burn: %v", err)
+		}
+	}
+}
+
+func (s *DogeNetClient) gossipRandomMintExpansions(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			if s.Stopping {
+				return
+			}
+		}
+		// wait for next turn
+		time.Sleep(GossipInterval)
+
+		expansion, err := s.store.ChooseMintExpansion(ctx)
+		if err != nil {
+			log.Printf("[FE] cannot choose mint expansion: %v", err)
+			continue
+		}
+
+		log.Printf("[FE] Gossiping random mint expansion\n")
+
+		err = s.GossipMintExpansion(expansion)
+		if err != nil {
+			log.Printf("[FE] cannot gossip mint expansion: %v", err)
 		}
 	}
 }

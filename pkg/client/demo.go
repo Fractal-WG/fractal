@@ -2,30 +2,18 @@ package client
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
+
+	"connectrpc.com/connect"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol"
 )
 
 func (c *TokenisationClient) TopUpBalance(ctx context.Context, address string) error {
-	resp, err := c.httpClient.Post(c.baseUrl+"/doge/top-up?address="+address, "application/json", nil)
-	if err != nil {
-		return err
-	}
+	addr := &protocol.Address{}
+	addr.SetValue(address)
 
-	defer resp.Body.Close()
+	req := &protocol.DogeTopUpRequest{}
+	req.SetAddress(addr)
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to top up balance: %s", resp.Status)
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result string
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err := c.client.DogeTopUp(ctx, connect.NewRequest(req))
+	return err
 }

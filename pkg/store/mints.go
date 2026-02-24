@@ -13,14 +13,14 @@ import (
 )
 
 func (s *TokenisationStore) GetMintByHash(ctx context.Context, hash string) (Mint, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM mints WHERE hash = $1", hash)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM mints WHERE hash = $1", hash)
 	if err != nil {
 		return Mint{}, err
 	}
 
 	var m Mint
 	if rows.Next() {
-		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 			return Mint{}, err
 		}
 	}
@@ -31,7 +31,7 @@ func (s *TokenisationStore) GetMintByHash(ctx context.Context, hash string) (Min
 }
 
 func (s *TokenisationStore) GetMintsByPublicKey(ctx context.Context, offset int, limit int, publicKey string, includeUnconfirmed bool) ([]Mint, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM mints WHERE public_key = $1 and transaction_hash is not null LIMIT $2 OFFSET $3", publicKey, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM mints WHERE public_key = $1 and transaction_hash is not null LIMIT $2 OFFSET $3", publicKey, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (s *TokenisationStore) GetMintsByPublicKey(ctx context.Context, offset int,
 	var mints []Mint
 	for rows.Next() {
 		var m Mint
-		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 			return nil, err
 		}
 		mints = append(mints, m)
@@ -51,7 +51,7 @@ func (s *TokenisationStore) GetMintsByPublicKey(ctx context.Context, offset int,
 	rows.Close()
 
 	if includeUnconfirmed {
-		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM unconfirmed_mints WHERE public_key = $1 LIMIT $2 OFFSET $3", publicKey, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM unconfirmed_mints WHERE public_key = $1 LIMIT $2 OFFSET $3", publicKey, limit, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +59,7 @@ func (s *TokenisationStore) GetMintsByPublicKey(ctx context.Context, offset int,
 
 		for rows.Next() {
 			var m Mint
-			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 				return nil, err
 			}
 			mints = append(mints, m)
@@ -75,7 +75,7 @@ func (s *TokenisationStore) GetMintsByPublicKey(ctx context.Context, offset int,
 }
 
 func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, limit int, address string, includeUnconfirmed bool) ([]Mint, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM mints WHERE owner_address = $1 LIMIT $2 OFFSET $3", address, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM mints WHERE owner_address = $1 LIMIT $2 OFFSET $3", address, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, l
 	var mints []Mint
 	for rows.Next() {
 		var m Mint
-		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 			return nil, err
 		}
 		mints = append(mints, m)
@@ -95,7 +95,7 @@ func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, l
 	rows.Close()
 
 	if includeUnconfirmed {
-		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM unconfirmed_mints WHERE owner_address = $1 LIMIT $2 OFFSET $3", address, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM unconfirmed_mints WHERE owner_address = $1 LIMIT $2 OFFSET $3", address, limit, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +103,7 @@ func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, l
 
 		for rows.Next() {
 			var m Mint
-			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 				return nil, err
 			}
 			mints = append(mints, m)
@@ -119,16 +119,25 @@ func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, l
 }
 
 func (s *TokenisationStore) ChooseMint(ctx context.Context) (Mint, error) {
-	row := s.DB.QueryRowContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM mints WHERE hash IN (SELECT hash FROM mints ORDER BY RANDOM() LIMIT 1)")
+	row := s.DB.QueryRowContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM mints WHERE hash IN (SELECT hash FROM mints ORDER BY RANDOM() LIMIT 1)")
 	var m Mint
-	if err := row.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+	if err := row.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 		return Mint{}, err
 	}
 	return m, nil
 }
 
+func (s *TokenisationStore) ChooseMintExpansion(ctx context.Context) (UnconfirmedMintExpansion, error) {
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, mint_hash, additional_supply, owner_address, public_key, signature, created_at FROM unconfirmed_mint_expansions WHERE id IN (SELECT id FROM unconfirmed_mint_expansions ORDER BY RANDOM() LIMIT 1)")
+	var e UnconfirmedMintExpansion
+	if err := row.Scan(&e.Id, &e.Hash, &e.MintHash, &e.AdditionalSupply, &e.OwnerAddress, &e.PublicKey, &e.Signature, &e.CreatedAt); err != nil {
+		return UnconfirmedMintExpansion{}, err
+	}
+	return e, nil
+}
+
 func (s *TokenisationStore) GetMints(ctx context.Context, offset int, limit int) ([]Mint, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM mints LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, owner_address, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM mints LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +146,7 @@ func (s *TokenisationStore) GetMints(ctx context.Context, offset int, limit int)
 	var mints []Mint
 	for rows.Next() {
 		var m Mint
-		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 			return nil, err
 		}
 		mints = append(mints, m)
@@ -150,7 +159,7 @@ func (s *TokenisationStore) GetMints(ctx context.Context, offset int, limit int)
 }
 
 func (s *TokenisationStore) GetUnconfirmedMints(ctx context.Context, offset int, limit int) ([]Mint, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM unconfirmed_mints LIMIT $1 OFFSET $2", limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, created_at, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM unconfirmed_mints LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +168,7 @@ func (s *TokenisationStore) GetUnconfirmedMints(ctx context.Context, offset int,
 	var mints []Mint
 	for rows.Next() {
 		var m Mint
-		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures); err != nil {
+		if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply, &m.Burnable, &m.BurnAuthority); err != nil {
 			return nil, err
 		}
 		mints = append(mints, m)
@@ -204,14 +213,19 @@ func (s *TokenisationStore) SaveMintWithTx(ctx context.Context, mint *MintWithou
 	}
 
 	query := `
-	INSERT INTO mints (id, title, description, fraction_count, tags, metadata, hash, requirements, lockup_options, feed_url, owner_address, public_key, block_height, transaction_hash, contract_of_sale, signature_requirement_type, asset_managers, min_signatures)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+	INSERT INTO mints (id, title, description, fraction_count, tags, metadata, hash, requirements, lockup_options, feed_url, owner_address, public_key, block_height, transaction_hash, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
 	`
 
+	currentSupply := mint.CurrentSupply
+	if currentSupply == 0 {
+		currentSupply = mint.FractionCount
+	}
+
 	if tx != nil {
-		_, err = tx.ExecContext(ctx, query, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, ownerAddress, mint.PublicKey, mint.BlockHeight, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures)
+		_, err = tx.ExecContext(ctx, query, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, ownerAddress, mint.PublicKey, mint.BlockHeight, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures, mint.AllowExpansion, currentSupply, mint.Burnable, mint.BurnAuthority)
 	} else {
-		_, err = s.DB.ExecContext(ctx, query, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, ownerAddress, mint.PublicKey, mint.BlockHeight, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures)
+		_, err = s.DB.ExecContext(ctx, query, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, ownerAddress, mint.PublicKey, mint.BlockHeight, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures, mint.AllowExpansion, currentSupply, mint.Burnable, mint.BurnAuthority)
 	}
 
 	return id, err
@@ -257,12 +271,26 @@ func (s *TokenisationStore) SaveUnconfirmedMint(ctx context.Context, mint *MintW
 	}
 
 	_, err = s.DB.ExecContext(ctx, `
-	INSERT INTO unconfirmed_mints (id, title, description, fraction_count, tags, metadata, hash, requirements, lockup_options, feed_url, public_key, owner_address, transaction_hash, contract_of_sale, signature_requirement_type, asset_managers, min_signatures)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
-	`, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, mint.PublicKey, mint.OwnerAddress, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures)
+	INSERT INTO unconfirmed_mints (id, title, description, fraction_count, tags, metadata, hash, requirements, lockup_options, feed_url, public_key, owner_address, transaction_hash, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+	`, id, mint.Title, mint.Description, mint.FractionCount, string(tags), string(metadata), mint.Hash, string(requirements), string(lockupOptions), mint.FeedURL, mint.PublicKey, mint.OwnerAddress, mint.TransactionHash, string(contractOfSale), mint.SignatureRequirementType, mint.AssetManagers, mint.MinSignatures, mint.AllowExpansion, mint.FractionCount, mint.Burnable, mint.BurnAuthority)
 	log.Println("err:", err)
 
 	return id, err
+}
+
+func (s *TokenisationStore) SaveUnconfirmedMintExpansion(ctx context.Context, expansion *UnconfirmedMintExpansion) (string, error) {
+	id := uuid.New().String()
+
+	_, err := s.DB.ExecContext(ctx, `
+	INSERT INTO unconfirmed_mint_expansions (id, hash, mint_hash, additional_supply, owner_address, public_key, signature, created_at)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	`, id, expansion.Hash, expansion.MintHash, expansion.AdditionalSupply, expansion.OwnerAddress, expansion.PublicKey, expansion.Signature, expansion.CreatedAt)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 func (s *TokenisationStore) MatchMint(ctx context.Context, onchainTransaction OnChainTransaction) bool {
@@ -317,7 +345,7 @@ func (s *TokenisationStore) MatchUnconfirmedMint(ctx context.Context, onchainTra
 	}
 	defer tx.Rollback()
 
-	rows, err := tx.QueryContext(ctx, "SELECT id, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures FROM unconfirmed_mints WHERE hash = $1", onchainMessage.Hash)
+	rows, err := tx.QueryContext(ctx, "SELECT id, title, description, fraction_count, tags, metadata, hash, transaction_hash, requirements, lockup_options, feed_url, public_key, contract_of_sale, signature_requirement_type, asset_managers, min_signatures, allow_expansion, current_supply, burnable, burn_authority FROM unconfirmed_mints WHERE hash = $1", onchainMessage.Hash)
 	if err != nil {
 		return err
 	}
@@ -330,7 +358,7 @@ func (s *TokenisationStore) MatchUnconfirmedMint(ctx context.Context, onchainTra
 			&unconfirmedMint.Id, &unconfirmedMint.Title, &unconfirmedMint.Description,
 			&unconfirmedMint.FractionCount, &unconfirmedMint.Tags, &unconfirmedMint.Metadata,
 			&unconfirmedMint.Hash, &unconfirmedMint.TransactionHash, &unconfirmedMint.Requirements,
-			&unconfirmedMint.LockupOptions, &unconfirmedMint.FeedURL, &unconfirmedMint.PublicKey, &unconfirmedMint.ContractOfSale, &unconfirmedMint.SignatureRequirementType, &unconfirmedMint.AssetManagers, &unconfirmedMint.MinSignatures); err != nil {
+			&unconfirmedMint.LockupOptions, &unconfirmedMint.FeedURL, &unconfirmedMint.PublicKey, &unconfirmedMint.ContractOfSale, &unconfirmedMint.SignatureRequirementType, &unconfirmedMint.AssetManagers, &unconfirmedMint.MinSignatures, &unconfirmedMint.AllowExpansion, &unconfirmedMint.CurrentSupply, &unconfirmedMint.Burnable, &unconfirmedMint.BurnAuthority); err != nil {
 			return err
 		}
 	} else {
@@ -359,6 +387,10 @@ func (s *TokenisationStore) MatchUnconfirmedMint(ctx context.Context, onchainTra
 		SignatureRequirementType: unconfirmedMint.SignatureRequirementType,
 		AssetManagers:            unconfirmedMint.AssetManagers,
 		MinSignatures:            unconfirmedMint.MinSignatures,
+		AllowExpansion:           unconfirmedMint.AllowExpansion,
+		CurrentSupply:            unconfirmedMint.FractionCount,
+		Burnable:                 unconfirmedMint.Burnable,
+		BurnAuthority:            unconfirmedMint.BurnAuthority,
 	}, onchainTransaction.Address, tx)
 
 	if err != nil {
@@ -439,6 +471,70 @@ func getUnconfirmedMintsCount(ctx context.Context, s *TokenisationStore) (int, e
 	}
 
 	return count, nil
+}
+
+func (s *TokenisationStore) MatchUnconfirmedMintExpansion(ctx context.Context, onchainTransaction OnChainTransaction) error {
+	if onchainTransaction.ActionType != protocol.ACTION_MINT_EXPANSION {
+		return fmt.Errorf("action type is not mint expansion: %d", onchainTransaction.ActionType)
+	}
+
+	var onchainMessage protocol.OnChainMintExpansionMessage
+	if err := proto.Unmarshal(onchainTransaction.ActionData, &onchainMessage); err != nil {
+		return err
+	}
+
+	expansionHash := fmt.Sprintf("%x", onchainMessage.ExpansionHash)
+	mintHash := fmt.Sprintf("%x", onchainMessage.MintHash)
+
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	var expansion UnconfirmedMintExpansion
+	row := tx.QueryRowContext(ctx, `
+		SELECT id, hash, mint_hash, additional_supply, owner_address, public_key, signature, created_at
+		FROM unconfirmed_mint_expansions WHERE hash = $1
+	`, expansionHash)
+	if err := row.Scan(
+		&expansion.Id, &expansion.Hash, &expansion.MintHash, &expansion.AdditionalSupply,
+		&expansion.OwnerAddress, &expansion.PublicKey, &expansion.Signature, &expansion.CreatedAt,
+	); err != nil {
+		return fmt.Errorf("no unconfirmed mint expansion found for hash %s: %w", expansionHash, err)
+	}
+
+	if expansion.MintHash != mintHash {
+		return fmt.Errorf("expansion mint_hash mismatch: expected %s got %s", mintHash, expansion.MintHash)
+	}
+
+	if int32(expansion.AdditionalSupply) != onchainMessage.AdditionalSupply {
+		return fmt.Errorf("expansion additional_supply mismatch: expected %d got %d", onchainMessage.AdditionalSupply, expansion.AdditionalSupply)
+	}
+
+	_, err = tx.ExecContext(ctx,
+		"UPDATE mints SET current_supply = current_supply + $1 WHERE hash = $2",
+		expansion.AdditionalSupply, expansion.MintHash,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update current_supply: %w", err)
+	}
+
+	if err := s.UpsertTokenBalanceWithTransaction(ctx, expansion.OwnerAddress, expansion.MintHash, expansion.AdditionalSupply, tx); err != nil {
+		return fmt.Errorf("failed to update token balance: %w", err)
+	}
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM unconfirmed_mint_expansions WHERE id = $1", expansion.Id)
+	if err != nil {
+		return fmt.Errorf("failed to delete unconfirmed mint expansion: %w", err)
+	}
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM onchain_transactions WHERE id = $1", onchainTransaction.Id)
+	if err != nil {
+		return fmt.Errorf("failed to delete onchain transaction: %w", err)
+	}
+
+	return tx.Commit()
 }
 
 func (s *TokenisationStore) ClearMints(ctx context.Context) error {

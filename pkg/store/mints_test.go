@@ -2,7 +2,9 @@ package store_test
 
 import (
 	"context"
+	"encoding/hex"
 	"testing"
+	"time"
 
 	"dogecoin.org/fractal-engine/internal/test/support"
 	"dogecoin.org/fractal-engine/pkg/protocol"
@@ -546,4 +548,265 @@ func TestGetMintsByPublicKeyWithUnconfirmed(t *testing.T) {
 	mints, err = db.GetMintsByPublicKey(testCtx, 0, 10, "testPubKey", true)
 	assert.NilError(t, err)
 	assert.Equal(t, len(mints), 2)
+}
+
+// helpers shared by expansion tests
+
+func saveConfirmedMintForExpansion(t *testing.T, db *store.TokenisationStore, mintHash string, fractionCount int, allowExpansion bool, ownerAddress string) {
+	t.Helper()
+	mint := &store.MintWithoutID{
+		Hash:            mintHash,
+		Title:           "Expansion Mint",
+		FractionCount:   fractionCount,
+		Description:     "Mint for expansion tests",
+		Tags:            store.StringArray{},
+		Metadata:        store.StringInterfaceMap{},
+		Requirements:    store.StringInterfaceMap{},
+		LockupOptions:   store.StringInterfaceMap{},
+		PublicKey:       "pubKey",
+		TransactionHash: "txHash",
+		AllowExpansion:  allowExpansion,
+	}
+	_, err := db.SaveMint(context.Background(), mint, ownerAddress)
+	assert.NilError(t, err)
+}
+
+func saveExpansionOnChainTx(t *testing.T, db *store.TokenisationStore, mintHashHex, expansionHashHex string, additionalSupply int32) store.OnChainTransaction {
+	t.Helper()
+	mintHashBytes, err := hex.DecodeString(mintHashHex)
+	assert.NilError(t, err)
+	expansionHashBytes, err := hex.DecodeString(expansionHashHex)
+	assert.NilError(t, err)
+
+	msg := &protocol.OnChainMintExpansionMessage{
+		MintHash:         mintHashBytes,
+		AdditionalSupply: additionalSupply,
+		ExpansionHash:    expansionHashBytes,
+	}
+	actionData, err := proto.Marshal(msg)
+	assert.NilError(t, err)
+
+	txId, err := db.SaveOnChainTransaction(context.Background(), "expansionTxHash", 3000, "blockHash", 1, protocol.ACTION_MINT_EXPANSION, 1, actionData, "ownerAddr", map[string]interface{}{})
+	assert.NilError(t, err)
+
+	return store.OnChainTransaction{
+		Id:            txId,
+		TxHash:        "expansionTxHash",
+		Height:        3000,
+		ActionType:    protocol.ACTION_MINT_EXPANSION,
+		ActionVersion: 1,
+		ActionData:    actionData,
+		Address:       "ownerAddr",
+	}
+}
+
+func TestSaveUnconfirmedMintExpansion(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mintHash := support.GenerateRandomHash()
+	expansionHash := support.GenerateRandomHash()
+
+	expansion := &store.UnconfirmedMintExpansion{
+		Hash:             expansionHash,
+		MintHash:         mintHash,
+		AdditionalSupply: 250,
+		OwnerAddress:     "nTestOwnerAddress1234567890123456",
+		PublicKey:        "pubKey123",
+		Signature:        "sig123",
+		CreatedAt:        time.Now(),
+	}
+
+	id, err := db.SaveUnconfirmedMintExpansion(testCtx, expansion)
+	assert.NilError(t, err)
+	assert.Assert(t, id != "")
+}
+
+func TestMatchUnconfirmedMintExpansion(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mintHash := support.GenerateRandomHash()
+	expansionHash := support.GenerateRandomHash()
+	ownerAddress := support.GenerateDogecoinAddress(true)
+	const fractionCount = 1000
+	const additionalSupply = 250
+
+	// Save the confirmed mint with an initial token balance for the owner
+	saveConfirmedMintForExpansion(t, db, mintHash, fractionCount, true, ownerAddress)
+	err := db.UpsertTokenBalance(testCtx, ownerAddress, mintHash, fractionCount)
+	assert.NilError(t, err)
+
+	// Save the unconfirmed expansion
+	expansion := &store.UnconfirmedMintExpansion{
+		Hash:             expansionHash,
+		MintHash:         mintHash,
+		AdditionalSupply: additionalSupply,
+		OwnerAddress:     ownerAddress,
+		PublicKey:        "pubKey",
+		Signature:        "sig",
+		CreatedAt:        time.Now(),
+	}
+	_, err = db.SaveUnconfirmedMintExpansion(testCtx, expansion)
+	assert.NilError(t, err)
+
+	// Build and save the matching on-chain transaction
+	onchainTx := saveExpansionOnChainTx(t, db, mintHash, expansionHash, additionalSupply)
+
+	// Perform the match
+	err = db.MatchUnconfirmedMintExpansion(testCtx, onchainTx)
+	assert.NilError(t, err)
+
+	// current_supply on the mint should now be fraction_count + additional_supply
+	confirmedMint, err := db.GetMintByHash(testCtx, mintHash)
+	assert.NilError(t, err)
+	assert.Equal(t, confirmedMint.CurrentSupply, fractionCount+additionalSupply)
+
+	// token_balances for the owner should reflect the additional supply
+	balances, err := db.GetTokenBalances(testCtx, ownerAddress, mintHash)
+	assert.NilError(t, err)
+	assert.Assert(t, len(balances) > 0)
+	var ownerBalance int
+	for _, b := range balances {
+		ownerBalance += b.Quantity
+	}
+	assert.Equal(t, ownerBalance, fractionCount+additionalSupply)
+
+	// unconfirmed expansion should be deleted
+	// (we verify indirectly — a second match attempt should fail to find the record)
+	err = db.MatchUnconfirmedMintExpansion(testCtx, onchainTx)
+	assert.Assert(t, err != nil, "second match should fail — expansion already consumed")
+
+	// on-chain transaction should be deleted
+	transactions, err := db.GetOnChainTransactions(testCtx, 0, 10)
+	assert.NilError(t, err)
+	assert.Equal(t, len(transactions), 0)
+}
+
+func TestMatchUnconfirmedMintExpansion_NotFound(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mintHash := support.GenerateRandomHash()
+	unknownExpansionHash := support.GenerateRandomHash()
+
+	onchainTx := saveExpansionOnChainTx(t, db, mintHash, unknownExpansionHash, 100)
+
+	err := db.MatchUnconfirmedMintExpansion(testCtx, onchainTx)
+	assert.Assert(t, err != nil, "should fail when no matching unconfirmed expansion exists")
+}
+
+func TestMatchUnconfirmedMintExpansion_MintHashMismatch(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mintHash := support.GenerateRandomHash()
+	differentMintHash := support.GenerateRandomHash()
+	expansionHash := support.GenerateRandomHash()
+
+	// Store the expansion against mintHash
+	expansion := &store.UnconfirmedMintExpansion{
+		Hash:             expansionHash,
+		MintHash:         mintHash,
+		AdditionalSupply: 100,
+		OwnerAddress:     "nOwner",
+		PublicKey:        "pubKey",
+		Signature:        "sig",
+		CreatedAt:        time.Now(),
+	}
+	_, err := db.SaveUnconfirmedMintExpansion(testCtx, expansion)
+	assert.NilError(t, err)
+
+	// On-chain message references a different mint_hash
+	onchainTx := saveExpansionOnChainTx(t, db, differentMintHash, expansionHash, 100)
+
+	err = db.MatchUnconfirmedMintExpansion(testCtx, onchainTx)
+	assert.Assert(t, err != nil, "should fail when mint_hash in on-chain message does not match stored record")
+}
+
+func TestMatchUnconfirmedMintExpansion_SupplyMismatch(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mintHash := support.GenerateRandomHash()
+	expansionHash := support.GenerateRandomHash()
+
+	expansion := &store.UnconfirmedMintExpansion{
+		Hash:             expansionHash,
+		MintHash:         mintHash,
+		AdditionalSupply: 100,
+		OwnerAddress:     "nOwner",
+		PublicKey:        "pubKey",
+		Signature:        "sig",
+		CreatedAt:        time.Now(),
+	}
+	_, err := db.SaveUnconfirmedMintExpansion(testCtx, expansion)
+	assert.NilError(t, err)
+
+	// On-chain message claims a different additional_supply
+	onchainTx := saveExpansionOnChainTx(t, db, mintHash, expansionHash, 999)
+
+	err = db.MatchUnconfirmedMintExpansion(testCtx, onchainTx)
+	assert.Assert(t, err != nil, "should fail when additional_supply in on-chain message does not match stored record")
+}
+
+func TestCurrentSupplyInitialisedOnMintConfirmation(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	const fractionCount = 750
+
+	unconfirmedMint := &store.MintWithoutID{
+		Hash:          "currentSupplyTestHash",
+		Title:         "Current Supply Test",
+		FractionCount: fractionCount,
+		Description:   "Checks current_supply is set on confirmation",
+		Tags:          store.StringArray{},
+		Metadata:      store.StringInterfaceMap{},
+		Requirements:  store.StringInterfaceMap{},
+		LockupOptions: store.StringInterfaceMap{},
+		PublicKey:     "pubKey",
+	}
+	_, err := db.SaveUnconfirmedMint(testCtx, unconfirmedMint)
+	assert.NilError(t, err)
+
+	onchainMsg := &protocol.OnChainMintMessage{Hash: "currentSupplyTestHash"}
+	actionData, err := proto.Marshal(onchainMsg)
+	assert.NilError(t, err)
+
+	txId, err := db.SaveOnChainTransaction(testCtx, "csTxHash", 4000, "blockHash", 1, protocol.ACTION_MINT, 1, actionData, "csOwner", map[string]interface{}{})
+	assert.NilError(t, err)
+
+	onchainTx := store.OnChainTransaction{
+		Id:            txId,
+		TxHash:        "csTxHash",
+		Height:        4000,
+		ActionType:    protocol.ACTION_MINT,
+		ActionVersion: 1,
+		ActionData:    actionData,
+		Address:       "csOwner",
+	}
+
+	err = db.MatchUnconfirmedMint(testCtx, onchainTx)
+	assert.NilError(t, err)
+
+	confirmed, err := db.GetMintByHash(testCtx, "currentSupplyTestHash")
+	assert.NilError(t, err)
+	assert.Equal(t, confirmed.CurrentSupply, fractionCount)
+}
+
+func TestAllowExpansionDefaultsFalse(t *testing.T) {
+	db := support.SetupTestDB(t)
+
+	mint := &store.MintWithoutID{
+		Hash:          "allowExpDefaultHash",
+		Title:         "Allow Expansion Default",
+		FractionCount: 100,
+		Description:   "Checks allow_expansion defaults to false",
+		Tags:          store.StringArray{},
+		Metadata:      store.StringInterfaceMap{},
+		Requirements:  store.StringInterfaceMap{},
+		LockupOptions: store.StringInterfaceMap{},
+		PublicKey:     "pubKey",
+	}
+	_, err := db.SaveMint(testCtx, mint, "owner")
+	assert.NilError(t, err)
+
+	retrieved, err := db.GetMintByHash(testCtx, "allowExpDefaultHash")
+	assert.NilError(t, err)
+	assert.Equal(t, retrieved.AllowExpansion, false)
 }

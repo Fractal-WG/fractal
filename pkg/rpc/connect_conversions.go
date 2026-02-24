@@ -35,6 +35,9 @@ func toCreateMintRequest(req *protocol.CreateMintRequest) (*CreateMintRequest, e
 			SignatureRequirementType: toStoreSignatureRequirementType(payload.GetSignatureRequirementType()),
 			AssetManagers:            toStoreAssetManagers(payload.GetAssetManagers()),
 			MinSignatures:            int(payload.GetMinSignatures()),
+			AllowExpansion:           payload.GetAllowExpansion(),
+			Burnable:                 payload.GetBurnable(),
+			BurnAuthority:            toStoreBurnAuthorityType(payload.GetBurnAuthority()),
 		},
 	}, nil
 }
@@ -115,6 +118,70 @@ func toDeleteSellOfferRequest(req *protocol.DeleteSellOfferRequest) (*DeleteSell
 		},
 		Payload: DeleteSellOfferRequestPayload{
 			OfferHash: payload.GetOfferHash().GetValue(),
+		},
+	}, nil
+}
+
+func toBurnTokensRequest(req *protocol.BurnTokensRequest) (*BurnTokensRequest, error) {
+	if req == nil || req.GetPayload() == nil {
+		return nil, errors.New("payload is required")
+	}
+
+	payload := req.GetPayload()
+	return &BurnTokensRequest{
+		SignedRequest: SignedRequest{
+			PublicKey: req.GetPublicKey(),
+			Signature: req.GetSignature(),
+		},
+		Payload: BurnTokensRequestPayload{
+			MintHash:     payload.GetMintHash().GetValue(),
+			BurnQuantity: int(payload.GetBurnQuantity()),
+		},
+	}, nil
+}
+
+func toStoreBurnAuthorityType(req protocol.BurnAuthorityType) store.BurnAuthorityType {
+	switch req {
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY:
+		return store.BurnAuthorityOwnerOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY:
+		return store.BurnAuthorityHolderOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER:
+		return store.BurnAuthorityOwnerOrHolder
+	default:
+		// UNSPECIFIED: return the zero value so it is omitted from JSON during
+		// signature verification, matching what the client signed.
+		return ""
+	}
+}
+
+func toProtoBurnAuthorityType(req store.BurnAuthorityType) protocol.BurnAuthorityType {
+	switch req {
+	case store.BurnAuthorityOwnerOnly:
+		return protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY
+	case store.BurnAuthorityHolderOnly:
+		return protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY
+	case store.BurnAuthorityOwnerOrHolder:
+		return protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER
+	default:
+		return protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY
+	}
+}
+
+func toExpandMintRequest(req *protocol.ExpandMintRequest) (*ExpandMintRequest, error) {
+	if req == nil || req.GetPayload() == nil {
+		return nil, errors.New("payload is required")
+	}
+
+	payload := req.GetPayload()
+	return &ExpandMintRequest{
+		SignedRequest: SignedRequest{
+			PublicKey: req.GetPublicKey(),
+			Signature: req.GetSignature(),
+		},
+		Payload: ExpandMintRequestPayload{
+			MintHash:         payload.GetMintHash().GetValue(),
+			AdditionalSupply: int(payload.GetAdditionalSupply()),
 		},
 	}, nil
 }
@@ -275,6 +342,10 @@ func toProtoMint(mint store.Mint) (*protocol.Mint, error) {
 	protoMint.SetTags([]string(mint.Tags))
 	protoMint.SetTitle(mint.Title)
 	protoMint.SetTransactionHash(toProtoHash(mint.TransactionHash))
+	protoMint.SetAllowExpansion(mint.AllowExpansion)
+	protoMint.SetCurrentSupply(int32(mint.CurrentSupply))
+	protoMint.SetBurnable(mint.Burnable)
+	protoMint.SetBurnAuthority(toProtoBurnAuthorityType(mint.BurnAuthority))
 
 	return protoMint, nil
 }

@@ -366,3 +366,209 @@ func TestProcessUnknownActionType(t *testing.T) {
 		t.Fatalf("Expected no error with unknown action type, got: %v", err)
 	}
 }
+
+func TestProcessMintExpansionMatched(t *testing.T) {
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
+	rpcClient := support.NewTestDogeClient(t)
+
+	processor := service.NewFractalEngineProcessor(tokenStore, rpcClient)
+
+	// Create and confirm a mint with allow_expansion=true
+	mintHash := createExpandableMint(t, ctx, tokenStore, processor)
+
+	// Verify initial current_supply
+	mint, err := tokenStore.GetMintByHash(ctx, mintHash)
+	if err != nil {
+		t.Fatalf("Failed to get mint: %v", err)
+	}
+	if mint.CurrentSupply != 100 {
+		t.Errorf("Expected initial current_supply=100, got %d", mint.CurrentSupply)
+	}
+
+	// Save an unconfirmed mint expansion
+	expansionHash := saveUnconfirmedMintExpansion(t, ctx, mintHash, 50, tokenStore)
+
+	// Save the on-chain expansion transaction
+	saveOnChainMintExpansionTx(t, ctx, "txExpansion", mintHash, expansionHash, 50, tokenStore)
+
+	// Process
+	err = processor.Process()
+	if err != nil {
+		t.Fatalf("Expected no error processing mint expansion, got: %v", err)
+	}
+
+	// Verify current_supply was incremented
+	mint, err = tokenStore.GetMintByHash(ctx, mintHash)
+	if err != nil {
+		t.Fatalf("Failed to get mint after expansion: %v", err)
+	}
+	if mint.CurrentSupply != 150 {
+		t.Errorf("Expected current_supply=150 after expansion, got %d", mint.CurrentSupply)
+	}
+
+	// Verify owner token balance increased
+	AssertTokenBalance(t, ctx, ownerAddress, mintHash, 150, tokenStore)
+}
+
+func TestProcessMintExpansionNotFound(t *testing.T) {
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
+	rpcClient := support.NewTestDogeClient(t)
+
+	processor := service.NewFractalEngineProcessor(tokenStore, rpcClient)
+
+	// Create and confirm a mint
+	mintHash := createExpandableMint(t, ctx, tokenStore, processor)
+
+	// Save an on-chain expansion tx with no matching unconfirmed expansion
+	unknownExpansionHash := support.GenerateRandomHash()
+	saveOnChainMintExpansionTx(t, ctx, "txExpansionNoMatch", mintHash, unknownExpansionHash, 50, tokenStore)
+
+	// Process should not crash, just log the error
+	err := processor.Process()
+	if err != nil {
+		t.Fatalf("Expected no error when expansion not found, got: %v", err)
+	}
+
+	// Verify current_supply unchanged
+	mint, err := tokenStore.GetMintByHash(ctx, mintHash)
+	if err != nil {
+		t.Fatalf("Failed to get mint: %v", err)
+	}
+	if mint.CurrentSupply != 100 {
+		t.Errorf("Expected current_supply=100 (unchanged), got %d", mint.CurrentSupply)
+	}
+}
+
+func TestProcessMintExpansionSupplyMismatch(t *testing.T) {
+	tokenStore := test_support.SetupTestDB(t)
+	ctx := context.Background()
+	rpcClient := support.NewTestDogeClient(t)
+
+	processor := service.NewFractalEngineProcessor(tokenStore, rpcClient)
+
+	// Create and confirm a mint
+	mintHash := createExpandableMint(t, ctx, tokenStore, processor)
+
+	// Save unconfirmed expansion for 50
+	expansionHash := saveUnconfirmedMintExpansion(t, ctx, mintHash, 50, tokenStore)
+
+	// But the on-chain message claims 99 (mismatch)
+	saveOnChainMintExpansionTx(t, ctx, "txExpansionMismatch", mintHash, expansionHash, 99, tokenStore)
+
+	// Process should log error, not panic
+	err := processor.Process()
+	if err != nil {
+		t.Fatalf("Expected no error on supply mismatch, got: %v", err)
+	}
+
+	// Verify current_supply unchanged
+	mint, err := tokenStore.GetMintByHash(ctx, mintHash)
+	if err != nil {
+		t.Fatalf("Failed to get mint: %v", err)
+	}
+	if mint.CurrentSupply != 100 {
+		t.Errorf("Expected current_supply=100 (unchanged), got %d", mint.CurrentSupply)
+	}
+}
+
+// createExpandableMint creates an unconfirmed mint with allow_expansion=true, processes it,
+// and returns the mint hash. The confirmed mint has current_supply=100.
+func createExpandableMint(t *testing.T, ctx context.Context, tokenStore *store.TokenisationStore, processor *service.FractalEngineProcessor) string {
+	t.Helper()
+
+	mintWithoutId := store.MintWithoutID{
+		Title:           "Expandable Mint",
+		Description:     "Test Description",
+		FractionCount:   100,
+		BlockHeight:     20,
+		TransactionHash: support.GenerateRandomHash(),
+		AllowExpansion:  true,
+	}
+	hash, err := mintWithoutId.GenerateHash()
+	if err != nil {
+		t.Fatalf("Failed to generate hash: %v", err)
+	}
+	mintWithoutId.Hash = hash
+
+	_, err = tokenStore.SaveUnconfirmedMint(ctx, &mintWithoutId)
+	if err != nil {
+		t.Fatalf("Failed to save unconfirmed mint: %v", err)
+	}
+
+	message := protocol.OnChainMintMessage{Hash: hash}
+	encodedMessage, err := proto.Marshal(&message)
+	if err != nil {
+		t.Fatalf("Failed to marshal message: %v", err)
+	}
+
+	_, err = tokenStore.SaveOnChainTransaction(ctx, mintWithoutId.TransactionHash, 1, "blockHash", 1, protocol.ACTION_MINT, protocol.DEFAULT_VERSION, encodedMessage, ownerAddress, map[string]interface{}{
+		ownerAddress: 100,
+	})
+	if err != nil {
+		t.Fatalf("Failed to save on-chain mint transaction: %v", err)
+	}
+
+	if err := processor.Process(); err != nil {
+		t.Fatalf("Failed to process mint: %v", err)
+	}
+
+	return hash
+}
+
+// saveUnconfirmedMintExpansion inserts an unconfirmed_mint_expansion row and returns its hash.
+func saveUnconfirmedMintExpansion(t *testing.T, ctx context.Context, mintHash string, additionalSupply int, tokenStore *store.TokenisationStore) string {
+	t.Helper()
+
+	expansion := &store.UnconfirmedMintExpansion{
+		MintHash:         mintHash,
+		AdditionalSupply: additionalSupply,
+		OwnerAddress:     ownerAddress,
+		PublicKey:        "03b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3b3e3",
+		Signature:        "dGVzdA==",
+	}
+	hash, err := expansion.GenerateHash()
+	if err != nil {
+		t.Fatalf("Failed to generate expansion hash: %v", err)
+	}
+	expansion.Hash = hash
+
+	_, err = tokenStore.SaveUnconfirmedMintExpansion(ctx, expansion)
+	if err != nil {
+		t.Fatalf("Failed to save unconfirmed mint expansion: %v", err)
+	}
+
+	return hash
+}
+
+// saveOnChainMintExpansionTx creates and saves an ACTION_MINT_EXPANSION on-chain transaction.
+func saveOnChainMintExpansionTx(t *testing.T, ctx context.Context, txHash string, mintHash string, expansionHash string, additionalSupply int32, tokenStore *store.TokenisationStore) {
+	t.Helper()
+
+	mintHashBytes, err := hex.DecodeString(mintHash)
+	if err != nil {
+		t.Fatalf("Failed to decode mint hash: %v", err)
+	}
+	expansionHashBytes, err := hex.DecodeString(expansionHash)
+	if err != nil {
+		t.Fatalf("Failed to decode expansion hash: %v", err)
+	}
+
+	message := &protocol.OnChainMintExpansionMessage{
+		MintHash:         mintHashBytes,
+		AdditionalSupply: additionalSupply,
+		ExpansionHash:    expansionHashBytes,
+	}
+	encodedMessage, err := proto.Marshal(message)
+	if err != nil {
+		t.Fatalf("Failed to marshal mint expansion message: %v", err)
+	}
+
+	_, err = tokenStore.SaveOnChainTransaction(ctx, txHash, 2, "blockHash", 1, protocol.ACTION_MINT_EXPANSION, protocol.DEFAULT_VERSION, encodedMessage, ownerAddress, map[string]interface{}{
+		ownerAddress: 0,
+	})
+	if err != nil {
+		t.Fatalf("Failed to save on-chain mint expansion transaction: %v", err)
+	}
+}

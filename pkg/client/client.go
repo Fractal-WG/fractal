@@ -1,28 +1,175 @@
 package client
 
 import (
-	"bytes"
+	"context"
+	"database/sql"
 	"encoding/json"
-	"fmt"
-	"io"
-	"log"
 	"net/http"
+	"time"
 
+	"connectrpc.com/connect"
 	"dogecoin.org/fractal-engine/pkg/doge"
 	"dogecoin.org/fractal-engine/pkg/rpc"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol"
+	"dogecoin.org/fractal-engine/pkg/rpc/protocol/protocolconnect"
 	"dogecoin.org/fractal-engine/pkg/store"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+func protoInvoiceToStore(inv *protocol.Invoice) (store.Invoice, error) {
+	createdAt, err := time.Parse(time.RFC3339Nano, inv.GetCreatedAt())
+	if err != nil {
+		return store.Invoice{}, err
+	}
+
+	paidAt := sql.NullTime{Valid: false}
+	if inv.GetPaidAt() != nil && inv.GetPaidAt().GetValid() {
+		t, err := time.Parse(time.RFC3339Nano, inv.GetPaidAt().GetTime())
+		if err != nil {
+			return store.Invoice{}, err
+		}
+		paidAt = sql.NullTime{Time: t, Valid: true}
+	}
+
+	return store.Invoice{
+		Id:                    inv.GetId(),
+		Hash:                  inv.GetHash().GetValue(),
+		PaymentAddress:        inv.GetPaymentAddress().GetValue(),
+		BuyerAddress:          inv.GetBuyerAddress().GetValue(),
+		MintHash:              inv.GetMintHash().GetValue(),
+		Quantity:              int(inv.GetQuantity()),
+		Price:                 int(inv.GetPrice()),
+		CreatedAt:             createdAt,
+		SellerAddress:         inv.GetSellerAddress().GetValue(),
+		BlockHeight:           int64(inv.GetBlockHeight()),
+		TransactionHash:       inv.GetTransactionHash().GetValue(),
+		PendingTokenBalanceId: inv.GetPendingTokenBalanceId(),
+		PublicKey:             inv.GetPublicKey(),
+		Signature:             inv.GetSignature(),
+		PaidAt:                paidAt,
+	}, nil
+}
+
+func protoMintToStore(m *protocol.Mint) (store.Mint, error) {
+	createdAt, err := time.Parse(time.RFC3339Nano, m.GetCreatedAt())
+	if err != nil {
+		return store.Mint{}, err
+	}
+
+	var metadata store.StringInterfaceMap
+	if v := m.GetMetadata(); v != nil && v.GetValue() != nil {
+		metadata = store.StringInterfaceMap(v.GetValue().AsMap())
+	}
+
+	var requirements store.StringInterfaceMap
+	if v := m.GetRequirements(); v != nil && v.GetValue() != nil {
+		requirements = store.StringInterfaceMap(v.GetValue().AsMap())
+	}
+
+	var lockupOptions store.StringInterfaceMap
+	if v := m.GetLockupOptions(); v != nil && v.GetValue() != nil {
+		lockupOptions = store.StringInterfaceMap(v.GetValue().AsMap())
+	}
+
+	var assetManagers []store.AssetManager
+	for _, am := range m.GetAssetManagers() {
+		if am == nil {
+			continue
+		}
+		assetManagers = append(assetManagers, store.AssetManager{
+			Name:      am.GetName(),
+			PublicKey: am.GetPublicKey(),
+			URL:       am.GetUrl(),
+		})
+	}
+
+	var sigReqType store.SignatureRequirementType
+	switch m.GetSignatureRequirementType() {
+	case protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES:
+		sigReqType = store.SignatureRequirementType_ALL_SIGNATURES
+	case protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE:
+		sigReqType = store.SignatureRequirementType_ONE_SIGNATURE
+	case protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES:
+		sigReqType = store.SignatureRequirementType_MIN_SIGNATURES
+	case protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_NONE:
+		sigReqType = store.SignatureRequirementType_NONE
+	}
+
+	var burnAuthority store.BurnAuthorityType
+	switch m.GetBurnAuthority() {
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY:
+		burnAuthority = store.BurnAuthorityOwnerOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY:
+		burnAuthority = store.BurnAuthorityHolderOnly
+	case protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER:
+		burnAuthority = store.BurnAuthorityOwnerOrHolder
+	default:
+		burnAuthority = store.BurnAuthorityOwnerOnly
+	}
+
+	return store.Mint{
+		MintWithoutID: store.MintWithoutID{
+			Hash:                     m.GetHash().GetValue(),
+			Title:                    m.GetTitle(),
+			FractionCount:            int(m.GetFractionCount()),
+			Description:              m.GetDescription(),
+			Tags:                     store.StringArray(m.GetTags()),
+			Metadata:                 metadata,
+			TransactionHash:          m.GetTransactionHash().GetValue(),
+			BlockHeight:              int64(m.GetBlockHeight()),
+			CreatedAt:                createdAt,
+			Requirements:             requirements,
+			LockupOptions:            lockupOptions,
+			FeedURL:                  m.GetFeedUrl(),
+			PublicKey:                m.GetPublicKey(),
+			OwnerAddress:             m.GetOwnerAddress().GetValue(),
+			Signature:                m.GetSignature(),
+			ContractOfSale:           m.GetContractOfSale(),
+			SignatureRequirementType: sigReqType,
+			AssetManagers:            assetManagers,
+			MinSignatures:            int(m.GetMinSignatures()),
+			AllowExpansion:           m.GetAllowExpansion(),
+			CurrentSupply:            int(m.GetCurrentSupply()),
+			Burnable:                 m.GetBurnable(),
+			BurnAuthority:            burnAuthority,
+		},
+		Id: m.GetId(),
+	}, nil
+}
+
+func protoSellOfferToStore(o *protocol.SellOffer) (store.SellOffer, error) {
+	createdAt, err := time.Parse(time.RFC3339Nano, o.GetCreatedAt())
+	if err != nil {
+		return store.SellOffer{}, err
+	}
+	return store.SellOffer{
+		SellOfferWithoutID: store.SellOfferWithoutID{
+			Hash:           o.GetHash().GetValue(),
+			MintHash:       o.GetMintHash().GetValue(),
+			OffererAddress: o.GetOffererAddress().GetValue(),
+			Quantity:       int(o.GetQuantity()),
+			Price:          int(o.GetPrice()),
+			CreatedAt:      createdAt,
+			PublicKey:      o.GetPublicKey(),
+			Signature:      o.GetSignature(),
+		},
+		Id: o.GetId(),
+	}, nil
+}
+
 type TokenisationClient struct {
-	baseUrl    string
-	httpClient *http.Client
-	privHex    string
-	pubHex     string
+	baseUrl string
+	client  protocolconnect.FractalEngineRpcServiceClient
+	privHex string
+	pubHex  string
 }
 
 func NewTokenisationClient(baseUrl string, privHex string, pubHex string) *TokenisationClient {
 	httpClient := &http.Client{}
-	return &TokenisationClient{baseUrl: baseUrl, httpClient: httpClient, privHex: privHex, pubHex: pubHex}
+	client := protocolconnect.NewFractalEngineRpcServiceClient(httpClient, baseUrl)
+
+	return &TokenisationClient{baseUrl: baseUrl, client: client, privHex: privHex, pubHex: pubHex}
 }
 
 func (c *TokenisationClient) CreateInvoice(invoice *rpc.CreateInvoiceRequest) (rpc.CreateInvoiceResponse, error) {
@@ -31,398 +178,556 @@ func (c *TokenisationClient) CreateInvoice(invoice *rpc.CreateInvoiceRequest) (r
 		return rpc.CreateInvoiceResponse{}, err
 	}
 
-	invoice.SignedRequest = rpc.SignedRequest{
-		PublicKey: c.pubHex,
-		Signature: signature,
-	}
+	paymentAddr := &protocol.Address{}
+	paymentAddr.SetValue(invoice.Payload.PaymentAddress)
 
-	jsonValue, err := json.Marshal(invoice)
+	buyerAddr := &protocol.Address{}
+	buyerAddr.SetValue(invoice.Payload.BuyerAddress)
+
+	mintHash := &protocol.Hash{}
+	mintHash.SetValue(invoice.Payload.MintHash)
+
+	sellerAddr := &protocol.Address{}
+	sellerAddr.SetValue(invoice.Payload.SellerAddress)
+
+	payload := &protocol.CreateInvoiceRequestPayload{}
+	payload.SetPaymentAddress(paymentAddr)
+	payload.SetBuyerAddress(buyerAddr)
+	payload.SetMintHash(mintHash)
+	payload.SetQuantity(int32(invoice.Payload.Quantity))
+	payload.SetPrice(int32(invoice.Payload.Price))
+	payload.SetSellerAddress(sellerAddr)
+
+	req := &protocol.CreateInvoiceRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.CreateInvoice(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.CreateInvoiceResponse{}, err
 	}
 
-	resp, err := c.httpClient.Post(c.baseUrl+"/invoices", "application/json", bytes.NewBuffer(jsonValue))
-	if err != nil {
-		return rpc.CreateInvoiceResponse{}, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return rpc.CreateInvoiceResponse{}, fmt.Errorf("failed to create invoice: %s", string(body))
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.CreateInvoiceResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.CreateInvoiceResponse{}, err
-	}
-
-	return result, nil
+	return rpc.CreateInvoiceResponse{
+		Hash:                   resp.Msg.GetHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
+	}, nil
 }
 
 func (c *TokenisationClient) GetInvoices(page int, limit int, mintHash string, address string) (rpc.GetInvoicesResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/invoices/%s?page=%d&limit=%d&mint_hash=%s", address, page, limit, mintHash))
+	addr := &protocol.Address{}
+	addr.SetValue(address)
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	req := &protocol.GetInvoicesRequest{}
+	req.SetAddress(addr)
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+	req.SetMintHash(mintHashProto)
+
+	resp, err := c.client.GetInvoices(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetInvoicesResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetInvoicesResponse{}, fmt.Errorf("failed to get invoices: %s", resp.Status)
+	invoices := make([]store.Invoice, 0, len(resp.Msg.GetInvoices()))
+	for _, inv := range resp.Msg.GetInvoices() {
+		storeInv, err := protoInvoiceToStore(inv)
+		if err != nil {
+			return rpc.GetInvoicesResponse{}, err
+		}
+		invoices = append(invoices, storeInv)
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetInvoicesResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.GetInvoicesResponse{}, err
-	}
-
-	return result, nil
+	return rpc.GetInvoicesResponse{
+		Invoices: invoices,
+		Total:    int(resp.Msg.GetTotal()),
+		Page:     int(resp.Msg.GetPage()),
+		Limit:    int(resp.Msg.GetLimit()),
+	}, nil
 }
 
 func (c *TokenisationClient) GetMyInvoices(page int, limit int, address string) (rpc.GetInvoicesResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/invoices/%s?page=%d&limit=%d", address, page, limit))
+	addr := &protocol.Address{}
+	addr.SetValue(address)
+
+	req := &protocol.GetInvoicesRequest{}
+	req.SetAddress(addr)
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+
+	resp, err := c.client.GetInvoices(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetInvoicesResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetInvoicesResponse{}, fmt.Errorf("failed to get invoices: %s", resp.Status)
+	invoices := make([]store.Invoice, 0, len(resp.Msg.GetInvoices()))
+	for _, inv := range resp.Msg.GetInvoices() {
+		storeInv, err := protoInvoiceToStore(inv)
+		if err != nil {
+			return rpc.GetInvoicesResponse{}, err
+		}
+		invoices = append(invoices, storeInv)
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetInvoicesResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.GetInvoicesResponse{}, err
-	}
-
-	return result, nil
+	return rpc.GetInvoicesResponse{
+		Invoices: invoices,
+		Total:    int(resp.Msg.GetTotal()),
+		Page:     int(resp.Msg.GetPage()),
+		Limit:    int(resp.Msg.GetLimit()),
+	}, nil
 }
 
 func (c *TokenisationClient) GetHealth() (rpc.GetHealthResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + "/health")
+	resp, err := c.client.GetHealth(context.Background(), connect.NewRequest(&protocol.GetHealthRequest{}))
 	if err != nil {
 		return rpc.GetHealthResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetHealthResponse{}, fmt.Errorf("failed to get health: %s", resp.Status)
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetHealthResponse
-	err = json.Unmarshal(body, &result)
+	updatedAt, err := time.Parse(time.RFC3339Nano, resp.Msg.GetUpdatedAt())
 	if err != nil {
 		return rpc.GetHealthResponse{}, err
 	}
 
-	return result, nil
+	return rpc.GetHealthResponse{
+		Chain:              resp.Msg.GetChain(),
+		CurrentBlockHeight: int64(resp.Msg.GetCurrentBlockHeight()),
+		LatestBlockHeight:  int64(resp.Msg.GetLatestBlockHeight()),
+		WalletsEnabled:     resp.Msg.GetWalletsEnabled(),
+		UpdatedAt:          updatedAt,
+	}, nil
 }
 
 func (c *TokenisationClient) CreateBuyOffer(offer *rpc.CreateBuyOfferRequest) (rpc.CreateOfferResponse, error) {
-	payloadBytes, err := json.Marshal(offer.Payload)
+	signature, err := doge.SignPayload(offer.Payload, c.privHex, c.pubHex)
 	if err != nil {
 		return rpc.CreateOfferResponse{}, err
 	}
 
-	signature, err := doge.SignPayload(payloadBytes, c.privHex, c.pubHex)
+	offererAddr := &protocol.Address{}
+	offererAddr.SetValue(offer.Payload.OffererAddress)
+
+	sellerAddr := &protocol.Address{}
+	sellerAddr.SetValue(offer.Payload.SellerAddress)
+
+	mintHash := &protocol.Hash{}
+	mintHash.SetValue(offer.Payload.MintHash)
+
+	payload := &protocol.CreateBuyOfferRequestPayload{}
+	payload.SetOffererAddress(offererAddr)
+	payload.SetSellerAddress(sellerAddr)
+	payload.SetMintHash(mintHash)
+	payload.SetQuantity(int32(offer.Payload.Quantity))
+	payload.SetPrice(int32(offer.Payload.Price))
+
+	req := &protocol.CreateBuyOfferRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.CreateBuyOffer(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.CreateOfferResponse{}, err
 	}
 
-	offer.SignedRequest = rpc.SignedRequest{
-		PublicKey: c.pubHex,
-		Signature: signature,
-	}
-
-	jsonValue, err := json.Marshal(offer)
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	resp, err := c.httpClient.Post(c.baseUrl+"/buy-offers", "application/json", bytes.NewBuffer(jsonValue))
-
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return rpc.CreateOfferResponse{}, fmt.Errorf("failed to create buy offer: %s", string(body))
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.CreateOfferResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	return result, nil
+	return rpc.CreateOfferResponse{
+		Id:   resp.Msg.GetId(),
+		Hash: resp.Msg.GetHash().GetValue(),
+	}, nil
 }
 
 func (c *TokenisationClient) DeleteBuyOffer(offer *rpc.DeleteBuyOfferRequest) (string, error) {
-	payloadBytes, err := json.Marshal(offer.Payload)
+	signature, err := doge.SignPayload(offer.Payload, c.privHex, c.pubHex)
 	if err != nil {
 		return "", err
 	}
 
-	signature, err := doge.SignPayload(payloadBytes, c.privHex, c.pubHex)
+	offerHash := &protocol.Hash{}
+	offerHash.SetValue(offer.Payload.OfferHash)
+
+	payload := &protocol.DeleteBuyOfferRequestPayload{}
+	payload.SetOfferHash(offerHash)
+
+	req := &protocol.DeleteBuyOfferRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.DeleteBuyOffer(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return "", err
 	}
 
-	offer.SignedRequest = rpc.SignedRequest{
-		PublicKey: c.pubHex,
-		Signature: signature,
-	}
-
-	jsonValue, err := json.Marshal(offer)
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := c.httpClient.Post(c.baseUrl+"/buy-offers/delete", "application/json", bytes.NewBuffer(jsonValue))
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("failed to delete buy offer: %s", string(body))
-	}
-
-	return "", nil
+	return resp.Msg.GetValue(), nil
 }
 
 func (c *TokenisationClient) DeleteSellOffer(offer *rpc.DeleteSellOfferRequest) (string, error) {
-	payloadBytes, err := json.Marshal(offer.Payload)
+	signature, err := doge.SignPayload(offer.Payload, c.privHex, c.pubHex)
 	if err != nil {
 		return "", err
 	}
 
-	signature, err := doge.SignPayload(payloadBytes, c.privHex, c.pubHex)
+	offerHash := &protocol.Hash{}
+	offerHash.SetValue(offer.Payload.OfferHash)
+
+	payload := &protocol.DeleteSellOfferRequestPayload{}
+	payload.SetOfferHash(offerHash)
+
+	req := &protocol.DeleteSellOfferRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.DeleteSellOffer(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return "", err
 	}
 
-	offer.SignedRequest = rpc.SignedRequest{
-		PublicKey: c.pubHex,
-		Signature: signature,
-	}
-
-	jsonValue, err := json.Marshal(offer)
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := c.httpClient.Post(c.baseUrl+"/sell-offers/delete", "application/json", bytes.NewBuffer(jsonValue))
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("failed to delete sell offer: %s", string(body))
-	}
-
-	return "", nil
+	return resp.Msg.GetValue(), nil
 }
 
 func (c *TokenisationClient) CreateSellOffer(offer *rpc.CreateSellOfferRequest) (rpc.CreateOfferResponse, error) {
-	payloadBytes, err := json.Marshal(offer.Payload)
+	signature, err := doge.SignPayload(offer.Payload, c.privHex, c.pubHex)
 	if err != nil {
 		return rpc.CreateOfferResponse{}, err
 	}
 
-	signature, err := doge.SignPayload(payloadBytes, c.privHex, c.pubHex)
+	offererAddr := &protocol.Address{}
+	offererAddr.SetValue(offer.Payload.OffererAddress)
+
+	mintHash := &protocol.Hash{}
+	mintHash.SetValue(offer.Payload.MintHash)
+
+	payload := &protocol.CreateSellOfferRequestPayload{}
+	payload.SetOffererAddress(offererAddr)
+	payload.SetMintHash(mintHash)
+	payload.SetQuantity(int32(offer.Payload.Quantity))
+	payload.SetPrice(int32(offer.Payload.Price))
+
+	req := &protocol.CreateSellOfferRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.CreateSellOffer(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.CreateOfferResponse{}, err
 	}
 
-	offer.SignedRequest = rpc.SignedRequest{
-		PublicKey: c.pubHex,
-		Signature: signature,
-	}
-
-	jsonValue, err := json.Marshal(offer)
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	resp, err := c.httpClient.Post(c.baseUrl+"/sell-offers", "application/json", bytes.NewBuffer(jsonValue))
-
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return rpc.CreateOfferResponse{}, fmt.Errorf("failed to create sell offer: %s", string(body))
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.CreateOfferResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.CreateOfferResponse{}, err
-	}
-
-	return result, nil
+	return rpc.CreateOfferResponse{
+		Id:   resp.Msg.GetId(),
+		Hash: resp.Msg.GetHash().GetValue(),
+	}, nil
 }
 
 func (c *TokenisationClient) GetMintByHash(hash string) (rpc.GetMintResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/mints/%s", hash))
+	mintHash := &protocol.Hash{}
+	mintHash.SetValue(hash)
+
+	req := &protocol.GetMintRequest{}
+	req.SetHash(mintHash)
+
+	resp, err := c.client.GetMint(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetMintResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetMintResponse{}, fmt.Errorf("failed to get mint: %s", resp.Status)
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetMintResponse
-	err = json.Unmarshal(body, &result)
+	mint, err := protoMintToStore(resp.Msg.GetMint())
 	if err != nil {
 		return rpc.GetMintResponse{}, err
 	}
 
-	return result, nil
+	return rpc.GetMintResponse{Mint: mint}, nil
 }
 
 func (c *TokenisationClient) GetSellOffersByMintHash(page int, limit int, mintHash string) (rpc.GetSellOffersResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/sell-offers?page=%d&limit=%d&mint_hash=%s", page, limit, mintHash))
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	req := &protocol.GetSellOffersRequest{}
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+	req.SetMintHash(mintHashProto)
+
+	resp, err := c.client.GetSellOffers(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetSellOffersResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetSellOffersResponse{}, fmt.Errorf("failed to get offers: %s", resp.Status)
+	offers := make([]rpc.SellOfferWithMint, 0, len(resp.Msg.GetOffers()))
+	for _, o := range resp.Msg.GetOffers() {
+		sellOffer, err := protoSellOfferToStore(o.GetOffer())
+		if err != nil {
+			return rpc.GetSellOffersResponse{}, err
+		}
+		mint, err := protoMintToStore(o.GetMint())
+		if err != nil {
+			return rpc.GetSellOffersResponse{}, err
+		}
+		offers = append(offers, rpc.SellOfferWithMint{Offer: sellOffer, Mint: mint})
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetSellOffersResponse
-	err = json.Unmarshal(body, &result)
+	return rpc.GetSellOffersResponse{
+		Offers: offers,
+		Total:  int(resp.Msg.GetTotal()),
+		Page:   int(resp.Msg.GetPage()),
+		Limit:  int(resp.Msg.GetLimit()),
+	}, nil
+}
+
+func protoBuyOfferToStore(o *protocol.BuyOffer) (store.BuyOffer, error) {
+	createdAt, err := time.Parse(time.RFC3339Nano, o.GetCreatedAt())
 	if err != nil {
-		return rpc.GetSellOffersResponse{}, err
+		return store.BuyOffer{}, err
 	}
-
-	return result, nil
+	return store.BuyOffer{
+		BuyOfferWithoutID: store.BuyOfferWithoutID{
+			Hash:           o.GetHash().GetValue(),
+			MintHash:       o.GetMintHash().GetValue(),
+			OffererAddress: o.GetOffererAddress().GetValue(),
+			SellerAddress:  o.GetSellerAddress().GetValue(),
+			Quantity:       int(o.GetQuantity()),
+			Price:          int(o.GetPrice()),
+			CreatedAt:      createdAt,
+			PublicKey:      o.GetPublicKey(),
+			Signature:      o.GetSignature(),
+		},
+		Id: o.GetId(),
+	}, nil
 }
 
 func (c *TokenisationClient) GetBuyOffersBySellerAddress(page int, limit int, mintHash string, sellerAddress string) (rpc.GetBuyOffersResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/buy-offers?page=%d&limit=%d&mint_hash=%s&seller_address=%s", page, limit, mintHash, sellerAddress))
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	sellerAddr := &protocol.Address{}
+	sellerAddr.SetValue(sellerAddress)
+
+	req := &protocol.GetBuyOffersRequest{}
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+	req.SetMintHash(mintHashProto)
+	req.SetSellerAddress(sellerAddr)
+
+	resp, err := c.client.GetBuyOffers(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetBuyOffersResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetBuyOffersResponse{}, fmt.Errorf("failed to get offers: %s", resp.Status)
+	offers := make([]rpc.BuyOfferWithMint, 0, len(resp.Msg.GetOffers()))
+	for _, o := range resp.Msg.GetOffers() {
+		buyOffer, err := protoBuyOfferToStore(o.GetOffer())
+		if err != nil {
+			return rpc.GetBuyOffersResponse{}, err
+		}
+		mint, err := protoMintToStore(o.GetMint())
+		if err != nil {
+			return rpc.GetBuyOffersResponse{}, err
+		}
+		offers = append(offers, rpc.BuyOfferWithMint{Offer: buyOffer, Mint: mint})
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetBuyOffersResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.GetBuyOffersResponse{}, err
-	}
-
-	return result, nil
+	return rpc.GetBuyOffersResponse{
+		Offers: offers,
+		Total:  int(resp.Msg.GetTotal()),
+		Page:   int(resp.Msg.GetPage()),
+		Limit:  int(resp.Msg.GetLimit()),
+	}, nil
 }
 
 func (c *TokenisationClient) GetBuyOffers(page int, limit int, mintHash string) (rpc.GetBuyOffersResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/buy-offers?page=%d&limit=%d&mint_hash=%s", page, limit, mintHash))
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	req := &protocol.GetBuyOffersRequest{}
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+	req.SetMintHash(mintHashProto)
+
+	resp, err := c.client.GetBuyOffers(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetBuyOffersResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetBuyOffersResponse{}, fmt.Errorf("failed to get offers: %s", resp.Status)
+	offers := make([]rpc.BuyOfferWithMint, 0, len(resp.Msg.GetOffers()))
+	for _, o := range resp.Msg.GetOffers() {
+		buyOffer, err := protoBuyOfferToStore(o.GetOffer())
+		if err != nil {
+			return rpc.GetBuyOffersResponse{}, err
+		}
+		mint, err := protoMintToStore(o.GetMint())
+		if err != nil {
+			return rpc.GetBuyOffersResponse{}, err
+		}
+		offers = append(offers, rpc.BuyOfferWithMint{Offer: buyOffer, Mint: mint})
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetBuyOffersResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.GetBuyOffersResponse{}, err
-	}
-
-	return result, nil
+	return rpc.GetBuyOffersResponse{
+		Offers: offers,
+		Total:  int(resp.Msg.GetTotal()),
+		Page:   int(resp.Msg.GetPage()),
+		Limit:  int(resp.Msg.GetLimit()),
+	}, nil
 }
 
 func (c *TokenisationClient) Mint(mint *rpc.CreateMintRequest) (rpc.CreateMintResponse, error) {
-	jsonValue, err := json.Marshal(mint)
+	signature, err := doge.SignPayload(mint.Payload, c.privHex, c.pubHex)
 	if err != nil {
 		return rpc.CreateMintResponse{}, err
 	}
 
-	resp, err := c.httpClient.Post(c.baseUrl+"/mints", "application/json", bytes.NewBuffer(jsonValue))
+	toProtoMap := func(m store.StringInterfaceMap) (*protocol.StringInterfaceMap, error) {
+		if m == nil {
+			return nil, nil
+		}
+		s, err := structpb.NewStruct(map[string]interface{}(m))
+		if err != nil {
+			return nil, err
+		}
+		protoMap := &protocol.StringInterfaceMap{}
+		protoMap.SetValue(s)
+		return protoMap, nil
+	}
+
+	metadata, err := toProtoMap(mint.Payload.Metadata)
 	if err != nil {
-		body, _ := io.ReadAll(resp.Body)
-		return rpc.CreateMintResponse{}, fmt.Errorf("failed to mint token: %s", string(body))
+		return rpc.CreateMintResponse{}, err
 	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return rpc.CreateMintResponse{}, fmt.Errorf("failed to mint token: %s", string(body))
+	requirements, err := toProtoMap(mint.Payload.Requirements)
+	if err != nil {
+		return rpc.CreateMintResponse{}, err
 	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.CreateMintResponse
-	err = json.Unmarshal(body, &result)
+	lockupOptions, err := toProtoMap(mint.Payload.LockupOptions)
 	if err != nil {
 		return rpc.CreateMintResponse{}, err
 	}
 
-	return result, nil
+	assetManagers := make([]*protocol.AssetManager, 0, len(mint.Payload.AssetManagers))
+	for _, am := range mint.Payload.AssetManagers {
+		protoAM := &protocol.AssetManager{}
+		protoAM.SetName(am.Name)
+		protoAM.SetPublicKey(am.PublicKey)
+		protoAM.SetUrl(am.URL)
+		assetManagers = append(assetManagers, protoAM)
+	}
+
+	var sigReqType protocol.SignatureRequirementType
+	switch mint.Payload.SignatureRequirementType {
+	case store.SignatureRequirementType_ALL_SIGNATURES:
+		sigReqType = protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES
+	case store.SignatureRequirementType_ONE_SIGNATURE:
+		sigReqType = protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE
+	case store.SignatureRequirementType_MIN_SIGNATURES:
+		sigReqType = protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES
+	case store.SignatureRequirementType_NONE:
+		sigReqType = protocol.SignatureRequirementType_SIGNATURE_REQUIREMENT_TYPE_NONE
+	}
+
+	ownerAddr := &protocol.Address{}
+	ownerAddr.SetValue(mint.Payload.OwnerAddress)
+
+	payload := &protocol.CreateMintRequestPayload{}
+	payload.SetTitle(mint.Payload.Title)
+	payload.SetFractionCount(int32(mint.Payload.FractionCount))
+	payload.SetDescription(mint.Payload.Description)
+	payload.SetTags([]string(mint.Payload.Tags))
+	payload.SetMetadata(metadata)
+	payload.SetRequirements(requirements)
+	payload.SetLockupOptions(lockupOptions)
+	payload.SetFeedUrl(mint.Payload.FeedURL)
+	payload.SetContractOfSale(mint.Payload.ContractOfSale)
+	payload.SetOwnerAddress(ownerAddr)
+	payload.SetSignatureRequirementType(sigReqType)
+	payload.SetAssetManagers(assetManagers)
+	payload.SetMinSignatures(int32(mint.Payload.MinSignatures))
+	payload.SetAllowExpansion(mint.Payload.AllowExpansion)
+	payload.SetBurnable(mint.Payload.Burnable)
+
+	var protoBurnAuthority protocol.BurnAuthorityType
+	switch mint.Payload.BurnAuthority {
+	case store.BurnAuthorityOwnerOnly:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY
+	case store.BurnAuthorityHolderOnly:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY
+	case store.BurnAuthorityOwnerOrHolder:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER
+	default:
+		protoBurnAuthority = protocol.BurnAuthorityType_BURN_AUTHORITY_TYPE_UNSPECIFIED
+	}
+	payload.SetBurnAuthority(protoBurnAuthority)
+
+	req := &protocol.CreateMintRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.CreateMint(context.Background(), connect.NewRequest(req))
+	if err != nil {
+		return rpc.CreateMintResponse{}, err
+	}
+
+	return rpc.CreateMintResponse{
+		Hash:                   resp.Msg.GetHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
+	}, nil
+}
+
+func (c *TokenisationClient) MintExpansion(expand *rpc.ExpandMintRequest) (rpc.ExpandMintResponse, error) {
+	signature, err := doge.SignPayload(expand.Payload, c.privHex, c.pubHex)
+	if err != nil {
+		return rpc.ExpandMintResponse{}, err
+	}
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(expand.Payload.MintHash)
+
+	payload := &protocol.ExpandMintRequestPayload{}
+	payload.SetMintHash(mintHashProto)
+	payload.SetAdditionalSupply(int32(expand.Payload.AdditionalSupply))
+
+	req := &protocol.ExpandMintRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.ExpandMint(context.Background(), connect.NewRequest(req))
+	if err != nil {
+		return rpc.ExpandMintResponse{}, err
+	}
+
+	return rpc.ExpandMintResponse{
+		ExpansionHash:          resp.Msg.GetExpansionHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
+	}, nil
 }
 
 func (c *TokenisationClient) GetTokenBalance(address string, mintHash string) ([]store.TokenBalance, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/token-balances/%s?mint_hash=%s", address, mintHash))
+	addr := &protocol.Address{}
+	addr.SetValue(address)
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	req := &protocol.GetTokenBalancesRequest{}
+	req.SetAddress(addr)
+	req.SetMintHash(mintHashProto)
+
+	resp, err := c.client.GetTokenBalances(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return []store.TokenBalance{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return []store.TokenBalance{}, fmt.Errorf("failed to get token balance: %s", resp.Status)
+	// Server returns {"balances": [...]} as a structpb.Struct
+	raw := resp.Msg.GetData().AsMap()
+	balancesJSON, err := json.Marshal(raw["balances"])
+	if err != nil {
+		return []store.TokenBalance{}, err
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-
 	var result []store.TokenBalance
-	err = json.Unmarshal(body, &result)
-	if err != nil {
+	if err := json.Unmarshal(balancesJSON, &result); err != nil {
 		return []store.TokenBalance{}, err
 	}
 
@@ -430,22 +735,25 @@ func (c *TokenisationClient) GetTokenBalance(address string, mintHash string) ([
 }
 
 func (c *TokenisationClient) GetTokenBalanceWithMintDetails(address string) (rpc.GetTokenBalanceWithMintsResponse, error) {
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/token-balances/%s?include_mint_details=true", address))
+	addr := &protocol.Address{}
+	addr.SetValue(address)
+
+	req := &protocol.GetTokenBalancesRequest{}
+	req.SetAddress(addr)
+	req.SetIncludeMintDetails(wrapperspb.Bool(true))
+
+	resp, err := c.client.GetTokenBalances(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetTokenBalanceWithMintsResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetTokenBalanceWithMintsResponse{}, fmt.Errorf("failed to get token balance: %s", resp.Status)
+	dataJSON, err := json.Marshal(resp.Msg.GetData().AsMap())
+	if err != nil {
+		return rpc.GetTokenBalanceWithMintsResponse{}, err
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-
 	var result rpc.GetTokenBalanceWithMintsResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
+	if err := json.Unmarshal(dataJSON, &result); err != nil {
 		return rpc.GetTokenBalanceWithMintsResponse{}, err
 	}
 
@@ -453,82 +761,125 @@ func (c *TokenisationClient) GetTokenBalanceWithMintDetails(address string) (rpc
 }
 
 func (c *TokenisationClient) GetPendingTokenBalance(address string, mintHash string) ([]store.TokenBalance, error) {
-	fmt.Println("Getting pending token balance: ADDRESS", c.baseUrl+fmt.Sprintf("/pending-token-balances/%s?mint_hash=%s", address, mintHash))
-	resp, err := c.httpClient.Get(c.baseUrl + fmt.Sprintf("/pending-token-balances/%s?mint_hash=%s", address, mintHash))
+	addr := &protocol.Address{}
+	addr.SetValue(address)
+
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(mintHash)
+
+	req := &protocol.GetPendingTokenBalancesRequest{}
+	req.SetAddress(addr)
+	req.SetMintHash(mintHashProto)
+
+	resp, err := c.client.GetPendingTokenBalances(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return []store.TokenBalance{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return []store.TokenBalance{}, fmt.Errorf("failed to get token balance: %s", resp.Status)
+	parseTime := func(s string) (time.Time, error) {
+		if s == "" {
+			return time.Time{}, nil
+		}
+		return time.Parse(time.RFC3339Nano, s)
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-
-	var result []store.TokenBalance
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return []store.TokenBalance{}, err
+	balances := make([]store.TokenBalance, 0, len(resp.Msg.GetBalances()))
+	for _, b := range resp.Msg.GetBalances() {
+		createdAt, err := parseTime(b.GetCreatedAt())
+		if err != nil {
+			return []store.TokenBalance{}, err
+		}
+		updatedAt, err := parseTime(b.GetUpdatedAt())
+		if err != nil {
+			return []store.TokenBalance{}, err
+		}
+		balances = append(balances, store.TokenBalance{
+			MintHash:  b.GetMintHash().GetValue(),
+			Address:   b.GetAddress().GetValue(),
+			Quantity:  int(b.GetQuantity()),
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		})
 	}
 
-	return result, nil
+	return balances, nil
 }
 
 func (c *TokenisationClient) GetMints(page int, limit int, publicKey string, includeUnconfirmed bool) (rpc.GetMintsResponse, error) {
-	var resp *http.Response
-	var err error
-	if includeUnconfirmed {
-		resp, err = c.httpClient.Get(c.baseUrl + fmt.Sprintf("/mints?page=%d&limit=%d&public_key=%s&include_unconfirmed=true", page, limit, publicKey))
-	} else {
-		resp, err = c.httpClient.Get(c.baseUrl + fmt.Sprintf("/mints?page=%d&limit=%d&public_key=%s", page, limit, publicKey))
-	}
+	req := &protocol.GetMintsRequest{}
+	req.SetPage(wrapperspb.Int32(int32(page)))
+	req.SetLimit(wrapperspb.Int32(int32(limit)))
+	req.SetPublicKey(publicKey)
+	req.SetIncludeUnconfirmed(wrapperspb.Bool(includeUnconfirmed))
+
+	resp, err := c.client.GetMints(context.Background(), connect.NewRequest(req))
 	if err != nil {
 		return rpc.GetMintsResponse{}, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return rpc.GetMintsResponse{}, fmt.Errorf("failed to get mints: %s", resp.Status)
+	mints := make([]store.Mint, 0, len(resp.Msg.GetMints()))
+	for _, m := range resp.Msg.GetMints() {
+		mint, err := protoMintToStore(m)
+		if err != nil {
+			return rpc.GetMintsResponse{}, err
+		}
+		mints = append(mints, mint)
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.GetMintsResponse
-	err = json.Unmarshal(body, &result)
+	return rpc.GetMintsResponse{
+		Mints: mints,
+		Total: int(resp.Msg.GetTotal()),
+		Page:  int(resp.Msg.GetPage()),
+		Limit: int(resp.Msg.GetLimit()),
+	}, nil
+}
+
+func (c *TokenisationClient) BurnTokens(burn *rpc.BurnTokensRequest) (rpc.BurnTokensResponse, error) {
+	signature, err := doge.SignPayload(burn.Payload, c.privHex, c.pubHex)
 	if err != nil {
-		return rpc.GetMintsResponse{}, err
+		return rpc.BurnTokensResponse{}, err
 	}
 
-	return result, nil
+	mintHashProto := &protocol.Hash{}
+	mintHashProto.SetValue(burn.Payload.MintHash)
+
+	payload := &protocol.BurnTokensRequestPayload{}
+	payload.SetMintHash(mintHashProto)
+	payload.SetBurnQuantity(int32(burn.Payload.BurnQuantity))
+
+	req := &protocol.BurnTokensRequest{}
+	req.SetPayload(payload)
+	req.SetPublicKey(c.pubHex)
+	req.SetSignature(signature)
+
+	resp, err := c.client.BurnTokens(context.Background(), connect.NewRequest(req))
+	if err != nil {
+		return rpc.BurnTokensResponse{}, err
+	}
+
+	return rpc.BurnTokensResponse{
+		BurnHash:               resp.Msg.GetBurnHash().GetValue(),
+		EncodedTransactionBody: resp.Msg.GetEncodedTransactionBody(),
+	}, nil
 }
 
 func (c *TokenisationClient) CreateInvoiceSignature(signature *rpc.CreateInvoiceSignatureRequest) (rpc.CreateInvoiceSignatureResponse, error) {
-	jsonValue, err := json.Marshal(signature)
+	ctx := context.Background()
+
+	payload := &protocol.CreateInvoiceSignatureRequestPayload{}
+	payload.SetInvoiceHash(signature.Payload.InvoiceHash)
+	payload.SetPublicKey(signature.Payload.PublicKey)
+	payload.SetSignature(signature.Payload.Signature)
+
+	req := &protocol.CreateInvoiceSignatureRequest{}
+	req.SetPayload(payload)
+
+	resp, err := c.client.CreateInvoiceSignature(ctx, connect.NewRequest(req))
 	if err != nil {
 		return rpc.CreateInvoiceSignatureResponse{}, err
 	}
 
-	log.Println("jsonValue", string(jsonValue))
-
-	resp, err := c.httpClient.Post(c.baseUrl+"/invoices/"+signature.Payload.InvoiceHash+"/signatures", "application/json", bytes.NewBuffer(jsonValue))
-	if err != nil {
-		return rpc.CreateInvoiceSignatureResponse{}, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		return rpc.CreateInvoiceSignatureResponse{}, fmt.Errorf("failed to create invoice signature: %s", resp.Status)
-	}
-
-	body, _ := io.ReadAll(resp.Body)
-	var result rpc.CreateInvoiceSignatureResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return rpc.CreateInvoiceSignatureResponse{}, err
-	}
-
-	return result, nil
+	return rpc.CreateInvoiceSignatureResponse{
+		Id: resp.Msg.GetId(),
+	}, nil
 }

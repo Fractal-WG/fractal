@@ -22,6 +22,53 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type BurnAuthorityType int32
+
+const (
+	BurnAuthorityType_BURN_AUTHORITY_TYPE_UNSPECIFIED     BurnAuthorityType = 0
+	BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_ONLY      BurnAuthorityType = 1
+	BurnAuthorityType_BURN_AUTHORITY_TYPE_HOLDER_ONLY     BurnAuthorityType = 2
+	BurnAuthorityType_BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER BurnAuthorityType = 3
+)
+
+// Enum value maps for BurnAuthorityType.
+var (
+	BurnAuthorityType_name = map[int32]string{
+		0: "BURN_AUTHORITY_TYPE_UNSPECIFIED",
+		1: "BURN_AUTHORITY_TYPE_OWNER_ONLY",
+		2: "BURN_AUTHORITY_TYPE_HOLDER_ONLY",
+		3: "BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER",
+	}
+	BurnAuthorityType_value = map[string]int32{
+		"BURN_AUTHORITY_TYPE_UNSPECIFIED":     0,
+		"BURN_AUTHORITY_TYPE_OWNER_ONLY":      1,
+		"BURN_AUTHORITY_TYPE_HOLDER_ONLY":     2,
+		"BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER": 3,
+	}
+)
+
+func (x BurnAuthorityType) Enum() *BurnAuthorityType {
+	p := new(BurnAuthorityType)
+	*p = x
+	return p
+}
+
+func (x BurnAuthorityType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BurnAuthorityType) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_proto_enumTypes[0].Descriptor()
+}
+
+func (BurnAuthorityType) Type() protoreflect.EnumType {
+	return &file_common_proto_enumTypes[0]
+}
+
+func (x BurnAuthorityType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
 type SignatureRequirementType int32
 
 const (
@@ -61,11 +108,11 @@ func (x SignatureRequirementType) String() string {
 }
 
 func (SignatureRequirementType) Descriptor() protoreflect.EnumDescriptor {
-	return file_common_proto_enumTypes[0].Descriptor()
+	return file_common_proto_enumTypes[1].Descriptor()
 }
 
 func (SignatureRequirementType) Type() protoreflect.EnumType {
-	return &file_common_proto_enumTypes[0]
+	return &file_common_proto_enumTypes[1]
 }
 
 func (x SignatureRequirementType) Number() protoreflect.EnumNumber {
@@ -549,6 +596,10 @@ type Mint struct {
 	xxx_hidden_Tags                     []string                 `protobuf:"bytes,18,rep,name=tags"`
 	xxx_hidden_Title                    *string                  `protobuf:"bytes,19,opt,name=title"`
 	xxx_hidden_TransactionHash          *Hash                    `protobuf:"bytes,20,opt,name=transaction_hash,json=transactionHash"`
+	xxx_hidden_AllowExpansion           bool                     `protobuf:"varint,21,opt,name=allow_expansion,json=allowExpansion"`
+	xxx_hidden_CurrentSupply            int32                    `protobuf:"varint,22,opt,name=current_supply,json=currentSupply"`
+	xxx_hidden_Burnable                 bool                     `protobuf:"varint,23,opt,name=burnable"`
+	xxx_hidden_BurnAuthority            BurnAuthorityType        `protobuf:"varint,24,opt,name=burn_authority,json=burnAuthority,enum=fractalengine.rpc.v1.BurnAuthorityType"`
 	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
 	XXX_presence                        [1]uint32
 	unknownFields                       protoimpl.UnknownFields
@@ -748,38 +799,68 @@ func (x *Mint) GetTransactionHash() *Hash {
 	return nil
 }
 
+func (x *Mint) GetAllowExpansion() bool {
+	if x != nil {
+		return x.xxx_hidden_AllowExpansion
+	}
+	return false
+}
+
+func (x *Mint) GetCurrentSupply() int32 {
+	if x != nil {
+		return x.xxx_hidden_CurrentSupply
+	}
+	return 0
+}
+
+func (x *Mint) GetBurnable() bool {
+	if x != nil {
+		return x.xxx_hidden_Burnable
+	}
+	return false
+}
+
+func (x *Mint) GetBurnAuthority() BurnAuthorityType {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 23) {
+			return x.xxx_hidden_BurnAuthority
+		}
+	}
+	return BurnAuthorityType_BURN_AUTHORITY_TYPE_UNSPECIFIED
+}
+
 func (x *Mint) SetAssetManagers(v []*AssetManager) {
 	x.xxx_hidden_AssetManagers = &v
 }
 
 func (x *Mint) SetBlockHeight(v int32) {
 	x.xxx_hidden_BlockHeight = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 24)
 }
 
 func (x *Mint) SetContractOfSale(v string) {
 	x.xxx_hidden_ContractOfSale = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 24)
 }
 
 func (x *Mint) SetCreatedAt(v string) {
 	x.xxx_hidden_CreatedAt = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 24)
 }
 
 func (x *Mint) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 24)
 }
 
 func (x *Mint) SetFeedUrl(v string) {
 	x.xxx_hidden_FeedUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 24)
 }
 
 func (x *Mint) SetFractionCount(v int32) {
 	x.xxx_hidden_FractionCount = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 24)
 }
 
 func (x *Mint) SetHash(v *Hash) {
@@ -788,7 +869,7 @@ func (x *Mint) SetHash(v *Hash) {
 
 func (x *Mint) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 24)
 }
 
 func (x *Mint) SetLockupOptions(v *StringInterfaceMap) {
@@ -801,7 +882,7 @@ func (x *Mint) SetMetadata(v *StringInterfaceMap) {
 
 func (x *Mint) SetMinSignatures(v int32) {
 	x.xxx_hidden_MinSignatures = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 24)
 }
 
 func (x *Mint) SetOwnerAddress(v *Address) {
@@ -810,7 +891,7 @@ func (x *Mint) SetOwnerAddress(v *Address) {
 
 func (x *Mint) SetPublicKey(v string) {
 	x.xxx_hidden_PublicKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 24)
 }
 
 func (x *Mint) SetRequirements(v *StringInterfaceMap) {
@@ -819,12 +900,12 @@ func (x *Mint) SetRequirements(v *StringInterfaceMap) {
 
 func (x *Mint) SetSignature(v string) {
 	x.xxx_hidden_Signature = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 24)
 }
 
 func (x *Mint) SetSignatureRequirementType(v SignatureRequirementType) {
 	x.xxx_hidden_SignatureRequirementType = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 24)
 }
 
 func (x *Mint) SetTags(v []string) {
@@ -833,11 +914,31 @@ func (x *Mint) SetTags(v []string) {
 
 func (x *Mint) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 20)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 24)
 }
 
 func (x *Mint) SetTransactionHash(v *Hash) {
 	x.xxx_hidden_TransactionHash = v
+}
+
+func (x *Mint) SetAllowExpansion(v bool) {
+	x.xxx_hidden_AllowExpansion = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 20, 24)
+}
+
+func (x *Mint) SetCurrentSupply(v int32) {
+	x.xxx_hidden_CurrentSupply = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 21, 24)
+}
+
+func (x *Mint) SetBurnable(v bool) {
+	x.xxx_hidden_Burnable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 22, 24)
+}
+
+func (x *Mint) SetBurnAuthority(v BurnAuthorityType) {
+	x.xxx_hidden_BurnAuthority = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 23, 24)
 }
 
 func (x *Mint) HasBlockHeight() bool {
@@ -966,6 +1067,34 @@ func (x *Mint) HasTransactionHash() bool {
 	return x.xxx_hidden_TransactionHash != nil
 }
 
+func (x *Mint) HasAllowExpansion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 20)
+}
+
+func (x *Mint) HasCurrentSupply() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 21)
+}
+
+func (x *Mint) HasBurnable() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 22)
+}
+
+func (x *Mint) HasBurnAuthority() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 23)
+}
+
 func (x *Mint) ClearBlockHeight() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_BlockHeight = 0
@@ -1050,6 +1179,26 @@ func (x *Mint) ClearTransactionHash() {
 	x.xxx_hidden_TransactionHash = nil
 }
 
+func (x *Mint) ClearAllowExpansion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 20)
+	x.xxx_hidden_AllowExpansion = false
+}
+
+func (x *Mint) ClearCurrentSupply() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 21)
+	x.xxx_hidden_CurrentSupply = 0
+}
+
+func (x *Mint) ClearBurnable() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 22)
+	x.xxx_hidden_Burnable = false
+}
+
+func (x *Mint) ClearBurnAuthority() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 23)
+	x.xxx_hidden_BurnAuthority = BurnAuthorityType_BURN_AUTHORITY_TYPE_UNSPECIFIED
+}
+
 type Mint_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -1073,6 +1222,10 @@ type Mint_builder struct {
 	Tags                     []string
 	Title                    *string
 	TransactionHash          *Hash
+	AllowExpansion           *bool
+	CurrentSupply            *int32
+	Burnable                 *bool
+	BurnAuthority            *BurnAuthorityType
 }
 
 func (b0 Mint_builder) Build() *Mint {
@@ -1081,60 +1234,76 @@ func (b0 Mint_builder) Build() *Mint {
 	_, _ = b, x
 	x.xxx_hidden_AssetManagers = &b.AssetManagers
 	if b.BlockHeight != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 24)
 		x.xxx_hidden_BlockHeight = *b.BlockHeight
 	}
 	if b.ContractOfSale != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 24)
 		x.xxx_hidden_ContractOfSale = b.ContractOfSale
 	}
 	if b.CreatedAt != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 24)
 		x.xxx_hidden_CreatedAt = b.CreatedAt
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 24)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.FeedUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 24)
 		x.xxx_hidden_FeedUrl = b.FeedUrl
 	}
 	if b.FractionCount != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 24)
 		x.xxx_hidden_FractionCount = *b.FractionCount
 	}
 	x.xxx_hidden_Hash = b.Hash
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 24)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_LockupOptions = b.LockupOptions
 	x.xxx_hidden_Metadata = b.Metadata
 	if b.MinSignatures != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 24)
 		x.xxx_hidden_MinSignatures = *b.MinSignatures
 	}
 	x.xxx_hidden_OwnerAddress = b.OwnerAddress
 	if b.PublicKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 24)
 		x.xxx_hidden_PublicKey = b.PublicKey
 	}
 	x.xxx_hidden_Requirements = b.Requirements
 	if b.Signature != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 24)
 		x.xxx_hidden_Signature = b.Signature
 	}
 	if b.SignatureRequirementType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 24)
 		x.xxx_hidden_SignatureRequirementType = *b.SignatureRequirementType
 	}
 	x.xxx_hidden_Tags = b.Tags
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 20)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 24)
 		x.xxx_hidden_Title = b.Title
 	}
 	x.xxx_hidden_TransactionHash = b.TransactionHash
+	if b.AllowExpansion != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 20, 24)
+		x.xxx_hidden_AllowExpansion = *b.AllowExpansion
+	}
+	if b.CurrentSupply != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 21, 24)
+		x.xxx_hidden_CurrentSupply = *b.CurrentSupply
+	}
+	if b.Burnable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 22, 24)
+		x.xxx_hidden_Burnable = *b.Burnable
+	}
+	if b.BurnAuthority != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 23, 24)
+		x.xxx_hidden_BurnAuthority = *b.BurnAuthority
+	}
 	return m0
 }
 
@@ -2660,7 +2829,7 @@ const file_common_proto_rawDesc = "" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\"C\n" +
 	"\x12StringInterfaceMap\x12-\n" +
-	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xed\a\n" +
+	"\x05value\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05value\"\xa9\t\n" +
 	"\x04Mint\x12I\n" +
 	"\x0easset_managers\x18\x01 \x03(\v2\".fractalengine.rpc.v1.AssetManagerR\rassetManagers\x12!\n" +
 	"\fblock_height\x18\x02 \x01(\x05R\vblockHeight\x12(\n" +
@@ -2684,7 +2853,11 @@ const file_common_proto_rawDesc = "" +
 	"\x1asignature_requirement_type\x18\x11 \x01(\x0e2..fractalengine.rpc.v1.SignatureRequirementTypeR\x18signatureRequirementType\x12\x12\n" +
 	"\x04tags\x18\x12 \x03(\tR\x04tags\x12\x1c\n" +
 	"\x05title\x18\x13 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12E\n" +
-	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\"\xc1\x05\n" +
+	"\x10transaction_hash\x18\x14 \x01(\v2\x1a.fractalengine.rpc.v1.HashR\x0ftransactionHash\x12'\n" +
+	"\x0fallow_expansion\x18\x15 \x01(\bR\x0eallowExpansion\x12%\n" +
+	"\x0ecurrent_supply\x18\x16 \x01(\x05R\rcurrentSupply\x12\x1a\n" +
+	"\bburnable\x18\x17 \x01(\bR\bburnable\x12N\n" +
+	"\x0eburn_authority\x18\x18 \x01(\x0e2'.fractalengine.rpc.v1.BurnAuthorityTypeR\rburnAuthority\"\xc1\x05\n" +
 	"\aInvoice\x12!\n" +
 	"\fblock_height\x18\x01 \x01(\x05R\vblockHeight\x12B\n" +
 	"\rbuyer_address\x18\x02 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\fbuyerAddress\x12\x1d\n" +
@@ -2743,7 +2916,12 @@ const file_common_proto_rawDesc = "" +
 	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint\"z\n" +
 	"\x11SellOfferWithMint\x125\n" +
 	"\x05offer\x18\x01 \x01(\v2\x1f.fractalengine.rpc.v1.SellOfferR\x05offer\x12.\n" +
-	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint*\x92\x02\n" +
+	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint*\xaa\x01\n" +
+	"\x11BurnAuthorityType\x12#\n" +
+	"\x1fBURN_AUTHORITY_TYPE_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eBURN_AUTHORITY_TYPE_OWNER_ONLY\x10\x01\x12#\n" +
+	"\x1fBURN_AUTHORITY_TYPE_HOLDER_ONLY\x10\x02\x12'\n" +
+	"#BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER\x10\x03*\x92\x02\n" +
 	"\x18SignatureRequirementType\x12*\n" +
 	"&SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED\x10\x00\x126\n" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES\x10\x01\x125\n" +
@@ -2751,63 +2929,65 @@ const file_common_proto_rawDesc = "" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES\x10\x03\x12#\n" +
 	"\x1fSIGNATURE_REQUIREMENT_TYPE_NONE\x10\x04B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
-var file_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_common_proto_goTypes = []any{
-	(SignatureRequirementType)(0), // 0: fractalengine.rpc.v1.SignatureRequirementType
-	(*StringResponse)(nil),        // 1: fractalengine.rpc.v1.StringResponse
-	(*StringMapResponse)(nil),     // 2: fractalengine.rpc.v1.StringMapResponse
-	(*SqlNullTime)(nil),           // 3: fractalengine.rpc.v1.SqlNullTime
-	(*AssetManager)(nil),          // 4: fractalengine.rpc.v1.AssetManager
-	(*StringInterfaceMap)(nil),    // 5: fractalengine.rpc.v1.StringInterfaceMap
-	(*Mint)(nil),                  // 6: fractalengine.rpc.v1.Mint
-	(*Invoice)(nil),               // 7: fractalengine.rpc.v1.Invoice
-	(*TokenBalance)(nil),          // 8: fractalengine.rpc.v1.TokenBalance
-	(*BuyOffer)(nil),              // 9: fractalengine.rpc.v1.BuyOffer
-	(*SellOffer)(nil),             // 10: fractalengine.rpc.v1.SellOffer
-	(*BuyOfferWithMint)(nil),      // 11: fractalengine.rpc.v1.BuyOfferWithMint
-	(*SellOfferWithMint)(nil),     // 12: fractalengine.rpc.v1.SellOfferWithMint
-	nil,                           // 13: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
-	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
-	(*Hash)(nil),                  // 15: fractalengine.rpc.v1.Hash
-	(*Address)(nil),               // 16: fractalengine.rpc.v1.Address
+	(BurnAuthorityType)(0),        // 0: fractalengine.rpc.v1.BurnAuthorityType
+	(SignatureRequirementType)(0), // 1: fractalengine.rpc.v1.SignatureRequirementType
+	(*StringResponse)(nil),        // 2: fractalengine.rpc.v1.StringResponse
+	(*StringMapResponse)(nil),     // 3: fractalengine.rpc.v1.StringMapResponse
+	(*SqlNullTime)(nil),           // 4: fractalengine.rpc.v1.SqlNullTime
+	(*AssetManager)(nil),          // 5: fractalengine.rpc.v1.AssetManager
+	(*StringInterfaceMap)(nil),    // 6: fractalengine.rpc.v1.StringInterfaceMap
+	(*Mint)(nil),                  // 7: fractalengine.rpc.v1.Mint
+	(*Invoice)(nil),               // 8: fractalengine.rpc.v1.Invoice
+	(*TokenBalance)(nil),          // 9: fractalengine.rpc.v1.TokenBalance
+	(*BuyOffer)(nil),              // 10: fractalengine.rpc.v1.BuyOffer
+	(*SellOffer)(nil),             // 11: fractalengine.rpc.v1.SellOffer
+	(*BuyOfferWithMint)(nil),      // 12: fractalengine.rpc.v1.BuyOfferWithMint
+	(*SellOfferWithMint)(nil),     // 13: fractalengine.rpc.v1.SellOfferWithMint
+	nil,                           // 14: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
+	(*structpb.Struct)(nil),       // 15: google.protobuf.Struct
+	(*Hash)(nil),                  // 16: fractalengine.rpc.v1.Hash
+	(*Address)(nil),               // 17: fractalengine.rpc.v1.Address
 }
 var file_common_proto_depIdxs = []int32{
-	13, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
-	14, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
-	4,  // 2: fractalengine.rpc.v1.Mint.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	15, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
-	5,  // 4: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	5,  // 5: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	16, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
-	5,  // 7: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	0,  // 8: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	15, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 10: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 11: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 12: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	3,  // 13: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
-	16, // 14: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
-	16, // 15: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 16: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 17: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
-	15, // 18: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 19: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 20: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 21: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
-	16, // 22: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 23: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 24: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 25: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
-	9,  // 26: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
-	6,  // 27: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	10, // 28: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
-	6,  // 29: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	30, // [30:30] is the sub-list for method output_type
-	30, // [30:30] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	14, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
+	15, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
+	5,  // 2: fractalengine.rpc.v1.Mint.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
+	16, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
+	6,  // 4: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	6,  // 5: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	17, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
+	6,  // 7: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
+	1,  // 8: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
+	16, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	0,  // 10: fractalengine.rpc.v1.Mint.burn_authority:type_name -> fractalengine.rpc.v1.BurnAuthorityType
+	17, // 11: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 12: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 13: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	4,  // 14: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
+	17, // 15: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 16: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 17: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 18: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
+	16, // 19: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 20: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 21: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 22: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 23: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 24: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 25: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 26: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	10, // 27: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
+	7,  // 28: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	11, // 29: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
+	7,  // 30: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_init() }
@@ -2821,7 +3001,7 @@ func file_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,

@@ -1,0 +1,26 @@
+edition = "2023";
+
+import "buf/validate/validate.proto";
+
+import "common.proto";
+import "types.proto";
+
+package fractalengine.rpc.v1;
+
+option go_package = "dogecoin.org/fractal-engine/pkg/rpc/protocol";
+
+message BurnTokensRequest {
+  BurnTokensRequestPayload payload = 1;
+  string public_key = 2;
+  string signature = 3;
+}
+
+message BurnTokensRequestPayload {
+  Hash mint_hash = 1;
+  int32 burn_quantity = 2 [(buf.validate.field).int32.gt = 0];
+}
+
+message BurnTokensResponse {
+  string encoded_transaction_body = 1;
+  Hash burn_hash = 2;
+}

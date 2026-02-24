@@ -1,0 +1,3064 @@
+{
+  "openapi": "3.1.0",
+  "info": {},
+  "paths": {
+    "/fractalengine.rpc.v1.FractalEngineRpcService/BurnTokens": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Burn Tokens",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.BurnTokens",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateBuyOffer": {
+      "post": {
+        "tags": [
+          "Buy Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Buy Offer",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateBuyOffer",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateBuyOfferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateBuyOfferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateInvoice": {
+      "post": {
+        "tags": [
+          "Invoices",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Invoice",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoice",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateInvoiceSignature": {
+      "post": {
+        "tags": [
+          "Invoices",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Invoice Signature",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateInvoiceSignature",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceSignatureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceSignatureResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateMint": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Mint",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateMint",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateMintRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateMintResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateNewPayment": {
+      "post": {
+        "tags": [
+          "Payments",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Payment",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateNewPayment",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateNewPaymentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateNewPaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/CreateSellOffer": {
+      "post": {
+        "tags": [
+          "Sell Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Create Sell Offer",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.CreateSellOffer",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateSellOfferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateSellOfferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/DeleteBuyOffer": {
+      "post": {
+        "tags": [
+          "Buy Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Delete Buy Offer",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.DeleteBuyOffer",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteBuyOfferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteBuyOfferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/DeleteSellOffer": {
+      "post": {
+        "tags": [
+          "Sell Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Delete Sell Offer",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.DeleteSellOffer",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteSellOfferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteSellOfferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/DogeConfirm": {
+      "post": {
+        "tags": [
+          "Doge",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Confirm",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.DogeConfirm",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeConfirmRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeConfirmResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/DogeSend": {
+      "post": {
+        "tags": [
+          "Doge",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Send",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.DogeSend",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeSendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeSendResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/DogeTopUp": {
+      "post": {
+        "tags": [
+          "Doge",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Top Up",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.DogeTopUp",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeTopUpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.DogeTopUpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/ExpandMint": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Expand Mint",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.ExpandMint",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.ExpandMintRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.ExpandMintResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetAllInvoices": {
+      "post": {
+        "tags": [
+          "Invoices",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get All Invoices",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetAllInvoices",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetAllInvoicesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetAllInvoicesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetBuyOffers": {
+      "post": {
+        "tags": [
+          "Buy Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Buy Offers",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetBuyOffers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetBuyOffersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetBuyOffersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetHealth": {
+      "post": {
+        "tags": [
+          "Health",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Health",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetHealth",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetHealthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetInvoices": {
+      "post": {
+        "tags": [
+          "Invoices",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Invoices",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetInvoices",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetInvoicesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetInvoicesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetMint": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Mint",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetMint",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetMintRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetMintResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetMints": {
+      "post": {
+        "tags": [
+          "Mints",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Mints",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetMints",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetMintsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetMintsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetPendingTokenBalances": {
+      "post": {
+        "tags": [
+          "Token Balances",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Pending Token Balances",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetPendingTokenBalances",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetPendingTokenBalancesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetPendingTokenBalancesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetSellOffers": {
+      "post": {
+        "tags": [
+          "Sell Offers",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Sell Offers",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetSellOffers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetSellOffersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetSellOffersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetStats": {
+      "post": {
+        "tags": [
+          "Stats",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Stats",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetStats",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetStatsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetStatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fractalengine.rpc.v1.FractalEngineRpcService/GetTokenBalances": {
+      "post": {
+        "tags": [
+          "Token Balances",
+          "fractalengine.rpc.v1.FractalEngineRpcService"
+        ],
+        "summary": "Get Token Balances",
+        "operationId": "fractalengine.rpc.v1.FractalEngineRpcService.GetTokenBalances",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/fractalengine.rpc.v1.GetTokenBalancesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/fractalengine.rpc.v1.GetTokenBalancesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "connect-protocol-version": {
+        "type": "number",
+        "title": "Connect-Protocol-Version",
+        "enum": [
+          1
+        ],
+        "description": "Define the version of the Connect protocol",
+        "const": 1
+      },
+      "connect-timeout-header": {
+        "type": "number",
+        "title": "Connect-Timeout-Ms",
+        "description": "Define the timeout, in ms"
+      },
+      "connect.error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "examples": [
+              "not_found"
+            ],
+            "enum": [
+              "canceled",
+              "unknown",
+              "invalid_argument",
+              "deadline_exceeded",
+              "not_found",
+              "already_exists",
+              "permission_denied",
+              "resource_exhausted",
+              "failed_precondition",
+              "aborted",
+              "out_of_range",
+              "unimplemented",
+              "internal",
+              "unavailable",
+              "data_loss",
+              "unauthenticated"
+            ],
+            "description": "The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code]."
+          },
+          "message": {
+            "type": "string",
+            "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client."
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/connect.error_details.Any"
+            },
+            "description": "A list of messages that carry the error details. There is no limit on the number of messages."
+          }
+        },
+        "title": "Connect Error",
+        "additionalProperties": true,
+        "description": "Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation"
+      },
+      "connect.error_details.Any": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`. This is used to determine the schema of the data in the `value` field and is the discriminator for the `debug` field."
+          },
+          "value": {
+            "type": "string",
+            "format": "binary",
+            "description": "The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the `type` field."
+          },
+          "debug": {
+            "oneOf": [
+              {
+                "type": "object",
+                "title": "Any",
+                "additionalProperties": true,
+                "description": "Detailed error information."
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type"
+            },
+            "title": "Debug",
+            "description": "Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic."
+          }
+        },
+        "additionalProperties": true,
+        "description": "Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details."
+      },
+      "fractalengine.rpc.v1.Address": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "Address",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.AssetManager": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "url": {
+            "type": "string",
+            "title": "url"
+          }
+        },
+        "title": "AssetManager",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BurnAuthorityType": {
+        "type": "string",
+        "title": "BurnAuthorityType",
+        "enum": [
+          "BURN_AUTHORITY_TYPE_UNSPECIFIED",
+          "BURN_AUTHORITY_TYPE_OWNER_ONLY",
+          "BURN_AUTHORITY_TYPE_HOLDER_ONLY",
+          "BURN_AUTHORITY_TYPE_OWNER_OR_HOLDER"
+        ]
+      },
+      "fractalengine.rpc.v1.BurnTokensRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnTokensRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "BurnTokensRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BurnTokensRequestPayload": {
+        "type": "object",
+        "properties": {
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "burnQuantity": {
+            "type": "integer",
+            "title": "burn_quantity",
+            "format": "int32"
+          }
+        },
+        "title": "BurnTokensRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BurnTokensResponse": {
+        "type": "object",
+        "properties": {
+          "encodedTransactionBody": {
+            "type": "string",
+            "title": "encoded_transaction_body"
+          },
+          "burnHash": {
+            "title": "burn_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "BurnTokensResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BuyOffer": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "offererAddress": {
+            "title": "offerer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "sellerAddress": {
+            "title": "seller_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          },
+          "id": {
+            "type": "string",
+            "title": "id"
+          }
+        },
+        "title": "BuyOffer",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.BuyOfferWithMint": {
+        "type": "object",
+        "properties": {
+          "offer": {
+            "title": "offer",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BuyOffer"
+          },
+          "mint": {
+            "title": "mint",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Mint"
+          }
+        },
+        "title": "BuyOfferWithMint",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateBuyOfferRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateBuyOfferRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "CreateBuyOfferRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateBuyOfferRequestPayload": {
+        "type": "object",
+        "properties": {
+          "offererAddress": {
+            "title": "offerer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "sellerAddress": {
+            "title": "seller_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          }
+        },
+        "title": "CreateBuyOfferRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateBuyOfferResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "id"
+          },
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "CreateBuyOfferResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "CreateInvoiceRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceRequestPayload": {
+        "type": "object",
+        "properties": {
+          "paymentAddress": {
+            "title": "payment_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "buyerAddress": {
+            "title": "buyer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          },
+          "sellerAddress": {
+            "title": "seller_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          }
+        },
+        "title": "CreateInvoiceRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceResponse": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "encodedTransactionBody": {
+            "type": "string",
+            "title": "encoded_transaction_body"
+          }
+        },
+        "title": "CreateInvoiceResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceSignatureRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload"
+          }
+        },
+        "title": "CreateInvoiceSignatureRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceSignatureRequestPayload": {
+        "type": "object",
+        "properties": {
+          "invoiceHash": {
+            "type": "string",
+            "title": "invoice_hash"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "CreateInvoiceSignatureRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateInvoiceSignatureResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "id"
+          }
+        },
+        "title": "CreateInvoiceSignatureResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateMintRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateMintRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "CreateMintRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateMintRequestPayload": {
+        "type": "object",
+        "properties": {
+          "assetManagers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.AssetManager"
+            },
+            "title": "asset_managers"
+          },
+          "contractOfSale": {
+            "type": "string",
+            "title": "contract_of_sale"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "feedUrl": {
+            "type": "string",
+            "title": "feed_url"
+          },
+          "fractionCount": {
+            "type": "integer",
+            "title": "fraction_count",
+            "format": "int32"
+          },
+          "lockupOptions": {
+            "title": "lockup_options",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "metadata": {
+            "title": "metadata",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "minSignatures": {
+            "type": "integer",
+            "title": "min_signatures",
+            "format": "int32"
+          },
+          "ownerAddress": {
+            "title": "owner_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "requirements": {
+            "title": "requirements",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "signatureRequirementType": {
+            "title": "signature_requirement_type",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.SignatureRequirementType"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "tags"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "allowExpansion": {
+            "type": "boolean",
+            "title": "allow_expansion"
+          },
+          "burnable": {
+            "type": "boolean",
+            "title": "burnable"
+          },
+          "burnAuthority": {
+            "title": "burn_authority",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnAuthorityType"
+          }
+        },
+        "title": "CreateMintRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateMintResponse": {
+        "type": "object",
+        "properties": {
+          "encodedTransactionBody": {
+            "type": "string",
+            "title": "encoded_transaction_body"
+          },
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "CreateMintResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateNewPaymentRequest": {
+        "type": "object",
+        "properties": {
+          "invoiceHash": {
+            "title": "invoice_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "CreateNewPaymentRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateNewPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "values": {
+            "type": "object",
+            "title": "values",
+            "additionalProperties": {
+              "type": "string",
+              "title": "value"
+            }
+          }
+        },
+        "title": "CreateNewPaymentResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateNewPaymentResponse.ValuesEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "ValuesEntry",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateSellOfferRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.CreateSellOfferRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "CreateSellOfferRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateSellOfferRequestPayload": {
+        "type": "object",
+        "properties": {
+          "offererAddress": {
+            "title": "offerer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          }
+        },
+        "title": "CreateSellOfferRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.CreateSellOfferResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "id"
+          },
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "CreateSellOfferResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteBuyOfferRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteBuyOfferRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "DeleteBuyOfferRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteBuyOfferRequestPayload": {
+        "type": "object",
+        "properties": {
+          "offerHash": {
+            "title": "offer_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "DeleteBuyOfferRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteBuyOfferResponse": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "DeleteBuyOfferResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteSellOfferRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.DeleteSellOfferRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "DeleteSellOfferRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteSellOfferRequestPayload": {
+        "type": "object",
+        "properties": {
+          "offerHash": {
+            "title": "offer_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "DeleteSellOfferRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DeleteSellOfferResponse": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "DeleteSellOfferResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeConfirmRequest": {
+        "type": "object",
+        "title": "DogeConfirmRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeConfirmResponse": {
+        "type": "object",
+        "properties": {
+          "values": {
+            "type": "object",
+            "title": "values",
+            "additionalProperties": {
+              "type": "string",
+              "title": "value"
+            }
+          }
+        },
+        "title": "DogeConfirmResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeConfirmResponse.ValuesEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "ValuesEntry",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeSendRequest": {
+        "type": "object",
+        "properties": {
+          "encodedTransactionHex": {
+            "type": "string",
+            "title": "encoded_transaction_hex"
+          }
+        },
+        "title": "DogeSendRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeSendResponse": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "title": "transaction_id"
+          }
+        },
+        "title": "DogeSendResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeTopUpRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          }
+        },
+        "title": "DogeTopUpRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.DogeTopUpResponse": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "DogeTopUpResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.ExpandMintRequest": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "title": "payload",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.ExpandMintRequestPayload"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          }
+        },
+        "title": "ExpandMintRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.ExpandMintRequestPayload": {
+        "type": "object",
+        "properties": {
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "additionalSupply": {
+            "type": "integer",
+            "title": "additional_supply",
+            "format": "int32"
+          }
+        },
+        "title": "ExpandMintRequestPayload",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.ExpandMintResponse": {
+        "type": "object",
+        "properties": {
+          "encodedTransactionBody": {
+            "type": "string",
+            "title": "encoded_transaction_body"
+          },
+          "expansionHash": {
+            "title": "expansion_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "ExpandMintResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetAllInvoicesRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "GetAllInvoicesRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetAllInvoicesResponse": {
+        "type": "object",
+        "properties": {
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.Invoice"
+            },
+            "title": "invoices"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "title": "page",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "title": "total",
+            "format": "int32"
+          }
+        },
+        "title": "GetAllInvoicesResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetBuyOffersRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "sellerAddress": {
+            "title": "seller_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          }
+        },
+        "title": "GetBuyOffersRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetBuyOffersResponse": {
+        "type": "object",
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.BuyOfferWithMint"
+            },
+            "title": "offers"
+          },
+          "total": {
+            "type": "integer",
+            "title": "total",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "title": "page",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          }
+        },
+        "title": "GetBuyOffersResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetHealthRequest": {
+        "type": "object",
+        "title": "GetHealthRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetHealthResponse": {
+        "type": "object",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "title": "chain"
+          },
+          "currentBlockHeight": {
+            "type": "integer",
+            "title": "current_block_height",
+            "format": "int32"
+          },
+          "latestBlockHeight": {
+            "type": "integer",
+            "title": "latest_block_height",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "title": "updated_at"
+          },
+          "version": {
+            "type": "string",
+            "title": "version"
+          },
+          "walletsEnabled": {
+            "type": "boolean",
+            "title": "wallets_enabled"
+          }
+        },
+        "title": "GetHealthResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetInvoicesRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "GetInvoicesRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetInvoicesResponse": {
+        "type": "object",
+        "properties": {
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.Invoice"
+            },
+            "title": "invoices"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "title": "page",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "title": "total",
+            "format": "int32"
+          }
+        },
+        "title": "GetInvoicesResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetMintRequest": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "GetMintRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetMintResponse": {
+        "type": "object",
+        "properties": {
+          "mint": {
+            "title": "mint",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Mint"
+          }
+        },
+        "title": "GetMintResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetMintsRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "includeUnconfirmed": {
+            "title": "include_unconfirmed",
+            "$ref": "#/components/schemas/google.protobuf.BoolValue"
+          }
+        },
+        "title": "GetMintsRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetMintsResponse": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          },
+          "mints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.Mint"
+            },
+            "title": "mints"
+          },
+          "page": {
+            "type": "integer",
+            "title": "page",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "title": "total",
+            "format": "int32"
+          }
+        },
+        "title": "GetMintsResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetPendingTokenBalancesRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "GetPendingTokenBalancesRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetPendingTokenBalancesResponse": {
+        "type": "object",
+        "properties": {
+          "balances": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.TokenBalance"
+            },
+            "title": "balances"
+          }
+        },
+        "title": "GetPendingTokenBalancesResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetSellOffersRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "offererAddress": {
+            "title": "offerer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          }
+        },
+        "title": "GetSellOffersRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetSellOffersResponse": {
+        "type": "object",
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.SellOfferWithMint"
+            },
+            "title": "offers"
+          },
+          "total": {
+            "type": "integer",
+            "title": "total",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "title": "page",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          }
+        },
+        "title": "GetSellOffersResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetStatsRequest": {
+        "type": "object",
+        "title": "GetStatsRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetStatsResponse": {
+        "type": "object",
+        "properties": {
+          "stats": {
+            "type": "object",
+            "title": "stats",
+            "additionalProperties": {
+              "type": "integer",
+              "title": "value",
+              "format": "int32"
+            }
+          }
+        },
+        "title": "GetStatsResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetStatsResponse.StatsEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "value": {
+            "type": "integer",
+            "title": "value",
+            "format": "int32"
+          }
+        },
+        "title": "StatsEntry",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetTokenBalancesRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "includeMintDetails": {
+            "title": "include_mint_details",
+            "$ref": "#/components/schemas/google.protobuf.BoolValue"
+          },
+          "limit": {
+            "title": "limit",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          },
+          "page": {
+            "title": "page",
+            "$ref": "#/components/schemas/google.protobuf.Int32Value"
+          }
+        },
+        "title": "GetTokenBalancesRequest",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.GetTokenBalancesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "title": "data",
+            "$ref": "#/components/schemas/google.protobuf.Struct"
+          }
+        },
+        "title": "GetTokenBalancesResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.Hash": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "Hash",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.Invoice": {
+        "type": "object",
+        "properties": {
+          "blockHeight": {
+            "type": "integer",
+            "title": "block_height",
+            "format": "int32"
+          },
+          "buyerAddress": {
+            "title": "buyer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "id": {
+            "type": "string",
+            "title": "id"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "paidAt": {
+            "title": "paid_at",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.SqlNullTime"
+          },
+          "paymentAddress": {
+            "title": "payment_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "pendingTokenBalanceId": {
+            "type": "string",
+            "title": "pending_token_balance_id"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "sellerAddress": {
+            "title": "seller_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          },
+          "transactionHash": {
+            "title": "transaction_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          }
+        },
+        "title": "Invoice",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.Mint": {
+        "type": "object",
+        "properties": {
+          "assetManagers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fractalengine.rpc.v1.AssetManager"
+            },
+            "title": "asset_managers"
+          },
+          "blockHeight": {
+            "type": "integer",
+            "title": "block_height",
+            "format": "int32"
+          },
+          "contractOfSale": {
+            "type": "string",
+            "title": "contract_of_sale"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "feedUrl": {
+            "type": "string",
+            "title": "feed_url"
+          },
+          "fractionCount": {
+            "type": "integer",
+            "title": "fraction_count",
+            "format": "int32"
+          },
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "id": {
+            "type": "string",
+            "title": "id"
+          },
+          "lockupOptions": {
+            "title": "lockup_options",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "metadata": {
+            "title": "metadata",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "minSignatures": {
+            "type": "integer",
+            "title": "min_signatures",
+            "format": "int32"
+          },
+          "ownerAddress": {
+            "title": "owner_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "requirements": {
+            "title": "requirements",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.StringInterfaceMap"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          },
+          "signatureRequirementType": {
+            "title": "signature_requirement_type",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.SignatureRequirementType"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "tags"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "transactionHash": {
+            "title": "transaction_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "allowExpansion": {
+            "type": "boolean",
+            "title": "allow_expansion"
+          },
+          "currentSupply": {
+            "type": "integer",
+            "title": "current_supply",
+            "format": "int32"
+          },
+          "burnable": {
+            "type": "boolean",
+            "title": "burnable"
+          },
+          "burnAuthority": {
+            "title": "burn_authority",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.BurnAuthorityType"
+          }
+        },
+        "title": "Mint",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.SellOffer": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "title": "hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "offererAddress": {
+            "title": "offerer_address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "price": {
+            "type": "integer",
+            "title": "price",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "publicKey": {
+            "type": "string",
+            "title": "public_key"
+          },
+          "signature": {
+            "type": "string",
+            "title": "signature"
+          },
+          "id": {
+            "type": "string",
+            "title": "id"
+          }
+        },
+        "title": "SellOffer",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.SellOfferWithMint": {
+        "type": "object",
+        "properties": {
+          "offer": {
+            "title": "offer",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.SellOffer"
+          },
+          "mint": {
+            "title": "mint",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Mint"
+          }
+        },
+        "title": "SellOfferWithMint",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.SignatureRequirementType": {
+        "type": "string",
+        "title": "SignatureRequirementType",
+        "enum": [
+          "SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED",
+          "SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES",
+          "SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ONE_SIGNATURE",
+          "SIGNATURE_REQUIREMENT_TYPE_REQUIRES_MIN_SIGNATURES",
+          "SIGNATURE_REQUIREMENT_TYPE_NONE"
+        ]
+      },
+      "fractalengine.rpc.v1.SqlNullTime": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "string",
+            "title": "time"
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "valid"
+          }
+        },
+        "title": "SqlNullTime",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.StringInterfaceMap": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "title": "value",
+            "$ref": "#/components/schemas/google.protobuf.Struct"
+          }
+        },
+        "title": "StringInterfaceMap",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.StringMapResponse": {
+        "type": "object",
+        "properties": {
+          "values": {
+            "type": "object",
+            "title": "values",
+            "additionalProperties": {
+              "type": "string",
+              "title": "value"
+            }
+          }
+        },
+        "title": "StringMapResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.StringMapResponse.ValuesEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "ValuesEntry",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.StringResponse": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "value"
+          }
+        },
+        "title": "StringResponse",
+        "additionalProperties": false
+      },
+      "fractalengine.rpc.v1.TokenBalance": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "address",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Address"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "mintHash": {
+            "title": "mint_hash",
+            "$ref": "#/components/schemas/fractalengine.rpc.v1.Hash"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "title": "updated_at"
+          }
+        },
+        "title": "TokenBalance",
+        "additionalProperties": false
+      },
+      "google.protobuf.BoolValue": {
+        "type": "boolean",
+        "description": "Wrapper message for `bool`.\n\n The JSON representation for `BoolValue` is JSON `true` and `false`.\n\n Not recommended for use in new APIs, but still useful for legacy APIs and\n has no plan to be removed."
+      },
+      "google.protobuf.Int32Value": {
+        "type": "number",
+        "description": "Wrapper message for `int32`.\n\n The JSON representation for `Int32Value` is JSON number.\n\n Not recommended for use in new APIs, but still useful for legacy APIs and\n has no plan to be removed."
+      },
+      "google.protobuf.ListValue": {
+        "type": "object",
+        "properties": {
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/google.protobuf.Value"
+            },
+            "title": "values",
+            "description": "Repeated field of dynamically typed values."
+          }
+        },
+        "title": "ListValue",
+        "additionalProperties": false,
+        "description": "`ListValue` is a wrapper around a repeated field of values.\n\n The JSON representation for `ListValue` is JSON array."
+      },
+      "google.protobuf.NullValue": {
+        "type": "string",
+        "title": "NullValue",
+        "enum": [
+          "NULL_VALUE"
+        ],
+        "description": "`NullValue` is a singleton enumeration to represent the null value for the\n `Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`."
+      },
+      "google.protobuf.Struct": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/google.protobuf.Value"
+        },
+        "description": "`Struct` represents a structured data value, consisting of fields\n which map to dynamically typed values. In some languages, `Struct`\n might be supported by a native representation. For example, in\n scripting languages like JS a struct is represented as an\n object. The details of that representation are described together\n with the proto support for the language.\n\n The JSON representation for `Struct` is JSON object."
+      },
+      "google.protobuf.Struct.FieldsEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "value": {
+            "title": "value",
+            "$ref": "#/components/schemas/google.protobuf.Value"
+          }
+        },
+        "title": "FieldsEntry",
+        "additionalProperties": false
+      },
+      "google.protobuf.Value": {
+        "oneOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "array"
+          },
+          {
+            "type": "object",
+            "additionalProperties": true
+          }
+        ],
+        "description": "`Value` represents a dynamically typed value which can be either\n null, a number, a string, a boolean, a recursive struct value, or a\n list of values. A producer of value is expected to set one of these\n variants. Absence of any variant indicates an error.\n\n The JSON representation for `Value` is JSON value."
+      }
+    }
+  },
+  "security": []
+}
