@@ -37,6 +37,9 @@ func NewRpcServer(cfg *config.Config, store *store.TokenisationStore, gossipClie
 	connectPath, connectHandler := protocolconnect.NewFractalEngineRpcServiceHandler(connectService)
 	mux.Handle(connectPath, connectHandler)
 
+	dcHandler := NewDCHandler(store, cfg)
+	mux.HandleFunc("GET /dc/mint/{hash}", dcHandler.ServeMint)
+
 	handler := withCORS(cfg.CORSAllowedOrigins, h2c.NewHandler(mux, &http2.Server{}))
 
 	if cfg.RpcApiKey != "" {
