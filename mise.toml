@@ -1,0 +1,4 @@
+[tools]
+buf = "latest"
+node = "latest"
+protoc-gen-connect-go = "latest"

@@ -8,8 +8,10 @@ require (
 	code.dogecoin.org/gossip v0.0.18
 	code.dogecoin.org/governor v1.0.2
 	connectrpc.com/connect v1.19.1
-	github.com/btcsuite/btcd v0.20.1-beta
-	github.com/btcsuite/btcd/btcec/v2 v2.3.5
+	github.com/btcsuite/btcd v0.25.0
+	github.com/btcsuite/btcd/btcec/v2 v2.3.6
+	github.com/btcsuite/btcd/btcutil v1.1.5
+	github.com/btcsuite/btcd/chaincfg/chainhash v1.1.0
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.4
@@ -19,6 +21,7 @@ require (
 	github.com/dogecoinfoundation/chainfollower v0.0.0-20250627015426-488188828ea3
 	github.com/dogecoinfoundation/dogetest v0.0.0-20250620045423-cd7468b764b9
 	github.com/dogeorg/doge v0.1.2-0.20250818072130-2d2e0619e480
+	github.com/dogeorg/dogeconnect-go v1.0.1
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/google/uuid v1.6.0
 	github.com/gowebpki/jcs v1.0.1
@@ -42,6 +45,8 @@ replace code.dogecoin.org/gossip => github.com/dogeorg/gossip v0.0.18
 replace code.dogecoin.org/governor => github.com/dogeorg/governor v1.0.2
 
 replace code.dogecoin.org/dogenet => github.com/Dogebox-WG/dogenet v0.1.10
+
+replace github.com/dogeorg/dogeconnect-go => github.com/danielwhelansb/dogeconnect-go v0.0.0-20260327042825-788d746a96fd
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect

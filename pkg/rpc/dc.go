@@ -1,17 +1,24 @@
 package rpc
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"net/http"
 	"time"
 
 	"dogecoin.org/fractal-engine/pkg/config"
 	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
-	"github.com/dogeorg/doge"
+	dogeconnect "github.com/dogeorg/dogeconnect-go"
 )
+
+// pubKeyHashStr encodes the first 15 bytes of the SHA256 of the Gateway Public Key
+// in URL-safe Base64 (RFC 4648); 15 is divisible by 3, which avoids Base64 padding.
+func pubKeyHashStr(pubKey []byte) string {
+	pkHash := sha256.Sum256(pubKey)
+	return base64.URLEncoding.EncodeToString(pkHash[0:15]) // 15 bytes -> 20 chars
+}
 
 type DCHandler struct {
 	store *store.TokenisationStore
@@ -22,39 +29,26 @@ func NewDCHandler(s *store.TokenisationStore, cfg *config.Config) *DCHandler {
 	return &DCHandler{store: s, cfg: cfg}
 }
 
-type connectEnvelope struct {
-	Version string `json:"version"`
-	Payload string `json:"payload"`
-	PubKey  string `json:"pubkey"`
-	Sig     string `json:"sig"`
+// mintPayload mirrors dogeconnect.ConnectPayment but uses mintOutput to support
+// OP_RETURN data outputs, which the standard ConnectOutput does not.
+type mintPayload struct {
+	Type       string                    `json:"type"`
+	ID         string                    `json:"id"`
+	Issued     string                    `json:"issued"`
+	Timeout    int                       `json:"timeout"`
+	FeePerKB   string                    `json:"fee_per_kb"`
+	MaxSize    int                       `json:"max_size"`
+	VendorName string                    `json:"vendor_name,omitempty"`
+	Total      string                    `json:"total"`
+	Fees       string                    `json:"fees"`
+	Taxes      string                    `json:"taxes"`
+	Items      []dogeconnect.ConnectItem `json:"items"`
+	Outputs    []mintOutput              `json:"outputs"`
 }
 
-type connectPayment struct {
-	Type          string          `json:"type"`
-	ID            string          `json:"id"`
-	Issued        string          `json:"issued"`
-	Timeout       int             `json:"timeout"`
-	Relay         string          `json:"relay,omitempty"`
-	FeePerKb      string          `json:"fee_per_kb"`
-	MaxSize       int             `json:"max_size"`
-	VendorName    string          `json:"vendor_name,omitempty"`
-	VendorAddress string          `json:"vendor_address,omitempty"`
-	Total         string          `json:"total"`
-	Fees          string          `json:"fees"`
-	Taxes         string          `json:"taxes"`
-	Items         []connectItem   `json:"items"`
-	Outputs       []connectOutput `json:"outputs"`
-}
-
-type connectItem struct {
-	Type string `json:"type"`
-	ID   string `json:"id"`
-	Name string `json:"name,omitempty"`
-	Desc string `json:"desc,omitempty"`
-}
-
-type connectOutput struct {
-	Type    string `json:"type"`
+// mintOutput extends the standard ConnectOutput with a data field for OP_RETURN outputs.
+type mintOutput struct {
+	Type    string `json:"type,omitempty"`
 	Data    string `json:"data,omitempty"`
 	Address string `json:"address,omitempty"`
 	Amount  string `json:"amount,omitempty"`
@@ -82,27 +76,26 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 	opReturnHex := hex.EncodeToString(txEnvelope.Serialize())
 
 	now := time.Now()
-	// Assume 0's mean no limit?
-	payment := connectPayment{
+	payment := dogeconnect.ConnectPayment{
 		Type:       "payment",
 		ID:         hash[:16],
 		Issued:     now.Format(time.RFC3339),
 		Timeout:    0,
-		FeePerKb:   "0",
+		FeePerKB:   "0",
 		MaxSize:    0,
 		VendorName: mint.Title,
 		Total:      "0.00000000",
 		Fees:       "0.00000000",
 		Taxes:      "0.00000000",
-		Items: []connectItem{
+		Items: []dogeconnect.ConnectItem{
 			{
-				Type: "signing",
-				ID:   hash,
-				Name: mint.Title,
-				Desc: mint.Description,
+				Type:        "signing",
+				ID:          hash,
+				Name:        mint.Title,
+				Description: mint.Description,
 			},
 		},
-		Outputs: []connectOutput{
+		Outputs: []dogeconnect.ConnectOutput{
 			{
 				Type: "data",
 				Data: opReturnHex,
@@ -110,33 +103,17 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	payloadBytes, err := json.Marshal(payment)
-	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	payloadB64 := base64.StdEncoding.EncodeToString(payloadBytes)
-
-	// Sign with the engine's Dogecoin Schnorr key (EC-Schnorr-Dogecoin over BLAKE-256)
 	keyPair := h.cfg.DogeNetKeyPair
 	if keyPair.Priv == nil || keyPair.Pub == nil {
 		http.Error(w, "signing key not configured", http.StatusServiceUnavailable)
 		return
 	}
 
-	sig, err := doge.SignMessage(keyPair.Priv, payloadBytes)
+	envelope, err := dogeconnect.SignPaymentRequest(payment, keyPair.Priv[:])
 	if err != nil {
-		http.Error(w, "signing error", http.StatusInternalServerError)
+		http.Error(w, "failed to sign request", http.StatusBadRequest)
 		return
 	}
 
-	result := connectEnvelope{
-		Version: "1.0",
-		Payload: payloadB64,
-		PubKey:  hex.EncodeToString(keyPair.Pub[:]),
-		Sig:     hex.EncodeToString(sig[:]),
-	}
-
-	respondJSON(w, http.StatusOK, result)
+	respondJSON(w, http.StatusOK, envelope)
 }
