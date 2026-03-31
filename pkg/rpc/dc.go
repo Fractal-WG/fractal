@@ -29,31 +29,6 @@ func NewDCHandler(s *store.TokenisationStore, cfg *config.Config) *DCHandler {
 	return &DCHandler{store: s, cfg: cfg}
 }
 
-// mintPayload mirrors dogeconnect.ConnectPayment but uses mintOutput to support
-// OP_RETURN data outputs, which the standard ConnectOutput does not.
-type mintPayload struct {
-	Type       string                    `json:"type"`
-	ID         string                    `json:"id"`
-	Issued     string                    `json:"issued"`
-	Timeout    int                       `json:"timeout"`
-	FeePerKB   string                    `json:"fee_per_kb"`
-	MaxSize    int                       `json:"max_size"`
-	VendorName string                    `json:"vendor_name,omitempty"`
-	Total      string                    `json:"total"`
-	Fees       string                    `json:"fees"`
-	Taxes      string                    `json:"taxes"`
-	Items      []dogeconnect.ConnectItem `json:"items"`
-	Outputs    []mintOutput              `json:"outputs"`
-}
-
-// mintOutput extends the standard ConnectOutput with a data field for OP_RETURN outputs.
-type mintOutput struct {
-	Type    string `json:"type,omitempty"`
-	Data    string `json:"data,omitempty"`
-	Address string `json:"address,omitempty"`
-	Amount  string `json:"amount,omitempty"`
-}
-
 func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 	hash := r.PathValue("hash")
 	if len(hash) != 64 {
@@ -81,8 +56,9 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 		ID:         hash[:16],
 		Issued:     now.Format(time.RFC3339),
 		Timeout:    0,
+		Relay:      "http://10.0.0.2:8891",
 		FeePerKB:   "0",
-		MaxSize:    0,
+		MaxSize:    100000, // What should this be???
 		VendorName: mint.Title,
 		Total:      "0.00000000",
 		Fees:       "0.00000000",
@@ -93,6 +69,9 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 				ID:          hash,
 				Name:        mint.Title,
 				Description: mint.Description,
+				Total:       "0",
+				UnitCount:   1,
+				UnitCost:    "0",
 			},
 		},
 		Outputs: []dogeconnect.ConnectOutput{
