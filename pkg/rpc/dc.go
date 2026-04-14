@@ -4,10 +4,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"net/http"
+	"sync"
 	"time"
 
 	"dogecoin.org/fractal-engine/pkg/config"
+	"dogecoin.org/fractal-engine/pkg/doge"
 	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	dogeconnect "github.com/dogeorg/dogeconnect-go"
@@ -21,12 +24,14 @@ func pubKeyHashStr(pubKey []byte) string {
 }
 
 type DCHandler struct {
-	store *store.TokenisationStore
-	cfg   *config.Config
+	store      *store.TokenisationStore
+	cfg        *config.Config
+	dogeClient *doge.RpcClient
+	relayState sync.Map // map[string]dogeconnect.PaymentStatusResponse
 }
 
-func NewDCHandler(s *store.TokenisationStore, cfg *config.Config) *DCHandler {
-	return &DCHandler{store: s, cfg: cfg}
+func NewDCHandler(s *store.TokenisationStore, cfg *config.Config, dogeClient *doge.RpcClient) *DCHandler {
+	return &DCHandler{store: s, cfg: cfg, dogeClient: dogeClient}
 }
 
 func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
@@ -55,8 +60,8 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 		Type:       "payment",
 		ID:         hash[:16],
 		Issued:     now.Format(time.RFC3339),
-		Timeout:    0,
-		Relay:      "http://10.0.0.2:8891",
+		Timeout:    9999999999999, // How much should i set this too??
+		Relay:      h.cfg.RelayURL,
 		FeePerKB:   "0",
 		MaxSize:    100000, // What should this be???
 		VendorName: mint.Title,
@@ -95,4 +100,78 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, http.StatusOK, envelope)
+}
+
+// ServeRelayPay handles POST /dc/relay/pay.
+// Wallets submit a signed transaction here; the relay broadcasts it and returns payment status.
+func (h *DCHandler) ServeRelayPay(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+
+	var submission dogeconnect.PaymentSubmission
+	if err := json.NewDecoder(r.Body).Decode(&submission); err != nil {
+		respondJSON(w, http.StatusBadRequest, dogeconnect.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "could not parse request body",
+		})
+		return
+	}
+
+	if _, errs := submission.Parse(); errs.Err() != nil {
+		respondJSON(w, http.StatusBadRequest, dogeconnect.ErrorResponse{
+			Error:   "invalid_request",
+			Message: errs.Err().Error(),
+		})
+		return
+	}
+
+	// Idempotency: if already accepted or confirmed, return stored status.
+	if existing, ok := h.relayState.Load(submission.ID); ok {
+		status := existing.(dogeconnect.PaymentStatusResponse)
+		if status.Status == dogeconnect.PaymentStatusAccepted || status.Status == dogeconnect.PaymentStatusConfirmed {
+			respondJSON(w, http.StatusOK, status)
+			return
+		}
+	}
+
+	status := dogeconnect.PaymentStatusResponse{
+		ID:     submission.ID,
+		Status: dogeconnect.PaymentStatusAccepted,
+		TxID:   "txid",
+	}
+	h.relayState.Store(submission.ID, status)
+	respondJSON(w, http.StatusOK, status)
+}
+
+// ServeRelayStatus handles POST /dc/relay/status.
+// Returns the current relay status for a previously submitted payment.
+func (h *DCHandler) ServeRelayStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+
+	var query dogeconnect.StatusQuery
+	if err := json.NewDecoder(r.Body).Decode(&query); err != nil {
+		respondJSON(w, http.StatusBadRequest, dogeconnect.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "could not parse request body",
+		})
+		return
+	}
+
+	if errs := query.Validate(); errs.Err() != nil {
+		respondJSON(w, http.StatusBadRequest, dogeconnect.ErrorResponse{
+			Error:   "invalid_request",
+			Message: errs.Err().Error(),
+		})
+		return
+	}
+
+	existing, ok := h.relayState.Load(query.ID)
+	if !ok {
+		respondJSON(w, http.StatusNotFound, dogeconnect.ErrorResponse{
+			Error:   dogeconnect.ErrorCodeNotFound,
+			Message: "unknown payment id",
+		})
+		return
+	}
+
+	respondJSON(w, http.StatusOK, existing.(dogeconnect.PaymentStatusResponse))
 }

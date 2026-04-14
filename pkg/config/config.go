@@ -23,6 +23,7 @@ type Config struct {
 	BuyOfferLimit      int
 	SellOfferLimit     int
 	CORSAllowedOrigins string
+	RelayURL           string
 }
 
 func NewConfig() *Config {
@@ -46,5 +47,6 @@ func NewConfig() *Config {
 		BuyOfferLimit:      10,
 		SellOfferLimit:     10,
 		CORSAllowedOrigins: "*",
+		RelayURL:           "http://10.0.2.2:8891/dc/relay",
 	}
 }
