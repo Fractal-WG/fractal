@@ -1,12 +1,14 @@
 package rpc
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"net/http"
-	"sync"
+	"strings"
 	"time"
 
 	"dogecoin.org/fractal-engine/pkg/config"
@@ -14,6 +16,20 @@ import (
 	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	dogeconnect "github.com/dogeorg/dogeconnect-go"
+)
+
+const (
+	// dcRequiredConfirmations is the number of block confirmations the relay
+	// reports as required before a transaction is considered final.
+	dcRequiredConfirmations = 6
+	// dcBlockTimeSec is the approximate Dogecoin block interval in seconds.
+	dcBlockTimeSec = 60
+
+	// Payment ID prefixes — type:hash format used in ConnectPayment.ID and
+	// parsed by ServeRelayStatus to route the confirmation check.
+	dcIDPrefixMint    = "mint"
+	dcIDPrefixInvoice = "invoice"
+	dcIDPrefixPayment = "payment"
 )
 
 // pubKeyHashStr encodes the first 15 bytes of the SHA256 of the Gateway Public Key
@@ -27,7 +43,6 @@ type DCHandler struct {
 	store      *store.TokenisationStore
 	cfg        *config.Config
 	dogeClient *doge.RpcClient
-	relayState sync.Map // map[string]dogeconnect.PaymentStatusResponse
 }
 
 func NewDCHandler(s *store.TokenisationStore, cfg *config.Config, dogeClient *doge.RpcClient) *DCHandler {
@@ -58,7 +73,7 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	payment := dogeconnect.ConnectPayment{
 		Type:       "payment",
-		ID:         hash[:16],
+		ID:         dcIDPrefixMint + ":" + hash,
 		Issued:     now.Format(time.RFC3339),
 		Timeout:    9999999999999, // How much should i set this too??
 		Relay:      h.cfg.RelayURL,
@@ -124,26 +139,32 @@ func (h *DCHandler) ServeRelayPay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Idempotency: if already accepted or confirmed, return stored status.
-	if existing, ok := h.relayState.Load(submission.ID); ok {
-		status := existing.(dogeconnect.PaymentStatusResponse)
-		if status.Status == dogeconnect.PaymentStatusAccepted || status.Status == dogeconnect.PaymentStatusConfirmed {
-			respondJSON(w, http.StatusOK, status)
-			return
-		}
+	if h.dogeClient == nil {
+		respondJSON(w, http.StatusServiceUnavailable, dogeconnect.ErrorResponse{
+			Error:   "node_unavailable",
+			Message: "dogecoin node not configured",
+		})
+		return
 	}
 
-	status := dogeconnect.PaymentStatusResponse{
+	txid, err := h.dogeClient.SendRawTransaction(r.Context(), submission.Tx)
+	if err != nil {
+		respondJSON(w, http.StatusServiceUnavailable, dogeconnect.ErrorResponse{
+			Error:   "broadcast_failed",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	respondJSON(w, http.StatusOK, dogeconnect.PaymentStatusResponse{
 		ID:     submission.ID,
 		Status: dogeconnect.PaymentStatusAccepted,
-		TxID:   "txid",
-	}
-	h.relayState.Store(submission.ID, status)
-	respondJSON(w, http.StatusOK, status)
+		TxID:   txid,
+	})
 }
 
 // ServeRelayStatus handles POST /dc/relay/status.
-// Returns the current relay status for a previously submitted payment.
+// Parses the type:hash payment ID and checks the store directly.
 func (h *DCHandler) ServeRelayStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 
@@ -164,14 +185,144 @@ func (h *DCHandler) ServeRelayStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existing, ok := h.relayState.Load(query.ID)
-	if !ok {
+	status, err := h.checkConfirmationStatus(r.Context(), query.ID)
+	if err != nil {
 		respondJSON(w, http.StatusNotFound, dogeconnect.ErrorResponse{
 			Error:   dogeconnect.ErrorCodeNotFound,
-			Message: "unknown payment id",
+			Message: err.Error(),
 		})
 		return
 	}
 
-	respondJSON(w, http.StatusOK, existing.(dogeconnect.PaymentStatusResponse))
+	respondJSON(w, http.StatusOK, status)
+}
+
+// checkConfirmationStatus parses a type:hash payment ID, queries the store,
+// and enriches the response with live confirmation counts from the node.
+func (h *DCHandler) checkConfirmationStatus(ctx context.Context, id string) (dogeconnect.PaymentStatusResponse, error) {
+	parts := strings.SplitN(id, ":", 2)
+	if len(parts) != 2 {
+		return dogeconnect.PaymentStatusResponse{}, errors.New("invalid payment id format")
+	}
+	kind, hash := parts[0], parts[1]
+
+	var (
+		status dogeconnect.PaymentStatusResponse
+		err    error
+	)
+	switch kind {
+	case dcIDPrefixMint:
+		status, err = h.mintConfirmationStatus(ctx, id, hash)
+	case dcIDPrefixInvoice:
+		status, err = h.invoiceConfirmationStatus(ctx, id, hash)
+	case dcIDPrefixPayment:
+		status, err = h.paymentConfirmationStatus(ctx, id, hash)
+	default:
+		return dogeconnect.PaymentStatusResponse{}, errors.New("unknown payment id prefix")
+	}
+	if err != nil {
+		return dogeconnect.PaymentStatusResponse{}, err
+	}
+
+	return h.enrichWithConfirmations(ctx, status), nil
+}
+
+// enrichWithConfirmations populates Required, Confirmed, DueSec, and
+// ConfirmedAt for accepted/confirmed responses. Required and DueSec are
+// always set; Confirmed is populated from the node when possible (best-effort).
+func (h *DCHandler) enrichWithConfirmations(ctx context.Context, status dogeconnect.PaymentStatusResponse) dogeconnect.PaymentStatusResponse {
+	if status.Status != dogeconnect.PaymentStatusAccepted && status.Status != dogeconnect.PaymentStatusConfirmed {
+		return status
+	}
+
+	required := dcRequiredConfirmations
+	status.Required = &required
+
+	// Best-effort: query the node for the live confirmation count.
+	confirmed := 0
+	if h.dogeClient != nil && status.TxID != "" {
+		if confs, err := h.dogeClient.GetTransactionConfirmations(ctx, status.TxID); err == nil {
+			confirmed = int(confs)
+		}
+	}
+	status.Confirmed = &confirmed
+
+	switch status.Status {
+	case dogeconnect.PaymentStatusAccepted:
+		dueSec := max(dcRequiredConfirmations-confirmed, 0) * dcBlockTimeSec
+		status.DueSec = &dueSec
+	case dogeconnect.PaymentStatusConfirmed:
+		status.ConfirmedAt = time.Now().UTC().Format(time.RFC3339)
+	}
+
+	return status
+}
+
+// mintConfirmationStatus checks the mints and unconfirmed_mints tables.
+// The txid is read from the store record so enrichWithConfirmations can query the node.
+func (h *DCHandler) mintConfirmationStatus(ctx context.Context, id, hash string) (dogeconnect.PaymentStatusResponse, error) {
+	mint, err := h.store.GetMintByHash(ctx, hash)
+	if err == nil && mint.Hash != "" {
+		return dogeconnect.PaymentStatusResponse{
+			ID:     id,
+			Status: dogeconnect.PaymentStatusConfirmed,
+			TxID:   mint.TransactionHash,
+		}, nil
+	}
+
+	unconfirmed, err := h.store.GetUnconfirmedMintByHash(ctx, hash)
+	if err == nil && unconfirmed.Hash != "" {
+		return dogeconnect.PaymentStatusResponse{
+			ID:     id,
+			Status: dogeconnect.PaymentStatusAccepted,
+			TxID:   unconfirmed.TransactionHash,
+		}, nil
+	}
+
+	return dogeconnect.PaymentStatusResponse{}, errors.New("mint not found")
+}
+
+// invoiceConfirmationStatus checks the invoices and unconfirmed_invoices tables.
+func (h *DCHandler) invoiceConfirmationStatus(ctx context.Context, id, hash string) (dogeconnect.PaymentStatusResponse, error) {
+	invoice, err := h.store.GetInvoiceByHash(ctx, hash)
+	if err == nil && invoice.Id != "" {
+		return dogeconnect.PaymentStatusResponse{
+			ID:     id,
+			Status: dogeconnect.PaymentStatusConfirmed,
+			TxID:   invoice.TransactionHash,
+		}, nil
+	}
+
+	unconfirmed, err := h.store.GetUnconfirmedInvoiceByHash(ctx, hash)
+	if err == nil && unconfirmed.Id != "" {
+		return dogeconnect.PaymentStatusResponse{
+			ID:     id,
+			Status: dogeconnect.PaymentStatusAccepted,
+		}, nil
+	}
+
+	return dogeconnect.PaymentStatusResponse{}, errors.New("invoice not found")
+}
+
+// paymentConfirmationStatus checks whether the invoice has been paid.
+// There is no separate payments table — paid_at on the invoice signals completion.
+func (h *DCHandler) paymentConfirmationStatus(ctx context.Context, id, invoiceHash string) (dogeconnect.PaymentStatusResponse, error) {
+	invoice, err := h.store.GetInvoiceByHash(ctx, invoiceHash)
+	if err != nil || invoice.Id == "" {
+		return dogeconnect.PaymentStatusResponse{}, errors.New("invoice not found")
+	}
+
+	if invoice.PaidAt.Valid {
+		return dogeconnect.PaymentStatusResponse{
+			ID:     id,
+			Status: dogeconnect.PaymentStatusConfirmed,
+			TxID:   invoice.TransactionHash,
+		}, nil
+	}
+
+	return dogeconnect.PaymentStatusResponse{
+		ID:     id,
+		Status: dogeconnect.PaymentStatusAccepted,
+		TxID:   invoice.TransactionHash,
+	}, nil
 }

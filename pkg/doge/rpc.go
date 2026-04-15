@@ -451,6 +451,35 @@ func (t *RpcClient) GetTxOutProof(ctx context.Context, txIds []string, blockHash
 	return result, nil
 }
 
+// GetTransactionConfirmations returns the number of block confirmations for a
+// transaction. Returns 0 and no error when the tx is in the mempool (unconfirmed).
+// Requires the node to have -txindex enabled for confirmed transactions.
+func (t *RpcClient) GetTransactionConfirmations(ctx context.Context, txid string) (int64, error) {
+	res, err := t.Request(ctx, "getrawtransaction", []any{txid, 1})
+	if err != nil {
+		return 0, err
+	}
+	var result struct {
+		Confirmations int64 `json:"confirmations"`
+	}
+	if err := json.Unmarshal(*res, &result); err != nil {
+		return 0, err
+	}
+	return result.Confirmations, nil
+}
+
+func (t *RpcClient) SendRawTransaction(ctx context.Context, txHex string) (string, error) {
+	res, err := t.Request(ctx, "sendrawtransaction", []any{txHex})
+	if err != nil {
+		return "", err
+	}
+	var txid string
+	if err := json.Unmarshal(*res, &txid); err != nil {
+		return "", err
+	}
+	return txid, nil
+}
+
 func (t *RpcClient) Request(ctx context.Context, method string, params []any) (*json.RawMessage, error) {
 	id := t.Id.Add(1)
 
