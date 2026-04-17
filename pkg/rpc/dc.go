@@ -156,11 +156,23 @@ func (h *DCHandler) ServeRelayPay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondJSON(w, http.StatusOK, dogeconnect.PaymentStatusResponse{
+	// Parse type:hash from the payment ID and record the txid against the
+	// appropriate unconfirmed record so status queries can track it.
+	if parts := strings.SplitN(submission.ID, ":", 2); len(parts) == 2 {
+		kind, hash := parts[0], parts[1]
+		switch kind {
+		case dcIDPrefixMint:
+			_ = h.store.UpdateUnconfirmedMintTransactionHash(r.Context(), hash, txid)
+		case dcIDPrefixInvoice, dcIDPrefixPayment:
+			_ = h.store.UpdateUnconfirmedInvoiceTransactionHash(r.Context(), hash, txid)
+		}
+	}
+
+	respondJSON(w, http.StatusOK, h.enrichWithConfirmations(r.Context(), dogeconnect.PaymentStatusResponse{
 		ID:     submission.ID,
 		Status: dogeconnect.PaymentStatusAccepted,
 		TxID:   txid,
-	})
+	}))
 }
 
 // ServeRelayStatus handles POST /dc/relay/status.
@@ -272,6 +284,12 @@ func (h *DCHandler) mintConfirmationStatus(ctx context.Context, id, hash string)
 
 	unconfirmed, err := h.store.GetUnconfirmedMintByHash(ctx, hash)
 	if err == nil && unconfirmed.Hash != "" {
+		if unconfirmed.TransactionHash == "" {
+			return dogeconnect.PaymentStatusResponse{
+				ID:     id,
+				Status: dogeconnect.PaymentStatusUnpaid,
+			}, nil
+		}
 		return dogeconnect.PaymentStatusResponse{
 			ID:     id,
 			Status: dogeconnect.PaymentStatusAccepted,
@@ -295,9 +313,16 @@ func (h *DCHandler) invoiceConfirmationStatus(ctx context.Context, id, hash stri
 
 	unconfirmed, err := h.store.GetUnconfirmedInvoiceByHash(ctx, hash)
 	if err == nil && unconfirmed.Id != "" {
+		if unconfirmed.TransactionHash == "" {
+			return dogeconnect.PaymentStatusResponse{
+				ID:     id,
+				Status: dogeconnect.PaymentStatusUnpaid,
+			}, nil
+		}
 		return dogeconnect.PaymentStatusResponse{
 			ID:     id,
 			Status: dogeconnect.PaymentStatusAccepted,
+			TxID:   unconfirmed.TransactionHash,
 		}, nil
 	}
 

@@ -331,18 +331,19 @@ type SellOffer struct {
 }
 
 type UnconfirmedInvoice struct {
-	Id             string    `json:"id"`
-	Hash           string    `json:"hash"`
-	BuyerAddress   string    `json:"buyer_address"`
-	MintHash       string    `json:"mint_hash"`
-	Quantity       int       `json:"quantity"`
-	Price          int       `json:"price"`
-	CreatedAt      time.Time `json:"created_at"`
-	PaymentAddress string    `json:"payment_address"`
-	SellerAddress  string    `json:"seller_address"`
-	PublicKey      string    `json:"public_key"`
-	Signature      string    `json:"signature"`
-	Status         string    `json:"status"`
+	Id              string    `json:"id"`
+	Hash            string    `json:"hash"`
+	BuyerAddress    string    `json:"buyer_address"`
+	MintHash        string    `json:"mint_hash"`
+	Quantity        int       `json:"quantity"`
+	Price           int       `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	PaymentAddress  string    `json:"payment_address"`
+	SellerAddress   string    `json:"seller_address"`
+	PublicKey       string    `json:"public_key"`
+	Signature       string    `json:"signature"`
+	Status          string    `json:"status"`
+	TransactionHash string    `json:"transaction_hash"`
 }
 
 func (u *UnconfirmedInvoice) GenerateHash() (string, error) {

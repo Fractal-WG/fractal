@@ -39,9 +39,9 @@ func (s *TokenisationStore) GetInvoiceByHash(ctx context.Context, hash string) (
 }
 
 func (s *TokenisationStore) GetUnconfirmedInvoiceByHash(ctx context.Context, hash string) (UnconfirmedInvoice, error) {
-	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature FROM unconfirmed_invoices WHERE hash = $1", hash)
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, transaction_hash FROM unconfirmed_invoices WHERE hash = $1", hash)
 	var invoice UnconfirmedInvoice
-	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature); err != nil {
+	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.TransactionHash); err != nil {
 		return UnconfirmedInvoice{}, err
 	}
 	return invoice, nil
@@ -157,6 +157,11 @@ func (s *TokenisationStore) GetUnconfirmedInvoices(ctx context.Context, offset i
 	}
 
 	return invoices, nil
+}
+
+func (s *TokenisationStore) UpdateUnconfirmedInvoiceTransactionHash(ctx context.Context, hash, txid string) error {
+	_, err := s.DB.ExecContext(ctx, "UPDATE unconfirmed_invoices SET transaction_hash = $1 WHERE hash = $2", txid, hash)
+	return err
 }
 
 func (s *TokenisationStore) SaveUnconfirmedInvoice(ctx context.Context, invoice *UnconfirmedInvoice) (string, error) {

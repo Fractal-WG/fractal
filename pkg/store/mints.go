@@ -189,6 +189,11 @@ func (s *TokenisationStore) GetUnconfirmedMints(ctx context.Context, offset int,
 	return mints, nil
 }
 
+func (s *TokenisationStore) UpdateUnconfirmedMintTransactionHash(ctx context.Context, hash, txid string) error {
+	_, err := s.DB.ExecContext(ctx, "UPDATE unconfirmed_mints SET transaction_hash = $1 WHERE hash = $2", txid, hash)
+	return err
+}
+
 func (s *TokenisationStore) SaveMint(ctx context.Context, mint *MintWithoutID, ownerAddress string) (string, error) {
 	return s.SaveMintWithTx(ctx, mint, ownerAddress, nil)
 }
