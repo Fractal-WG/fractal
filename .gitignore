@@ -13,3 +13,4 @@ nix/result
 result
 dogenet.db
 dist
+mise.toml
