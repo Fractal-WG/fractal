@@ -16,6 +16,7 @@ import (
 	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
 	dogeconnect "github.com/dogeorg/dogeconnect-go"
+	"github.com/dogeorg/doge/koinu"
 )
 
 const (
@@ -95,6 +96,189 @@ func (h *DCHandler) ServeMint(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		Outputs: []dogeconnect.ConnectOutput{
+			{
+				Type: "data",
+				Data: opReturnHex,
+			},
+		},
+	}
+
+	keyPair := h.cfg.DogeNetKeyPair
+	if keyPair.Priv == nil || keyPair.Pub == nil {
+		http.Error(w, "signing key not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	envelope, err := dogeconnect.SignPaymentRequest(payment, keyPair.Priv[:])
+	if err != nil {
+		http.Error(w, "failed to sign request", http.StatusBadRequest)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, envelope)
+}
+
+// ServeInvoice handles GET /dc/invoice/{hash}.
+// Returns a DogeConnect payment request for signing an invoice on-chain (zero-DOGE, OP_RETURN only).
+func (h *DCHandler) ServeInvoice(w http.ResponseWriter, r *http.Request) {
+	hash := r.PathValue("hash")
+	if len(hash) != 64 {
+		http.Error(w, "invalid invoice hash", http.StatusBadRequest)
+		return
+	}
+
+	// Look up invoice: unconfirmed first, then confirmed.
+	var (
+		mintHash string
+		quantity int
+	)
+	unconfirmed, err := h.store.GetUnconfirmedInvoiceByHash(r.Context(), hash)
+	if err == nil && unconfirmed.Hash != "" {
+		mintHash = unconfirmed.MintHash
+		quantity = unconfirmed.Quantity
+	} else {
+		invoice, err := h.store.GetInvoiceByHash(r.Context(), hash)
+		if err != nil || invoice.Hash == "" {
+			http.Error(w, "invoice not found", http.StatusNotFound)
+			return
+		}
+		mintHash = invoice.MintHash
+		quantity = invoice.Quantity
+	}
+
+	mint, err := h.store.GetMintByHash(r.Context(), mintHash)
+	if err != nil || mint.Hash == "" {
+		http.Error(w, "mint not found", http.StatusNotFound)
+		return
+	}
+
+	txEnvelope := engineprotocol.NewInvoiceTransactionEnvelope(hash, mintHash, int32(quantity), engineprotocol.ACTION_INVOICE)
+	opReturnHex := hex.EncodeToString(txEnvelope.Serialize())
+
+	now := time.Now()
+	payment := dogeconnect.ConnectPayment{
+		Type:       "payment",
+		ID:         dcIDPrefixInvoice + ":" + hash,
+		Issued:     now.Format(time.RFC3339),
+		Timeout:    9999999999999,
+		Relay:      h.cfg.RelayURL,
+		FeePerKB:   "0",
+		MaxSize:    100000,
+		VendorName: mint.Title,
+		Total:      "0.00000000",
+		Fees:       "0.00000000",
+		Taxes:      "0.00000000",
+		Items: []dogeconnect.ConnectItem{
+			{
+				Type:        "signing",
+				ID:          hash,
+				Name:        mint.Title,
+				Description: mint.Description,
+				Total:       "0",
+				UnitCount:   1,
+				UnitCost:    "0",
+			},
+		},
+		Outputs: []dogeconnect.ConnectOutput{
+			{
+				Type: "data",
+				Data: opReturnHex,
+			},
+		},
+	}
+
+	keyPair := h.cfg.DogeNetKeyPair
+	if keyPair.Priv == nil || keyPair.Pub == nil {
+		http.Error(w, "signing key not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	envelope, err := dogeconnect.SignPaymentRequest(payment, keyPair.Priv[:])
+	if err != nil {
+		http.Error(w, "failed to sign request", http.StatusBadRequest)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, envelope)
+}
+
+// ServePayment handles GET /dc/payment/{hash}.
+// Returns a DogeConnect payment request for paying DOGE to settle an invoice.
+func (h *DCHandler) ServePayment(w http.ResponseWriter, r *http.Request) {
+	hash := r.PathValue("hash")
+	if len(hash) != 64 {
+		http.Error(w, "invalid invoice hash", http.StatusBadRequest)
+		return
+	}
+
+	// Look up invoice: confirmed first (on-chain), then unconfirmed.
+	var (
+		mintHash      string
+		quantity      int
+		price         int
+		sellerAddress string
+	)
+	invoice, err := h.store.GetInvoiceByHash(r.Context(), hash)
+	if err == nil && invoice.Hash != "" {
+		mintHash = invoice.MintHash
+		quantity = invoice.Quantity
+		price = invoice.Price
+		sellerAddress = invoice.SellerAddress
+	} else {
+		unconfirmed, err := h.store.GetUnconfirmedInvoiceByHash(r.Context(), hash)
+		if err != nil || unconfirmed.Hash == "" {
+			http.Error(w, "invoice not found", http.StatusNotFound)
+			return
+		}
+		mintHash = unconfirmed.MintHash
+		quantity = unconfirmed.Quantity
+		price = unconfirmed.Price
+		sellerAddress = unconfirmed.SellerAddress
+	}
+
+	mint, err := h.store.GetMintByHash(r.Context(), mintHash)
+	if err != nil || mint.Hash == "" {
+		http.Error(w, "mint not found", http.StatusNotFound)
+		return
+	}
+
+	totalKoinu := koinu.Koinu(quantity * price)
+	totalStr := totalKoinu.String()
+	unitCostStr := koinu.Koinu(price).String()
+
+	txEnvelope := engineprotocol.NewPaymentTransactionEnvelope(hash, engineprotocol.ACTION_PAYMENT)
+	opReturnHex := hex.EncodeToString(txEnvelope.Serialize())
+
+	now := time.Now()
+	payment := dogeconnect.ConnectPayment{
+		Type:       "payment",
+		ID:         dcIDPrefixPayment + ":" + hash,
+		Issued:     now.Format(time.RFC3339),
+		Timeout:    9999999999999,
+		Relay:      h.cfg.RelayURL,
+		FeePerKB:   "0",
+		MaxSize:    100000,
+		VendorName: mint.Title,
+		Total:      totalStr,
+		Fees:       "0.00000000",
+		Taxes:      "0.00000000",
+		Items: []dogeconnect.ConnectItem{
+			{
+				Type:        "item",
+				ID:          hash,
+				Name:        mint.Title,
+				Description: mint.Description,
+				Total:       totalStr,
+				UnitCount:   quantity,
+				UnitCost:    unitCostStr,
+			},
+		},
+		Outputs: []dogeconnect.ConnectOutput{
+			{
+				Type:    "p2pkh",
+				Address: sellerAddress,
+				Amount:  totalStr,
+			},
 			{
 				Type: "data",
 				Data: opReturnHex,
