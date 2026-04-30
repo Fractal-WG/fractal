@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"time"
 
 	"dogecoin.org/fractal-engine/pkg/protocol"
@@ -83,12 +84,13 @@ func (s *TokenisationStore) MatchPayment(ctx context.Context, onchainTransaction
 		return Invoice{}, fmt.Errorf("invoice not found")
 	}
 
-	value := float64(invoice.Quantity * invoice.Price)
+	// Compare in koinu: invoice.Price is koinu/fraction; Values are DOGE floats.
+	expectedKoinu := int64(invoice.Quantity) * int64(invoice.Price)
+	paymentDoge, _ := onchainTransaction.Values[invoice.SellerAddress].(float64)
+	paymentKoinu := int64(math.Round(paymentDoge * 100_000_000))
 
-	paymentValue := onchainTransaction.Values[invoice.SellerAddress]
-
-	if paymentValue != value {
-		return Invoice{}, fmt.Errorf("payment value is not equal to buy offer value: %f != %f", paymentValue, value)
+	if paymentKoinu != expectedKoinu {
+		return Invoice{}, fmt.Errorf("payment value mismatch: got %d koinu, expected %d koinu", paymentKoinu, expectedKoinu)
 	}
 
 	return invoice, nil
