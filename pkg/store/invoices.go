@@ -12,9 +12,9 @@ import (
 )
 
 func (s *TokenisationStore) ChooseInvoice(ctx context.Context) (Invoice, error) {
-	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash IN (SELECT hash FROM invoices ORDER BY RANDOM() LIMIT 1)")
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices WHERE hash IN (SELECT hash FROM invoices ORDER BY RANDOM() LIMIT 1)")
 	var invoice Invoice
-	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
+	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt, &invoice.BlockHeight); err != nil {
 		return Invoice{}, err
 	}
 	return invoice, nil
@@ -30,9 +30,9 @@ func (s *TokenisationStore) ChooseInvoiceSignature(ctx context.Context) (Invoice
 }
 
 func (s *TokenisationStore) GetInvoiceByHash(ctx context.Context, hash string) (Invoice, error) {
-	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE hash = $1", hash)
+	row := s.DB.QueryRowContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices WHERE hash = $1", hash)
 	var invoice Invoice
-	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
+	if err := row.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt, &invoice.BlockHeight); err != nil {
 		return Invoice{}, err
 	}
 	return invoice, nil
@@ -48,7 +48,7 @@ func (s *TokenisationStore) GetUnconfirmedInvoiceByHash(ctx context.Context, has
 }
 
 func (s *TokenisationStore) GetInvoicesForMe(ctx context.Context, offset int, limit int, myAddress string) ([]Invoice, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE (buyer_address = $1 OR seller_address = $1) LIMIT $2 OFFSET $3", myAddress, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices WHERE (buyer_address = $1 OR seller_address = $1) LIMIT $2 OFFSET $3", myAddress, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (s *TokenisationStore) GetInvoicesForMe(ctx context.Context, offset int, li
 
 	for rows.Next() {
 		var invoice Invoice
-		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
+		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt, &invoice.BlockHeight); err != nil {
 			return nil, err
 		}
 
@@ -73,7 +73,7 @@ func (s *TokenisationStore) GetInvoicesForMe(ctx context.Context, offset int, li
 }
 
 func (s *TokenisationStore) GetInvoices(ctx context.Context, offset int, limit int, mintHash string, offererAddress string) ([]Invoice, error) {
-	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 AND (buyer_address = $2 OR seller_address = $2) LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
+	rows, err := s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices WHERE mint_hash = $1 AND (buyer_address = $2 OR seller_address = $2) LIMIT $3 OFFSET $4", mintHash, offererAddress, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (s *TokenisationStore) GetInvoices(ctx context.Context, offset int, limit i
 
 	for rows.Next() {
 		var invoice Invoice
-		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
+		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt, &invoice.BlockHeight); err != nil {
 			return nil, err
 		}
 
@@ -102,9 +102,9 @@ func (s *TokenisationStore) GetAllInvoices(ctx context.Context, offset int, limi
 	var err error
 
 	if mintHash == "" {
-		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices LIMIT $1 OFFSET $2", limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices LIMIT $1 OFFSET $2", limit, offset)
 	} else {
-		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at FROM invoices WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
+		rows, err = s.DB.QueryContext(ctx, "SELECT id, hash, payment_address, buyer_address, mint_hash, quantity, price, created_at, seller_address, public_key, signature, paid_at, COALESCE(block_height, 0) FROM invoices WHERE mint_hash = $1 LIMIT $2 OFFSET $3", mintHash, limit, offset)
 	}
 	if err != nil {
 		return nil, err
@@ -114,7 +114,7 @@ func (s *TokenisationStore) GetAllInvoices(ctx context.Context, offset int, limi
 	var invoices []Invoice
 	for rows.Next() {
 		var invoice Invoice
-		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt); err != nil {
+		if err := rows.Scan(&invoice.Id, &invoice.Hash, &invoice.PaymentAddress, &invoice.BuyerAddress, &invoice.MintHash, &invoice.Quantity, &invoice.Price, &invoice.CreatedAt, &invoice.SellerAddress, &invoice.PublicKey, &invoice.Signature, &invoice.PaidAt, &invoice.BlockHeight); err != nil {
 			return nil, err
 		}
 		invoices = append(invoices, invoice)
