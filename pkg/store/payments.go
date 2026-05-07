@@ -84,13 +84,13 @@ func (s *TokenisationStore) MatchPayment(ctx context.Context, onchainTransaction
 		return Invoice{}, fmt.Errorf("invoice not found")
 	}
 
-	// Compare in koinu: invoice.Price is koinu/fraction; Values are DOGE floats.
+	// Compare in koinu: invoice.Price is koinu/fraction; Values are koinu integers.
 	expectedKoinu := int64(invoice.Quantity) * int64(invoice.Price)
-	paymentDoge, _ := onchainTransaction.Values[invoice.SellerAddress].(float64)
-	paymentKoinu := int64(math.Round(paymentDoge * 100_000_000))
+	paymentValue, _ := onchainTransaction.Values[invoice.SellerAddress].(float64)
+	paymentKoinu := int64(math.Round(paymentValue))
 
 	if paymentKoinu != expectedKoinu {
-		return Invoice{}, fmt.Errorf("payment value mismatch: got %d koinu, expected %d koinu", paymentKoinu, expectedKoinu)
+		return Invoice{}, fmt.Errorf("payment value is not equal to buy offer value")
 	}
 
 	return invoice, nil

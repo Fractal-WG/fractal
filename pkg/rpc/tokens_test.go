@@ -33,16 +33,11 @@ func TestGetTokenBalance(t *testing.T) {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}
 
-	data := response.Msg.GetData().AsMap()
-	balances, ok := data["balances"].([]interface{})
-	assert.Assert(t, ok)
+	balances := response.Msg.GetBalances()
 	assert.Equal(t, len(balances), 1)
-
-	balance, ok := balances[0].(map[string]interface{})
-	assert.Assert(t, ok)
-	assert.Equal(t, balance["address"], "address1")
-	assert.Equal(t, balance["mint_hash"], "mint1")
-	assert.Equal(t, int(balance["quantity"].(float64)), 10)
+	assert.Equal(t, balances[0].GetAddress().GetValue(), "address1")
+	assert.Equal(t, balances[0].GetMintHash().GetValue(), "mint1")
+	assert.Equal(t, int(balances[0].GetQuantity()), 10)
 }
 
 func TestGetTokenBalanceWithMintDetails(t *testing.T) {
@@ -75,18 +70,12 @@ func TestGetTokenBalanceWithMintDetails(t *testing.T) {
 		t.Fatalf("Failed to get token balances: %v", err)
 	}
 
-	data := response.Msg.GetData().AsMap()
-	mints, ok := data["mints"].([]interface{})
-	assert.Assert(t, ok)
-
+	mints := response.Msg.GetMints()
 	assert.Equal(t, len(mints), 1)
-
-	mint, ok := mints[0].(map[string]interface{})
-	assert.Assert(t, ok)
-	assert.Equal(t, mint["address"], "address1")
-	assert.Equal(t, int(mint["quantity"].(float64)), 10)
-	assert.Equal(t, mint["hash"], "mint1")
-	assert.Equal(t, mint["title"], "mint1")
-	assert.Equal(t, mint["description"], "description1")
-	assert.Equal(t, int(mint["fraction_count"].(float64)), 10)
+	assert.Equal(t, mints[0].GetAddress().GetValue(), "address1")
+	assert.Equal(t, int(mints[0].GetQuantity()), 10)
+	assert.Equal(t, mints[0].GetMint().GetHash().GetValue(), "mint1")
+	assert.Equal(t, mints[0].GetMint().GetTitle(), "mint1")
+	assert.Equal(t, mints[0].GetMint().GetDescription(), "description1")
+	assert.Equal(t, int(mints[0].GetMint().GetFractionCount()), 10)
 }
