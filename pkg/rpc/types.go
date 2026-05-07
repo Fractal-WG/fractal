@@ -123,12 +123,6 @@ type GetTokenBalanceResponse struct {
 	Balance  int    `json:"balance"`
 }
 
-type GetTokenBalanceWithMintsResponse struct {
-	Mints []store.TokenBalanceWithMint `json:"mints"`
-	Total int                          `json:"total"`
-	Page  int                          `json:"page"`
-	Limit int                          `json:"limit"`
-}
 
 type GetMintsResponse struct {
 	Mints []store.Mint `json:"mints"`

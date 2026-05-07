@@ -69,28 +69,26 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 
-		var responseData interface{}
-		if start >= len(tokenBalances) {
-			responseData = GetTokenBalanceWithMintsResponse{}
-		} else {
+		resp := &protocol.GetTokenBalancesResponse{}
+		resp.SetTotal(int32(len(tokenBalances)))
+		resp.SetPage(page)
+		resp.SetLimit(limit)
+
+		if start < len(tokenBalances) {
 			if end > len(tokenBalances) {
 				end = len(tokenBalances)
 			}
-			responseData = GetTokenBalanceWithMintsResponse{
-				Mints: tokenBalances[start:end],
-				Total: len(tokenBalances),
-				Page:  int(page),
-				Limit: int(limit),
+			protoMints := make([]*protocol.TokenBalanceWithMint, 0, end-start)
+			for _, balance := range tokenBalances[start:end] {
+				protoBalance, err := toProtoTokenBalanceWithMint(balance)
+				if err != nil {
+					return nil, connect.NewError(connect.CodeInternal, err)
+				}
+				protoMints = append(protoMints, protoBalance)
 			}
+			resp.SetMints(protoMints)
 		}
 
-		data, err := toStructPB(responseData)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-
-		resp := &protocol.GetTokenBalancesResponse{}
-		resp.SetData(data)
 		return connect.NewResponse(resp), nil
 	}
 
@@ -99,12 +97,12 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	data, err := toStructPB(map[string]interface{}{"balances": tokenBalances})
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+	responseBalances := make([]*protocol.TokenBalance, 0, len(tokenBalances))
+	for _, balance := range tokenBalances {
+		responseBalances = append(responseBalances, toProtoTokenBalance(balance))
 	}
 
 	resp := &protocol.GetTokenBalancesResponse{}
-	resp.SetData(data)
+	resp.SetBalances(responseBalances)
 	return connect.NewResponse(resp), nil
 }
