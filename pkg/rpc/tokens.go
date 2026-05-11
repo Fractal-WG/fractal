@@ -59,32 +59,25 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 		}
 
 		start := int(page * limit)
-		end := int(start + int(limit))
 
-		tokenBalances, err := s.store.GetMyMintTokenBalances(ctx, address.GetValue(), start, end)
+		tokenBalances, err := s.store.GetMyMintTokenBalances(ctx, address.GetValue(), start, int(limit))
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 
-		if start < len(tokenBalances) {
-			if end > len(tokenBalances) {
-				end = len(tokenBalances)
+		protoMints := make([]*protocol.TokenBalanceWithMint, 0, len(tokenBalances))
+		for _, balance := range tokenBalances {
+			protoBalance, err := toProtoTokenBalanceWithMint(balance)
+			if err != nil {
+				return nil, connect.NewError(connect.CodeInternal, err)
 			}
-
-			protoMints := make([]*protocol.TokenBalanceWithMint, 0, end-start)
-			for _, balance := range tokenBalances[start:end] {
-				protoBalance, err := toProtoTokenBalanceWithMint(balance)
-				if err != nil {
-					return nil, connect.NewError(connect.CodeInternal, err)
-				}
-				protoMints = append(protoMints, protoBalance)
-			}
-
-			resp.SetMints(protoMints)
-			resp.SetTotal(int32(len(tokenBalances)))
-			resp.SetPage(page)
-			resp.SetLimit(limit)
+			protoMints = append(protoMints, protoBalance)
 		}
+
+		resp.SetMints(protoMints)
+		resp.SetTotal(int32(len(tokenBalances)))
+		resp.SetPage(page)
+		resp.SetLimit(limit)
 
 		return connect.NewResponse(resp), nil
 	}
