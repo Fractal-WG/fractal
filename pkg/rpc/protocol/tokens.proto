@@ -1,7 +1,6 @@
 edition = "2023";
 
 import "buf/validate/validate.proto";
-import "google/protobuf/struct.proto";
 import "google/protobuf/wrappers.proto";
 
 import "common.proto";
@@ -29,5 +28,9 @@ message GetTokenBalancesRequest {
 }
 
 message GetTokenBalancesResponse {
-  google.protobuf.Struct data = 1;
+  repeated TokenBalance balances = 1;
+  int32 limit = 2;
+  repeated TokenBalanceWithMint mints = 3;
+  int32 page = 4;
+  int32 total = 5;
 }
