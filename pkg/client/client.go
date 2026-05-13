@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -692,41 +691,27 @@ func (c *TokenisationClient) GetTokenBalance(address string, mintHash string) ([
 	}
 
 	// Server returns {"balances": [...]} as a structpb.Struct
-	raw := resp.Msg.GetData().AsMap()
-	balancesJSON, err := json.Marshal(raw["balances"])
-	if err != nil {
-		return []store.TokenBalance{}, err
-	}
+	balances := resp.Msg.GetBalances()
 
 	var result []store.TokenBalance
-	if err := json.Unmarshal(balancesJSON, &result); err != nil {
-		return []store.TokenBalance{}, err
-	}
+	for _, balance := range balances {
+		createdAt, err := time.Parse(time.RFC3339, balance.GetCreatedAt())
+		if err != nil {
+			return []store.TokenBalance{}, err
+		}
 
-	return result, nil
-}
+		updatedAt, err := time.Parse(time.RFC3339, balance.GetUpdatedAt())
+		if err != nil {
+			return []store.TokenBalance{}, err
+		}
 
-func (c *TokenisationClient) GetTokenBalanceWithMintDetails(address string) (rpc.GetTokenBalanceWithMintsResponse, error) {
-	addr := &protocol.Address{}
-	addr.SetValue(address)
-
-	req := &protocol.GetTokenBalancesRequest{}
-	req.SetAddress(addr)
-	req.SetIncludeMintDetails(wrapperspb.Bool(true))
-
-	resp, err := c.client.GetTokenBalances(context.Background(), connect.NewRequest(req))
-	if err != nil {
-		return rpc.GetTokenBalanceWithMintsResponse{}, err
-	}
-
-	dataJSON, err := json.Marshal(resp.Msg.GetData().AsMap())
-	if err != nil {
-		return rpc.GetTokenBalanceWithMintsResponse{}, err
-	}
-
-	var result rpc.GetTokenBalanceWithMintsResponse
-	if err := json.Unmarshal(dataJSON, &result); err != nil {
-		return rpc.GetTokenBalanceWithMintsResponse{}, err
+		result = append(result, store.TokenBalance{
+			MintHash:  balance.GetMintHash().GetValue(),
+			Address:   balance.GetAddress().GetValue(),
+			Quantity:  int(balance.GetQuantity()),
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		})
 	}
 
 	return result, nil
