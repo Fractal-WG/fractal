@@ -249,8 +249,8 @@ func TestMatchPaymentValueMismatch(t *testing.T) {
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
 	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
-		buyerAddress: 25,
-	}) // Wrong value
+		sellerAddress: 25, // Wrong amount sent to seller (should be 5000 = 50 * 100)
+	})
 	assert.NilError(t, err)
 
 	txs, err := tokenStore.GetOnChainTransactions(ctx, 0, 10)
@@ -341,7 +341,7 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 	encodedPaymentMsg, _ := proto.Marshal(paymentMsg)
 
 	paymentTxId, err := tokenStore.SaveOnChainTransaction(ctx, "paymentTx", 1, "blockHash", 1, protocol.ACTION_PAYMENT, protocol.DEFAULT_VERSION, encodedPaymentMsg, buyerAddress, map[string]interface{}{
-		buyerAddress: 50,
+		sellerAddress: 5000, // Correct amount (50 * 100) so MatchPayment passes
 	})
 	assert.NilError(t, err)
 
@@ -350,12 +350,13 @@ func TestMatchPaymentNoPendingBalance(t *testing.T) {
 	paymentTx := findTransactionById(txs, paymentTxId)
 	assert.Assert(t, paymentTx != nil)
 
-	// Should fail due to missing pending balance
+	// MatchPayment should succeed — it does not check pending balance
 	inv, err := tokenStore.MatchPayment(ctx, *paymentTx)
-	assert.Assert(t, err != nil, "Should fail without pending balance")
+	assert.NilError(t, err)
 
+	// ProcessPayment should fail because there is no pending token balance
 	err = tokenStore.ProcessPayment(ctx, *paymentTx, inv)
-	assert.Assert(t, err != nil, "Should fail without pending balance")
+	assert.ErrorContains(t, err, "no pending token balance found")
 
 	var paidAt sql.NullTime
 	err = tokenStore.DB.QueryRowContext(ctx, "SELECT paid_at FROM invoices WHERE hash = $1", invoiceHash).Scan(&paidAt)

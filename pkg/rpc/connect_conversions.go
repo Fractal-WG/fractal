@@ -344,30 +344,6 @@ func toProtoTokenBalance(balance store.TokenBalance) *protocol.TokenBalance {
 	return protoBalance
 }
 
-func toProtoTokenBalanceWithMint(balance store.TokenBalanceWithMint) (*protocol.TokenBalanceWithMint, error) {
-	mint, err := toProtoMint(balance.Mint)
-	if err != nil {
-		return nil, err
-	}
-
-	createdAt := ""
-	if !balance.CreatedAt.IsZero() {
-		createdAt = balance.CreatedAt.Format(time.RFC3339Nano)
-	}
-	updatedAt := ""
-	if !balance.UpdatedAt.IsZero() {
-		updatedAt = balance.UpdatedAt.Format(time.RFC3339Nano)
-	}
-
-	protoBalance := &protocol.TokenBalanceWithMint{}
-	protoBalance.SetAddress(toProtoAddress(balance.Address))
-	protoBalance.SetCreatedAt(createdAt)
-	protoBalance.SetMint(mint)
-	protoBalance.SetQuantity(int32(balance.Quantity))
-	protoBalance.SetUpdatedAt(updatedAt)
-	return protoBalance, nil
-}
-
 func toProtoBuyOffer(offer store.BuyOffer) *protocol.BuyOffer {
 	createdAt := ""
 	if !offer.CreatedAt.IsZero() {
