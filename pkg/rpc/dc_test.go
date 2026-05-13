@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -395,4 +396,468 @@ func TestServePayment_InvalidHash(t *testing.T) {
 	assert.NilError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, resp.StatusCode, http.StatusBadRequest)
+}
+
+// --- ServeInvoice (additional) -----------------------------------------
+
+func TestServeInvoice_ConfirmedFound(t *testing.T) {
+	srv, tokenStore := SetupDCTest(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "Confirmed Invoice Mint",
+		Description:   "mint for confirmed invoice test",
+		FractionCount: 100,
+	}, "owner")
+	assert.NilError(t, err)
+
+	inv := store.Invoice{
+		MintHash:        mintHash,
+		Quantity:        2,
+		Price:           100,
+		BuyerAddress:    test_support.GenerateDogecoinAddress(true),
+		SellerAddress:   test_support.GenerateDogecoinAddress(true),
+		PaymentAddress:  test_support.GenerateDogecoinAddress(true),
+		PublicKey:       "pubkey",
+		Signature:       "sig",
+		TransactionHash: "txhash",
+		BlockHeight:     1,
+		CreatedAt:       time.Now(),
+	}
+	var hashErr error
+	inv.Hash, hashErr = inv.GenerateHash()
+	assert.NilError(t, hashErr)
+
+	_, err = tokenStore.SaveInvoice(ctx, &inv)
+	assert.NilError(t, err)
+
+	resp, err := srv.Client().Get(srv.URL + "/dc/invoice/" + inv.Hash)
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	var buf [65536]byte
+	n, _ := resp.Body.Read(buf[:])
+	payment := decodeEnvelopePayload(t, buf[:n])
+
+	assert.Equal(t, payment.ID, "invoice:"+inv.Hash)
+	assert.Equal(t, payment.VendorName, "Confirmed Invoice Mint")
+	assert.Equal(t, payment.Total, "0.00000000")
+	assert.Equal(t, len(payment.Outputs), 1)
+	assert.Equal(t, string(payment.Outputs[0].Type), "data")
+}
+
+// setupDCWithRelayEndpoints creates a DCHandler with all 5 routes registered,
+// including the relay pay and status endpoints. Used for relay endpoint tests.
+func setupDCWithRelayEndpoints(t *testing.T) (*httptest.Server, *store.TokenisationStore) {
+	t.Helper()
+
+	tokenStore := test_support.SetupTestDB(t)
+
+	keyPair, err := dnet.GenerateKeyPair()
+	assert.NilError(t, err)
+
+	cfg := config.NewConfig()
+	cfg.DogeNetKeyPair = keyPair
+
+	mux := http.NewServeMux()
+	dcHandler := rpc.NewDCHandler(tokenStore, cfg, nil)
+	mux.HandleFunc("GET /dc/mint/{hash}", dcHandler.ServeMint)
+	mux.HandleFunc("GET /dc/invoice/{hash}", dcHandler.ServeInvoice)
+	mux.HandleFunc("GET /dc/payment/{hash}", dcHandler.ServePayment)
+	mux.HandleFunc("POST /dc/relay/pay", dcHandler.ServeRelayPay)
+	mux.HandleFunc("POST /dc/relay/status", dcHandler.ServeRelayStatus)
+
+	srv := httptest.NewServer(mux)
+	t.Cleanup(srv.Close)
+
+	return srv, tokenStore
+}
+
+// postRelayStatus POSTs a StatusQuery to /dc/relay/status and returns the response.
+func postRelayStatus(t *testing.T, srv *httptest.Server, id string) *http.Response {
+	t.Helper()
+	body := `{"id":"` + id + `"}`
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/status", "application/json", strings.NewReader(body))
+	assert.NilError(t, err)
+	return resp
+}
+
+// decodeStatusResponse reads and JSON-decodes a PaymentStatusResponse from a response body.
+func decodeStatusResponse(t *testing.T, resp *http.Response) dogeconnect.PaymentStatusResponse {
+	t.Helper()
+	var buf [4096]byte
+	n, _ := resp.Body.Read(buf[:])
+	var status dogeconnect.PaymentStatusResponse
+	assert.NilError(t, json.Unmarshal(buf[:n], &status))
+	return status
+}
+
+// --- ServeRelayPay -----------------------------------------------------
+
+func TestServeRelayPay_InvalidJSON(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/pay", "application/json", strings.NewReader("{not json}"))
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusBadRequest)
+}
+
+func TestServeRelayPay_MissingTx(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	// Valid JSON but missing required "tx" field → Parse() fails.
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/pay", "application/json", strings.NewReader(`{"id":"mint:abc123"}`))
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusBadRequest)
+}
+
+func TestServeRelayPay_NoDogeClient(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t) // dogeClient is nil
+
+	hash := test_support.GenerateRandomHash()
+	body := `{"id":"mint:` + hash + `","tx":"deadbeef"}`
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/pay", "application/json", strings.NewReader(body))
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusServiceUnavailable)
+
+	var buf [4096]byte
+	n, _ := resp.Body.Read(buf[:])
+	var errResp dogeconnect.ErrorResponse
+	assert.NilError(t, json.Unmarshal(buf[:n], &errResp))
+	assert.Equal(t, string(errResp.Error), "node_unavailable")
+}
+
+// --- ServeRelayStatus --------------------------------------------------
+
+func TestServeRelayStatus_InvalidJSON(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/status", "application/json", strings.NewReader("{not json}"))
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusBadRequest)
+}
+
+func TestServeRelayStatus_EmptyID(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	resp, err := srv.Client().Post(srv.URL+"/dc/relay/status", "application/json", strings.NewReader(`{"id":""}`))
+	assert.NilError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusBadRequest)
+}
+
+func TestServeRelayStatus_InvalidIDFormat(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	resp := postRelayStatus(t, srv, "nocolon")
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
+
+func TestServeRelayStatus_UnknownPrefix(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	hash := test_support.GenerateRandomHash()
+	resp := postRelayStatus(t, srv, "unknown:"+hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
+
+// --- ServeRelayStatus: mint routing ------------------------------------
+
+func TestServeRelayStatus_MintNotFound(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	hash := test_support.GenerateRandomHash()
+	resp := postRelayStatus(t, srv, "mint:"+hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
+
+func TestServeRelayStatus_MintUnpaid(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "Unpaid Mint",
+		FractionCount: 1,
+	})
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "mint:"+mintHash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "mint:"+mintHash)
+	assert.Equal(t, string(status.Status), "unpaid")
+}
+
+func TestServeRelayStatus_MintAccepted(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveUnconfirmedMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "Accepted Mint",
+		FractionCount: 1,
+	})
+	assert.NilError(t, err)
+	err = tokenStore.UpdateUnconfirmedMintTransactionHash(ctx, mintHash, "faketxid")
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "mint:"+mintHash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "mint:"+mintHash)
+	assert.Equal(t, string(status.Status), "accepted")
+	assert.Equal(t, status.TxID, "faketxid")
+	assert.Assert(t, status.Required != nil)
+	assert.Assert(t, status.Confirmed != nil)
+}
+
+func TestServeRelayStatus_MintConfirmed(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "Confirmed Mint",
+		FractionCount: 1,
+	}, "owner")
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "mint:"+mintHash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "mint:"+mintHash)
+	assert.Equal(t, string(status.Status), "confirmed")
+}
+
+// --- ServeRelayStatus: invoice routing ---------------------------------
+
+func TestServeRelayStatus_InvoiceNotFound(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	hash := test_support.GenerateRandomHash()
+	resp := postRelayStatus(t, srv, "invoice:"+hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
+
+func TestServeRelayStatus_InvoiceUnpaid(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	invoice := store.UnconfirmedInvoice{
+		MintHash:       test_support.GenerateRandomHash(),
+		Quantity:       1,
+		Price:          100,
+		BuyerAddress:   test_support.GenerateDogecoinAddress(true),
+		SellerAddress:  test_support.GenerateDogecoinAddress(true),
+		PaymentAddress: test_support.GenerateDogecoinAddress(true),
+		PublicKey:      "pk",
+		Signature:      "sig",
+		CreatedAt:      time.Now(),
+	}
+	var hashErr error
+	invoice.Hash, hashErr = invoice.GenerateHash()
+	assert.NilError(t, hashErr)
+	_, err := tokenStore.SaveUnconfirmedInvoice(ctx, &invoice)
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "invoice:"+invoice.Hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "invoice:"+invoice.Hash)
+	assert.Equal(t, string(status.Status), "unpaid")
+}
+
+func TestServeRelayStatus_InvoiceAccepted(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	invoice := store.UnconfirmedInvoice{
+		MintHash:       test_support.GenerateRandomHash(),
+		Quantity:       1,
+		Price:          100,
+		BuyerAddress:   test_support.GenerateDogecoinAddress(true),
+		SellerAddress:  test_support.GenerateDogecoinAddress(true),
+		PaymentAddress: test_support.GenerateDogecoinAddress(true),
+		PublicKey:      "pk",
+		Signature:      "sig",
+		CreatedAt:      time.Now(),
+	}
+	var hashErr error
+	invoice.Hash, hashErr = invoice.GenerateHash()
+	assert.NilError(t, hashErr)
+	_, err := tokenStore.SaveUnconfirmedInvoice(ctx, &invoice)
+	assert.NilError(t, err)
+	err = tokenStore.UpdateUnconfirmedInvoiceTransactionHash(ctx, invoice.Hash, "invoicetxid")
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "invoice:"+invoice.Hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "invoice:"+invoice.Hash)
+	assert.Equal(t, string(status.Status), "accepted")
+	assert.Equal(t, status.TxID, "invoicetxid")
+	assert.Assert(t, status.Required != nil)
+	assert.Assert(t, status.Confirmed != nil)
+}
+
+func TestServeRelayStatus_InvoiceConfirmed(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "M",
+		FractionCount: 1,
+	}, "owner")
+	assert.NilError(t, err)
+
+	inv := store.Invoice{
+		MintHash:        mintHash,
+		Quantity:        1,
+		Price:           100,
+		BuyerAddress:    test_support.GenerateDogecoinAddress(true),
+		SellerAddress:   test_support.GenerateDogecoinAddress(true),
+		PaymentAddress:  test_support.GenerateDogecoinAddress(true),
+		PublicKey:       "pk",
+		Signature:       "sig",
+		TransactionHash: "invtx",
+		BlockHeight:     10,
+		CreatedAt:       time.Now(),
+	}
+	inv.Hash, err = inv.GenerateHash()
+	assert.NilError(t, err)
+	_, err = tokenStore.SaveInvoice(ctx, &inv)
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "invoice:"+inv.Hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "invoice:"+inv.Hash)
+	assert.Equal(t, string(status.Status), "confirmed")
+	assert.Equal(t, status.TxID, "invtx")
+}
+
+// --- ServeRelayStatus: payment routing ---------------------------------
+
+func TestServeRelayStatus_PaymentNotFound(t *testing.T) {
+	srv, _ := setupDCWithRelayEndpoints(t)
+
+	hash := test_support.GenerateRandomHash()
+	resp := postRelayStatus(t, srv, "payment:"+hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusNotFound)
+}
+
+// TestServeRelayStatus_PaymentUnpaid verifies that a confirmed invoice
+// (on-chain) with no paid_at returns "accepted" status, meaning the DOGE
+// payment has not yet been received.
+func TestServeRelayStatus_PaymentUnpaid(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "M",
+		FractionCount: 1,
+	}, "owner")
+	assert.NilError(t, err)
+
+	inv := store.Invoice{
+		MintHash:        mintHash,
+		Quantity:        1,
+		Price:           100,
+		BuyerAddress:    test_support.GenerateDogecoinAddress(true),
+		SellerAddress:   test_support.GenerateDogecoinAddress(true),
+		PaymentAddress:  test_support.GenerateDogecoinAddress(true),
+		PublicKey:       "pk",
+		Signature:       "sig",
+		TransactionHash: "invtx",
+		BlockHeight:     5,
+		CreatedAt:       time.Now(),
+	}
+	inv.Hash, err = inv.GenerateHash()
+	assert.NilError(t, err)
+	_, err = tokenStore.SaveInvoice(ctx, &inv)
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "payment:"+inv.Hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "payment:"+inv.Hash)
+	assert.Equal(t, string(status.Status), "accepted")
+}
+
+func TestServeRelayStatus_PaymentConfirmed(t *testing.T) {
+	srv, tokenStore := setupDCWithRelayEndpoints(t)
+	ctx := context.Background()
+
+	mintHash := test_support.GenerateRandomHash()
+	_, err := tokenStore.SaveMint(ctx, &store.MintWithoutID{
+		Hash:          mintHash,
+		Title:         "M",
+		FractionCount: 1,
+	}, "owner")
+	assert.NilError(t, err)
+
+	inv := store.Invoice{
+		MintHash:        mintHash,
+		Quantity:        1,
+		Price:           100,
+		BuyerAddress:    test_support.GenerateDogecoinAddress(true),
+		SellerAddress:   test_support.GenerateDogecoinAddress(true),
+		PaymentAddress:  test_support.GenerateDogecoinAddress(true),
+		PublicKey:       "pk",
+		Signature:       "sig",
+		TransactionHash: "paidtx",
+		BlockHeight:     5,
+		CreatedAt:       time.Now(),
+	}
+	inv.Hash, err = inv.GenerateHash()
+	assert.NilError(t, err)
+	id, err := tokenStore.SaveInvoice(ctx, &inv)
+	assert.NilError(t, err)
+
+	// Mark invoice as paid directly in the DB.
+	_, err = tokenStore.DB.ExecContext(ctx, "UPDATE invoices SET paid_at = $1 WHERE id = $2", time.Now().UTC(), id)
+	assert.NilError(t, err)
+
+	resp := postRelayStatus(t, srv, "payment:"+inv.Hash)
+	defer resp.Body.Close()
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+
+	status := decodeStatusResponse(t, resp)
+	assert.Equal(t, status.ID, "payment:"+inv.Hash)
+	assert.Equal(t, string(status.Status), "confirmed")
+	assert.Assert(t, status.ConfirmedAt != "")
 }
