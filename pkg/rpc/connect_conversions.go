@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -429,30 +428,26 @@ func toProtoSellOfferWithMint(offer store.SellOffer, mint store.Mint) (*protocol
 	return protoOffer, nil
 }
 
-func toStructPB(value interface{}) (*structpb.Struct, error) {
-	data, err := encodeToInterface(value)
+func toProtoTokenBalanceWithMint(balance store.TokenBalanceWithMint) (*protocol.TokenBalanceWithMint, error) {
+	protoMint, err := toProtoMint(balance.Mint)
 	if err != nil {
 		return nil, err
 	}
 
-	switch typed := data.(type) {
-	case map[string]interface{}:
-		return structpb.NewStruct(typed)
-	default:
-		return structpb.NewStruct(map[string]interface{}{"items": typed})
+	createdAt := ""
+	if !balance.CreatedAt.IsZero() {
+		createdAt = balance.CreatedAt.Format(time.RFC3339Nano)
 	}
-}
-
-func encodeToInterface(value interface{}) (interface{}, error) {
-	encoded, err := json.Marshal(value)
-	if err != nil {
-		return nil, err
+	updatedAt := ""
+	if !balance.UpdatedAt.IsZero() {
+		updatedAt = balance.UpdatedAt.Format(time.RFC3339Nano)
 	}
 
-	var data interface{}
-	if err := json.Unmarshal(encoded, &data); err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	protoBalance := &protocol.TokenBalanceWithMint{}
+	protoBalance.SetAddress(toProtoAddress(balance.Address))
+	protoBalance.SetCreatedAt(createdAt)
+	protoBalance.SetMint(protoMint)
+	protoBalance.SetQuantity(int32(balance.Quantity))
+	protoBalance.SetUpdatedAt(updatedAt)
+	return protoBalance, nil
 }

@@ -2699,6 +2699,197 @@ func (b0 SellOfferWithMint_builder) Build() *SellOfferWithMint {
 	return m0
 }
 
+type TokenBalanceWithMint struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Address     *Address               `protobuf:"bytes,1,opt,name=address"`
+	xxx_hidden_CreatedAt   *string                `protobuf:"bytes,2,opt,name=created_at,json=createdAt"`
+	xxx_hidden_Mint        *Mint                  `protobuf:"bytes,3,opt,name=mint"`
+	xxx_hidden_Quantity    int32                  `protobuf:"varint,4,opt,name=quantity"`
+	xxx_hidden_UpdatedAt   *string                `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *TokenBalanceWithMint) Reset() {
+	*x = TokenBalanceWithMint{}
+	mi := &file_common_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenBalanceWithMint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenBalanceWithMint) ProtoMessage() {}
+
+func (x *TokenBalanceWithMint) ProtoReflect() protoreflect.Message {
+	mi := &file_common_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TokenBalanceWithMint) GetAddress() *Address {
+	if x != nil {
+		return x.xxx_hidden_Address
+	}
+	return nil
+}
+
+func (x *TokenBalanceWithMint) GetCreatedAt() string {
+	if x != nil {
+		if x.xxx_hidden_CreatedAt != nil {
+			return *x.xxx_hidden_CreatedAt
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TokenBalanceWithMint) GetMint() *Mint {
+	if x != nil {
+		return x.xxx_hidden_Mint
+	}
+	return nil
+}
+
+func (x *TokenBalanceWithMint) GetQuantity() int32 {
+	if x != nil {
+		return x.xxx_hidden_Quantity
+	}
+	return 0
+}
+
+func (x *TokenBalanceWithMint) GetUpdatedAt() string {
+	if x != nil {
+		if x.xxx_hidden_UpdatedAt != nil {
+			return *x.xxx_hidden_UpdatedAt
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TokenBalanceWithMint) SetAddress(v *Address) {
+	x.xxx_hidden_Address = v
+}
+
+func (x *TokenBalanceWithMint) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *TokenBalanceWithMint) SetMint(v *Mint) {
+	x.xxx_hidden_Mint = v
+}
+
+func (x *TokenBalanceWithMint) SetQuantity(v int32) {
+	x.xxx_hidden_Quantity = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *TokenBalanceWithMint) SetUpdatedAt(v string) {
+	x.xxx_hidden_UpdatedAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *TokenBalanceWithMint) HasAddress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Address != nil
+}
+
+func (x *TokenBalanceWithMint) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TokenBalanceWithMint) HasMint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Mint != nil
+}
+
+func (x *TokenBalanceWithMint) HasQuantity() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *TokenBalanceWithMint) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *TokenBalanceWithMint) ClearAddress() {
+	x.xxx_hidden_Address = nil
+}
+
+func (x *TokenBalanceWithMint) ClearCreatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *TokenBalanceWithMint) ClearMint() {
+	x.xxx_hidden_Mint = nil
+}
+
+func (x *TokenBalanceWithMint) ClearQuantity() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Quantity = 0
+}
+
+func (x *TokenBalanceWithMint) ClearUpdatedAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type TokenBalanceWithMint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Address   *Address
+	CreatedAt *string
+	Mint      *Mint
+	Quantity  *int32
+	UpdatedAt *string
+}
+
+func (b0 TokenBalanceWithMint_builder) Build() *TokenBalanceWithMint {
+	m0 := &TokenBalanceWithMint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Address = b.Address
+	if b.CreatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_CreatedAt = b.CreatedAt
+	}
+	x.xxx_hidden_Mint = b.Mint
+	if b.Quantity != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Quantity = *b.Quantity
+	}
+	if b.UpdatedAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	}
+	return m0
+}
+
 var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
@@ -2805,7 +2996,15 @@ const file_common_proto_rawDesc = "" +
 	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint\"z\n" +
 	"\x11SellOfferWithMint\x125\n" +
 	"\x05offer\x18\x01 \x01(\v2\x1f.fractalengine.rpc.v1.SellOfferR\x05offer\x12.\n" +
-	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint*\x92\x02\n" +
+	"\x04mint\x18\x02 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint\"\xd9\x01\n" +
+	"\x14TokenBalanceWithMint\x127\n" +
+	"\aaddress\x18\x01 \x01(\v2\x1d.fractalengine.rpc.v1.AddressR\aaddress\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x02 \x01(\tR\tcreatedAt\x12.\n" +
+	"\x04mint\x18\x03 \x01(\v2\x1a.fractalengine.rpc.v1.MintR\x04mint\x12\x1a\n" +
+	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\x05 \x01(\tR\tupdatedAt*\x92\x02\n" +
 	"\x18SignatureRequirementType\x12*\n" +
 	"&SIGNATURE_REQUIREMENT_TYPE_UNSPECIFIED\x10\x00\x126\n" +
 	"2SIGNATURE_REQUIREMENT_TYPE_REQUIRES_ALL_SIGNATURES\x10\x01\x125\n" +
@@ -2814,7 +3013,7 @@ const file_common_proto_rawDesc = "" +
 	"\x1fSIGNATURE_REQUIREMENT_TYPE_NONE\x10\x04B.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_common_proto_goTypes = []any{
 	(SignatureRequirementType)(0), // 0: fractalengine.rpc.v1.SignatureRequirementType
 	(*StringResponse)(nil),        // 1: fractalengine.rpc.v1.StringResponse
@@ -2829,47 +3028,50 @@ var file_common_proto_goTypes = []any{
 	(*SellOffer)(nil),             // 10: fractalengine.rpc.v1.SellOffer
 	(*BuyOfferWithMint)(nil),      // 11: fractalengine.rpc.v1.BuyOfferWithMint
 	(*SellOfferWithMint)(nil),     // 12: fractalengine.rpc.v1.SellOfferWithMint
-	nil,                           // 13: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
-	(*structpb.Struct)(nil),       // 14: google.protobuf.Struct
-	(*Hash)(nil),                  // 15: fractalengine.rpc.v1.Hash
-	(*Address)(nil),               // 16: fractalengine.rpc.v1.Address
+	(*TokenBalanceWithMint)(nil),  // 13: fractalengine.rpc.v1.TokenBalanceWithMint
+	nil,                           // 14: fractalengine.rpc.v1.StringMapResponse.ValuesEntry
+	(*structpb.Struct)(nil),       // 15: google.protobuf.Struct
+	(*Hash)(nil),                  // 16: fractalengine.rpc.v1.Hash
+	(*Address)(nil),               // 17: fractalengine.rpc.v1.Address
 }
 var file_common_proto_depIdxs = []int32{
-	13, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
-	14, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
+	14, // 0: fractalengine.rpc.v1.StringMapResponse.values:type_name -> fractalengine.rpc.v1.StringMapResponse.ValuesEntry
+	15, // 1: fractalengine.rpc.v1.StringInterfaceMap.value:type_name -> google.protobuf.Struct
 	4,  // 2: fractalengine.rpc.v1.Mint.asset_managers:type_name -> fractalengine.rpc.v1.AssetManager
-	15, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 3: fractalengine.rpc.v1.Mint.hash:type_name -> fractalengine.rpc.v1.Hash
 	5,  // 4: fractalengine.rpc.v1.Mint.lockup_options:type_name -> fractalengine.rpc.v1.StringInterfaceMap
 	5,  // 5: fractalengine.rpc.v1.Mint.metadata:type_name -> fractalengine.rpc.v1.StringInterfaceMap
-	16, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 6: fractalengine.rpc.v1.Mint.owner_address:type_name -> fractalengine.rpc.v1.Address
 	5,  // 7: fractalengine.rpc.v1.Mint.requirements:type_name -> fractalengine.rpc.v1.StringInterfaceMap
 	0,  // 8: fractalengine.rpc.v1.Mint.signature_requirement_type:type_name -> fractalengine.rpc.v1.SignatureRequirementType
-	15, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 10: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 11: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 12: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 9: fractalengine.rpc.v1.Mint.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 10: fractalengine.rpc.v1.Invoice.buyer_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 11: fractalengine.rpc.v1.Invoice.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 12: fractalengine.rpc.v1.Invoice.mint_hash:type_name -> fractalengine.rpc.v1.Hash
 	3,  // 13: fractalengine.rpc.v1.Invoice.paid_at:type_name -> fractalengine.rpc.v1.SqlNullTime
-	16, // 14: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
-	16, // 15: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 16: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 17: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
-	15, // 18: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 19: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 20: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 21: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
-	16, // 22: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
-	15, // 23: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
-	15, // 24: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
-	16, // 25: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 14: fractalengine.rpc.v1.Invoice.payment_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 15: fractalengine.rpc.v1.Invoice.seller_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 16: fractalengine.rpc.v1.Invoice.transaction_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 17: fractalengine.rpc.v1.TokenBalance.address:type_name -> fractalengine.rpc.v1.Address
+	16, // 18: fractalengine.rpc.v1.TokenBalance.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 19: fractalengine.rpc.v1.BuyOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 20: fractalengine.rpc.v1.BuyOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 21: fractalengine.rpc.v1.BuyOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
+	17, // 22: fractalengine.rpc.v1.BuyOffer.seller_address:type_name -> fractalengine.rpc.v1.Address
+	16, // 23: fractalengine.rpc.v1.SellOffer.hash:type_name -> fractalengine.rpc.v1.Hash
+	16, // 24: fractalengine.rpc.v1.SellOffer.mint_hash:type_name -> fractalengine.rpc.v1.Hash
+	17, // 25: fractalengine.rpc.v1.SellOffer.offerer_address:type_name -> fractalengine.rpc.v1.Address
 	9,  // 26: fractalengine.rpc.v1.BuyOfferWithMint.offer:type_name -> fractalengine.rpc.v1.BuyOffer
 	6,  // 27: fractalengine.rpc.v1.BuyOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
 	10, // 28: fractalengine.rpc.v1.SellOfferWithMint.offer:type_name -> fractalengine.rpc.v1.SellOffer
 	6,  // 29: fractalengine.rpc.v1.SellOfferWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
-	30, // [30:30] is the sub-list for method output_type
-	30, // [30:30] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	17, // 30: fractalengine.rpc.v1.TokenBalanceWithMint.address:type_name -> fractalengine.rpc.v1.Address
+	6,  // 31: fractalengine.rpc.v1.TokenBalanceWithMint.mint:type_name -> fractalengine.rpc.v1.Mint
+	32, // [32:32] is the sub-list for method output_type
+	32, // [32:32] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() { file_common_proto_init() }
@@ -2884,7 +3086,7 @@ func file_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

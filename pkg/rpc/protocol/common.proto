@@ -124,3 +124,11 @@ message SellOfferWithMint {
   SellOffer offer = 1;
   Mint mint = 2;
 }
+
+message TokenBalanceWithMint {
+  Address address = 1;
+  string created_at = 2;
+  Mint mint = 3;
+  int32 quantity = 4;
+  string updated_at = 5;
+}
