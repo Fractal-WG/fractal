@@ -21,7 +21,6 @@ require (
 	github.com/dogecoinfoundation/chainfollower v0.0.0-20250627015426-488188828ea3
 	github.com/dogecoinfoundation/dogetest v0.0.0-20250620045423-cd7468b764b9
 	github.com/dogeorg/doge v0.1.10
-	github.com/dogeorg/dogeconnect-go v1.0.1
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/google/uuid v1.6.0
 	github.com/gowebpki/jcs v1.0.1
@@ -46,7 +45,7 @@ replace code.dogecoin.org/governor => github.com/dogeorg/governor v1.0.2
 
 replace code.dogecoin.org/dogenet => github.com/Dogebox-WG/dogenet v0.1.10
 
-replace github.com/dogeorg/dogeconnect-go => github.com/danielwhelansb/dogeconnect-go v0.0.0-20260327042825-788d746a96fd
+require github.com/dogeorg/dogeconnect-go v1.0.2-0.20260424043721-35220d1ac217
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
