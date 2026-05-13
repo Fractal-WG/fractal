@@ -45,10 +45,7 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 		includeMintDetails = req.Msg.GetIncludeMintDetails().Value
 	}
 
-	mintHash := ""
-	if req.Msg.GetMintHash() != nil {
-		mintHash = req.Msg.GetMintHash().GetValue()
-	}
+	resp := &protocol.GetTokenBalancesResponse{}
 
 	if includeMintDetails {
 		limit := int32(100)
@@ -62,34 +59,32 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 		}
 
 		start := int(page * limit)
-		end := int(start + int(limit))
 
-		tokenBalances, err := s.store.GetMyMintTokenBalances(ctx, address.GetValue(), start, end)
+		tokenBalances, err := s.store.GetMyMintTokenBalances(ctx, address.GetValue(), start, int(limit))
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 
-		resp := &protocol.GetTokenBalancesResponse{}
+		protoMints := make([]*protocol.TokenBalanceWithMint, 0, len(tokenBalances))
+		for _, balance := range tokenBalances {
+			protoBalance, err := toProtoTokenBalanceWithMint(balance)
+			if err != nil {
+				return nil, connect.NewError(connect.CodeInternal, err)
+			}
+			protoMints = append(protoMints, protoBalance)
+		}
+
+		resp.SetMints(protoMints)
 		resp.SetTotal(int32(len(tokenBalances)))
 		resp.SetPage(page)
 		resp.SetLimit(limit)
 
-		if start < len(tokenBalances) {
-			if end > len(tokenBalances) {
-				end = len(tokenBalances)
-			}
-			protoMints := make([]*protocol.TokenBalanceWithMint, 0, end-start)
-			for _, balance := range tokenBalances[start:end] {
-				protoBalance, err := toProtoTokenBalanceWithMint(balance)
-				if err != nil {
-					return nil, connect.NewError(connect.CodeInternal, err)
-				}
-				protoMints = append(protoMints, protoBalance)
-			}
-			resp.SetMints(protoMints)
-		}
-
 		return connect.NewResponse(resp), nil
+	}
+
+	mintHash := ""
+	if req.Msg.GetMintHash() != nil {
+		mintHash = req.Msg.GetMintHash().GetValue()
 	}
 
 	tokenBalances, err := s.store.GetTokenBalances(ctx, address.GetValue(), mintHash)
@@ -101,8 +96,7 @@ func (s *ConnectRpcService) GetTokenBalances(ctx context.Context, req *connect.R
 	for _, balance := range tokenBalances {
 		responseBalances = append(responseBalances, toProtoTokenBalance(balance))
 	}
-
-	resp := &protocol.GetTokenBalancesResponse{}
 	resp.SetBalances(responseBalances)
+
 	return connect.NewResponse(resp), nil
 }
