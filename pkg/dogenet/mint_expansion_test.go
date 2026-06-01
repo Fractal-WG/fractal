@@ -17,6 +17,7 @@ import (
 	"dogecoin.org/fractal-engine/pkg/dogenet"
 	"dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/assert"
@@ -166,11 +167,14 @@ func TestRecvMintExpansionViaStartWithConn(t *testing.T) {
 	signature, err := doge.SignPayload(sigPayload, privKey, dogePubKey)
 	assert.NilError(t, err)
 
+	nonce := uuid.New().String()
 	expansionForHash := &store.UnconfirmedMintExpansion{
 		MintHash:         mintHash,
 		AdditionalSupply: additionalSupply,
 		OwnerAddress:     dogeAddress,
 		PublicKey:        dogePubKey,
+		Signature:        signature,
+		Nonce:            nonce,
 	}
 	expansionHash, err := expansionForHash.GenerateHash()
 	assert.NilError(t, err)
@@ -181,6 +185,7 @@ func TestRecvMintExpansionViaStartWithConn(t *testing.T) {
 		AdditionalSupply: additionalSupply,
 		OwnerAddress:     dogeAddress,
 		CreatedAt:        timestamppb.New(time.Now()),
+		Nonce:            nonce,
 	}
 
 	envelope := &protocol.MintExpansionMessageEnvelope{

@@ -18,6 +18,7 @@ message MintExpansionMessage {
     int32 additional_supply = 3;
     string owner_address = 4;
     google.protobuf.Timestamp created_at = 5;
+    string nonce = 6;
 }
 
 message MintExpansionMessageEnvelope {

@@ -7,6 +7,8 @@ import (
 	"time"
 
 	connect "connectrpc.com/connect"
+	"github.com/google/uuid"
+
 	engineprotocol "dogecoin.org/fractal-engine/pkg/protocol"
 	protocol "dogecoin.org/fractal-engine/pkg/rpc/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
@@ -165,6 +167,7 @@ func (s *ConnectRpcService) ExpandMint(ctx context.Context, req *connect.Request
 		OwnerAddress:     mint.OwnerAddress,
 		PublicKey:        request.PublicKey,
 		Signature:        request.Signature,
+		Nonce:            uuid.New().String(),
 		CreatedAt:        time.Now(),
 	}
 

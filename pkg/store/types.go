@@ -485,6 +485,7 @@ type UnconfirmedMintExpansion struct {
 	OwnerAddress     string    `json:"owner_address"`
 	PublicKey        string    `json:"public_key"`
 	Signature        string    `json:"signature"`
+	Nonce            string    `json:"nonce"`
 	CreatedAt        time.Time `json:"created_at"`
 }
 
@@ -493,6 +494,8 @@ type MintExpansionHash struct {
 	AdditionalSupply int    `json:"additional_supply"`
 	OwnerAddress     string `json:"owner_address"`
 	PublicKey        string `json:"public_key"`
+	Signature        string `json:"signature"`
+	Nonce            string `json:"nonce"`
 }
 
 func (e *UnconfirmedMintExpansion) GenerateHash() (string, error) {
@@ -501,6 +504,8 @@ func (e *UnconfirmedMintExpansion) GenerateHash() (string, error) {
 		AdditionalSupply: e.AdditionalSupply,
 		OwnerAddress:     e.OwnerAddress,
 		PublicKey:        e.PublicKey,
+		Signature:        e.Signature,
+		Nonce:            e.Nonce,
 	}
 
 	jsonBytes, err := json.Marshal(input)

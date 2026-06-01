@@ -26,6 +26,7 @@ func (c *DogeNetClient) GossipMintExpansion(record store.UnconfirmedMintExpansio
 		AdditionalSupply: int32(record.AdditionalSupply),
 		OwnerAddress:     record.OwnerAddress,
 		CreatedAt:        timestamppb.New(record.CreatedAt),
+		Nonce:            record.Nonce,
 	}
 
 	envelope := protocol.MintExpansionMessageEnvelope{
@@ -68,6 +69,11 @@ func (c *DogeNetClient) recvMintExpansion(msg dnet.Message) {
 	}
 
 	expansion := envelope.Payload
+
+	if expansion == nil {
+		log.Println("Error nil payload:", err)
+		return
+	}
 
 	sigPayload := mintExpansionSignaturePayload{
 		MintHash:         expansion.MintHash,
@@ -120,6 +126,7 @@ func (c *DogeNetClient) recvMintExpansion(msg dnet.Message) {
 		OwnerAddress:     expansion.OwnerAddress,
 		PublicKey:        envelope.PublicKey,
 		Signature:        envelope.Signature,
+		Nonce:            expansion.Nonce,
 		CreatedAt:        expansion.CreatedAt.AsTime(),
 	}
 

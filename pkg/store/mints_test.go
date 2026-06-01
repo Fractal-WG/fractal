@@ -9,6 +9,7 @@ import (
 	"dogecoin.org/fractal-engine/internal/test/support"
 	"dogecoin.org/fractal-engine/pkg/protocol"
 	"dogecoin.org/fractal-engine/pkg/store"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"gotest.tools/assert"
 )
@@ -600,6 +601,39 @@ func saveExpansionOnChainTx(t *testing.T, db *store.TokenisationStore, mintHashH
 	}
 }
 
+func TestMintExpansionGenerateHashIsUniquePerRequest(t *testing.T) {
+	mintHash := support.GenerateRandomHash()
+	ownerAddress := "nTestOwnerAddress1234567890123456"
+	pubKey := "pubKey123"
+	signature := "sameSig"
+
+	e1 := &store.UnconfirmedMintExpansion{
+		MintHash:         mintHash,
+		AdditionalSupply: 10,
+		OwnerAddress:     ownerAddress,
+		PublicKey:        pubKey,
+		Signature:        signature,
+		Nonce:            uuid.New().String(),
+		CreatedAt:        time.Now(),
+	}
+	e2 := &store.UnconfirmedMintExpansion{
+		MintHash:         mintHash,
+		AdditionalSupply: 10,
+		OwnerAddress:     ownerAddress,
+		PublicKey:        pubKey,
+		Signature:        signature,
+		Nonce:            uuid.New().String(),
+		CreatedAt:        time.Now(),
+	}
+
+	h1, err := e1.GenerateHash()
+	assert.NilError(t, err)
+	h2, err := e2.GenerateHash()
+	assert.NilError(t, err)
+
+	assert.Assert(t, h1 != h2, "identical expansion params with different nonces must produce different hashes")
+}
+
 func TestSaveUnconfirmedMintExpansion(t *testing.T) {
 	db := support.SetupTestDB(t)
 
@@ -613,6 +647,7 @@ func TestSaveUnconfirmedMintExpansion(t *testing.T) {
 		OwnerAddress:     "nTestOwnerAddress1234567890123456",
 		PublicKey:        "pubKey123",
 		Signature:        "sig123",
+		Nonce:            uuid.New().String(),
 		CreatedAt:        time.Now(),
 	}
 
@@ -643,6 +678,7 @@ func TestMatchUnconfirmedMintExpansion(t *testing.T) {
 		OwnerAddress:     ownerAddress,
 		PublicKey:        "pubKey",
 		Signature:        "sig",
+		Nonce:            uuid.New().String(),
 		CreatedAt:        time.Now(),
 	}
 	_, err = db.SaveUnconfirmedMintExpansion(testCtx, expansion)
@@ -708,6 +744,7 @@ func TestMatchUnconfirmedMintExpansion_MintHashMismatch(t *testing.T) {
 		OwnerAddress:     "nOwner",
 		PublicKey:        "pubKey",
 		Signature:        "sig",
+		Nonce:            uuid.New().String(),
 		CreatedAt:        time.Now(),
 	}
 	_, err := db.SaveUnconfirmedMintExpansion(testCtx, expansion)
@@ -733,6 +770,7 @@ func TestMatchUnconfirmedMintExpansion_SupplyMismatch(t *testing.T) {
 		OwnerAddress:     "nOwner",
 		PublicKey:        "pubKey",
 		Signature:        "sig",
+		Nonce:            uuid.New().String(),
 		CreatedAt:        time.Now(),
 	}
 	_, err := db.SaveUnconfirmedMintExpansion(testCtx, expansion)

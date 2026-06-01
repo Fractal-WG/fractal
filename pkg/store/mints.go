@@ -103,7 +103,7 @@ func (s *TokenisationStore) GetMintsByAddress(ctx context.Context, offset int, l
 
 		for rows.Next() {
 			var m Mint
-			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion); err != nil {
+			if err := rows.Scan(&m.Id, &m.CreatedAt, &m.Title, &m.Description, &m.FractionCount, &m.Tags, &m.Metadata, &m.Hash, &m.TransactionHash, &m.Requirements, &m.LockupOptions, &m.FeedURL, &m.OwnerAddress, &m.PublicKey, &m.ContractOfSale, &m.SignatureRequirementType, &m.AssetManagers, &m.MinSignatures, &m.AllowExpansion, &m.CurrentSupply); err != nil {
 				return nil, err
 			}
 			mints = append(mints, m)
@@ -283,9 +283,9 @@ func (s *TokenisationStore) SaveUnconfirmedMintExpansion(ctx context.Context, ex
 	id := uuid.New().String()
 
 	_, err := s.DB.ExecContext(ctx, `
-	INSERT INTO unconfirmed_mint_expansions (id, hash, mint_hash, additional_supply, owner_address, public_key, signature, created_at)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-	`, id, expansion.Hash, expansion.MintHash, expansion.AdditionalSupply, expansion.OwnerAddress, expansion.PublicKey, expansion.Signature, expansion.CreatedAt)
+	INSERT INTO unconfirmed_mint_expansions (id, hash, mint_hash, additional_supply, owner_address, public_key, signature, nonce, created_at)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	`, id, expansion.Hash, expansion.MintHash, expansion.AdditionalSupply, expansion.OwnerAddress, expansion.PublicKey, expansion.Signature, expansion.Nonce, expansion.CreatedAt)
 	if err != nil {
 		return "", err
 	}
@@ -510,12 +510,21 @@ func (s *TokenisationStore) MatchUnconfirmedMintExpansion(ctx context.Context, o
 		return fmt.Errorf("expansion additional_supply mismatch: expected %d got %d", onchainMessage.AdditionalSupply, expansion.AdditionalSupply)
 	}
 
-	_, err = tx.ExecContext(ctx,
+	mintSupplyRes, err := tx.ExecContext(ctx,
 		"UPDATE mints SET current_supply = current_supply + $1 WHERE hash = $2",
 		expansion.AdditionalSupply, expansion.MintHash,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update current_supply: %w", err)
+	}
+
+	rowsEffected, err := mintSupplyRes.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to update current_supply: %w", err)
+	}
+
+	if rowsEffected == 0 {
+		return fmt.Errorf("no rows updated for current_supply")
 	}
 
 	if err := s.UpsertTokenBalanceWithTransaction(ctx, expansion.OwnerAddress, expansion.MintHash, expansion.AdditionalSupply, tx); err != nil {
