@@ -32,6 +32,49 @@ func (f *FakeChainFollower) Stop() {
 	close(f.Messages)
 }
 
+func TestParseOpReturnData(t *testing.T) {
+	t.Run("OP_RETURN with no payload does not panic", func(t *testing.T) {
+		vout := types.RawTxnVOut{
+			ScriptPubKey: types.RawTxnScriptPubKey{
+				Asm: "OP_RETURN",
+			},
+		}
+		result := followerer.ParseOpReturnData(vout)
+		assert.Equal(t, true, result == nil)
+	})
+
+	t.Run("OP_RETURN with valid hex payload returns bytes", func(t *testing.T) {
+		payload := []byte{0x01, 0x02, 0x03}
+		vout := types.RawTxnVOut{
+			ScriptPubKey: types.RawTxnScriptPubKey{
+				Asm: "OP_RETURN " + hex.EncodeToString(payload),
+			},
+		}
+		result := followerer.ParseOpReturnData(vout)
+		assert.DeepEqual(t, payload, result)
+	})
+
+	t.Run("non-OP_RETURN script returns nil", func(t *testing.T) {
+		vout := types.RawTxnVOut{
+			ScriptPubKey: types.RawTxnScriptPubKey{
+				Asm: "OP_DUP OP_HASH160 abc123 OP_EQUALVERIFY OP_CHECKSIG",
+			},
+		}
+		result := followerer.ParseOpReturnData(vout)
+		assert.Equal(t, true, result == nil)
+	})
+
+	t.Run("empty asm returns nil", func(t *testing.T) {
+		vout := types.RawTxnVOut{
+			ScriptPubKey: types.RawTxnScriptPubKey{
+				Asm: "",
+			},
+		}
+		result := followerer.ParseOpReturnData(vout)
+		assert.Equal(t, true, result == nil)
+	})
+}
+
 func TestDogeFollower(t *testing.T) {
 	tokenisationStore := test_support.SetupTestDB(t)
 	ctx := context.Background()
