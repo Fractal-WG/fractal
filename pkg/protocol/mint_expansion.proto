@@ -1,0 +1,29 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package fractalengine;
+
+option go_package = "pkg/protocol";
+
+// This is what gets written to the OP_RETURN on the L1
+message OnChainMintExpansionMessage {
+    bytes mint_hash = 1;
+    int32 additional_supply = 2;
+    bytes expansion_hash = 3;
+}
+
+message MintExpansionMessage {
+    string hash = 1;
+    string mint_hash = 2;
+    int32 additional_supply = 3;
+    string owner_address = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message MintExpansionMessageEnvelope {
+    int32 type = 1;
+    int32 version = 2;
+    MintExpansionMessage payload = 3;
+    string public_key = 4;
+    string signature = 5;
+}

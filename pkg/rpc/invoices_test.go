@@ -18,9 +18,8 @@ func TestInvoices(t *testing.T) {
 	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
 	ctx := context.Background()
 
-	paymentAddress := support.GenerateDogecoinAddress(true)
 	buyerAddress := support.GenerateDogecoinAddress(true)
-	sellOfferAddress := support.GenerateDogecoinAddress(true)
+
 	mintHash := support.GenerateRandomHash()
 
 	_, err := tokenisationStore.SaveMint(ctx, &store.MintWithoutID{
@@ -31,29 +30,29 @@ func TestInvoices(t *testing.T) {
 	}, "owner")
 	assert.NilError(t, err)
 
+	privHex, pubHex, ownerAddress, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
+
 	invoicePayload := rpc.CreateInvoiceRequestPayload{
-		PaymentAddress: paymentAddress,
+		PaymentAddress: ownerAddress,
 		BuyerAddress:   buyerAddress,
 		MintHash:       mintHash,
 		Quantity:       10,
 		Price:          100,
-		SellerAddress:  sellOfferAddress,
+		SellerAddress:  ownerAddress,
 	}
-
-	privHex, pubHex, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
-	assert.NilError(t, err)
 
 	signature, err := doge.SignPayload(invoicePayload, privHex, pubHex)
 	assert.NilError(t, err)
 
 	paymentAddressProto := &protocol.Address{}
-	paymentAddressProto.SetValue(paymentAddress)
+	paymentAddressProto.SetValue(ownerAddress)
 	buyerAddressProto := &protocol.Address{}
 	buyerAddressProto.SetValue(buyerAddress)
 	mintHashProto := &protocol.Hash{}
 	mintHashProto.SetValue(mintHash)
 	sellerAddressProto := &protocol.Address{}
-	sellerAddressProto.SetValue(sellOfferAddress)
+	sellerAddressProto.SetValue(ownerAddress)
 
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
 	protoPayload.SetPaymentAddress(paymentAddressProto)
@@ -102,8 +101,6 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	tokenisationStore, dogenetClient, feClient := SetupRpcTest(t)
 	ctx := context.Background()
 
-	paymentAddress := support.GenerateDogecoinAddress(true)
-	sellOfferAddress := support.GenerateDogecoinAddress(true)
 	buyerAddress := support.GenerateDogecoinAddress(true)
 
 	// Save a confirmed mint
@@ -134,31 +131,31 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	_, err = tokenisationStore.SaveMint(ctx, confirmedMint, "owner")
 	assert.NilError(t, err)
 
+	privHex, pubHex, ownerAddress, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
+
 	invoice := rpc.CreateInvoiceRequest{
 		Payload: rpc.CreateInvoiceRequestPayload{
-			PaymentAddress: paymentAddress,
+			PaymentAddress: ownerAddress,
 			BuyerAddress:   buyerAddress,
 			MintHash:       confirmedMint.Hash,
 			Quantity:       10,
 			Price:          100,
-			SellerAddress:  sellOfferAddress,
+			SellerAddress:  ownerAddress,
 		},
 	}
-
-	privHex, pubHex, _, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
-	assert.NilError(t, err)
 
 	signature, err := doge.SignPayload(invoice.Payload, privHex, pubHex)
 	assert.NilError(t, err)
 
 	paymentAddressProto := &protocol.Address{}
-	paymentAddressProto.SetValue(paymentAddress)
+	paymentAddressProto.SetValue(ownerAddress)
 	buyerAddressProto := &protocol.Address{}
 	buyerAddressProto.SetValue(buyerAddress)
 	mintHashProto := &protocol.Hash{}
 	mintHashProto.SetValue(confirmedMint.Hash)
 	sellerAddressProto := &protocol.Address{}
-	sellerAddressProto.SetValue(sellOfferAddress)
+	sellerAddressProto.SetValue(ownerAddress)
 
 	protoPayload := &protocol.CreateInvoiceRequestPayload{}
 	protoPayload.SetPaymentAddress(paymentAddressProto)

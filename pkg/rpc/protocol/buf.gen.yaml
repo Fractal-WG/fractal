@@ -16,3 +16,10 @@ plugins:
     opt:
       - target=ts
       - import_extension=.js
+  - local: ["go", "run", "github.com/sudorandom/protoc-gen-connect-openapi@latest"]
+    out: ../../../docs
+    opt:
+      - format=json
+      - features=connectrpc;gnostic
+      - path=openapi.json
+      - without-default-tags 

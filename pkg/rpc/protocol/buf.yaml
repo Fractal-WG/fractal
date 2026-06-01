@@ -9,6 +9,7 @@ lint:
     - PACKAGE_DIRECTORY_MATCH
 deps:
   - buf.build/bufbuild/protovalidate:v1.1.0
+  - buf.build/gnostic/gnostic
 
 breaking:
   use:

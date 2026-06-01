@@ -34,6 +34,7 @@ func toCreateMintRequest(req *protocol.CreateMintRequest) (*CreateMintRequest, e
 			SignatureRequirementType: toStoreSignatureRequirementType(payload.GetSignatureRequirementType()),
 			AssetManagers:            toStoreAssetManagers(payload.GetAssetManagers()),
 			MinSignatures:            int(payload.GetMinSignatures()),
+			AllowExpansion:           payload.GetAllowExpansion(),
 		},
 	}, nil
 }
@@ -114,6 +115,24 @@ func toDeleteSellOfferRequest(req *protocol.DeleteSellOfferRequest) (*DeleteSell
 		},
 		Payload: DeleteSellOfferRequestPayload{
 			OfferHash: payload.GetOfferHash().GetValue(),
+		},
+	}, nil
+}
+
+func toExpandMintRequest(req *protocol.ExpandMintRequest) (*ExpandMintRequest, error) {
+	if req == nil || req.GetPayload() == nil {
+		return nil, errors.New("payload is required")
+	}
+
+	payload := req.GetPayload()
+	return &ExpandMintRequest{
+		SignedRequest: SignedRequest{
+			PublicKey: req.GetPublicKey(),
+			Signature: req.GetSignature(),
+		},
+		Payload: ExpandMintRequestPayload{
+			MintHash:         payload.GetMintHash().GetValue(),
+			AdditionalSupply: int(payload.GetAdditionalSupply()),
 		},
 	}, nil
 }
@@ -274,6 +293,8 @@ func toProtoMint(mint store.Mint) (*protocol.Mint, error) {
 	protoMint.SetTags([]string(mint.Tags))
 	protoMint.SetTitle(mint.Title)
 	protoMint.SetTransactionHash(toProtoHash(mint.TransactionHash))
+	protoMint.SetAllowExpansion(mint.AllowExpansion)
+	protoMint.SetCurrentSupply(int32(mint.CurrentSupply))
 
 	return protoMint, nil
 }

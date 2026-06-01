@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"time"
 
 	connect "connectrpc.com/connect"
@@ -100,6 +101,7 @@ func (s *ConnectRpcService) CreateMint(ctx context.Context, req *connect.Request
 		ContractOfSale:           request.Payload.ContractOfSale,
 		AssetManagers:            request.Payload.AssetManagers,
 		MinSignatures:            request.Payload.MinSignatures,
+		AllowExpansion:           request.Payload.AllowExpansion,
 	}
 
 	newMintWithoutId.Hash, err = newMintWithoutId.GenerateHash()
@@ -126,6 +128,65 @@ func (s *ConnectRpcService) CreateMint(ctx context.Context, req *connect.Request
 
 	resp := &protocol.CreateMintResponse{}
 	resp.SetHash(toProtoHash(newMintWithoutId.Hash))
+	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectRpcService) ExpandMint(ctx context.Context, req *connect.Request[protocol.ExpandMintRequest]) (*connect.Response[protocol.ExpandMintResponse], error) {
+	request, err := toExpandMintRequest(req.Msg)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := request.Validate(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	mint, err := s.store.GetMintByHash(ctx, request.Payload.MintHash)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("mint not found: %w", err))
+	}
+
+	if mint.Hash == "" {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("mint not found"))
+	}
+
+	if !mint.AllowExpansion {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("mint does not allow supply expansion"))
+	}
+
+	if err := validation.ValidateAddressPublicKeyMatch(mint.OwnerAddress, request.PublicKey); err != nil {
+		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("only the mint owner can expand supply"))
+	}
+
+	expansion := &store.UnconfirmedMintExpansion{
+		MintHash:         request.Payload.MintHash,
+		AdditionalSupply: request.Payload.AdditionalSupply,
+		OwnerAddress:     mint.OwnerAddress,
+		PublicKey:        request.PublicKey,
+		Signature:        request.Signature,
+		CreatedAt:        time.Now(),
+	}
+
+	expansion.Hash, err = expansion.GenerateHash()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	_, err = s.store.SaveUnconfirmedMintExpansion(ctx, expansion)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	if err := s.gossipClient.GossipMintExpansion(*expansion); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	envelope := engineprotocol.NewMintExpansionTransactionEnvelope(expansion.MintHash, expansion.Hash, int32(expansion.AdditionalSupply))
+	encodedTransactionBody := envelope.Serialize()
+
+	resp := &protocol.ExpandMintResponse{}
+	resp.SetExpansionHash(toProtoHash(expansion.Hash))
 	resp.SetEncodedTransactionBody(hex.EncodeToString(encodedTransactionBody))
 	return connect.NewResponse(resp), nil
 }

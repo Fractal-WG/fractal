@@ -95,6 +95,7 @@ type CreateMintRequestPayload struct {
 	SignatureRequirementType store.SignatureRequirementType `json:"signature_requirement_type,omitempty"`
 	AssetManagers            []store.AssetManager           `json:"asset_managers,omitempty"`
 	MinSignatures            int                            `json:"min_signatures,omitempty"`
+	AllowExpansion           bool                           `json:"allow_expansion,omitempty"`
 }
 
 func (req *CreateMintRequest) Validate() error {
@@ -115,6 +116,11 @@ func (req *CreateMintRequest) Validate() error {
 
 type CreateMintResponse struct {
 	Hash                   string `json:"hash"`
+	EncodedTransactionBody string `json:"encoded_transaction_body"`
+}
+
+type ExpandMintResponse struct {
+	ExpansionHash          string `json:"expansion_hash"`
 	EncodedTransactionBody string `json:"encoded_transaction_body"`
 }
 
@@ -373,6 +379,36 @@ type Address struct {
 	PrivateKey string `json:"private_key"`
 	PublicKey  string `json:"public_key"`
 	Label      string `json:"label"`
+}
+
+type ExpandMintRequest struct {
+	SignedRequest
+	Payload ExpandMintRequestPayload `json:"payload"`
+}
+
+type ExpandMintRequestPayload struct {
+	MintHash         string `json:"mint_hash"`
+	AdditionalSupply int    `json:"additional_supply"`
+}
+
+func (req *ExpandMintRequest) Validate() error {
+	if err := validation.ValidateHash(req.Payload.MintHash); err != nil {
+		return fmt.Errorf("invalid mint_hash: %w", err)
+	}
+
+	if err := validation.ValidateQuantity("additional_supply", req.Payload.AdditionalSupply); err != nil {
+		return err
+	}
+
+	if err := validation.ValidatePublicKey(req.PublicKey); err != nil {
+		return fmt.Errorf("invalid public_key: %w", err)
+	}
+
+	if err := doge.ValidateSignature(req.Payload, req.PublicKey, req.Signature); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type SignTxRequest struct {

@@ -12,34 +12,147 @@ import "offers.proto";
 import "payments.proto";
 import "stats.proto";
 import "tokens.proto";
+import "gnostic/openapi/v3/annotations.proto";
 
 service FractalEngineRpcService {
-  rpc DogeConfirm(DogeConfirmRequest) returns (DogeConfirmResponse);
-  rpc DogeSend(DogeSendRequest) returns (DogeSendResponse);
-  rpc DogeTopUp(DogeTopUpRequest) returns (DogeTopUpResponse);
+  rpc DogeConfirm(DogeConfirmRequest) returns (DogeConfirmResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Doge"]
+      summary: "Confirm"
+    };
+  }
+  
+  rpc DogeSend(DogeSendRequest) returns (DogeSendResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Doge"]
+      summary: "Send"
+    };
+  }
+  rpc DogeTopUp(DogeTopUpRequest) returns (DogeTopUpResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Doge"]
+      summary: "Top Up"
+    };
+  }
 
-  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
-  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Health"]
+      summary: "Get Health"
+    };
+  }
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Stats"]
+      summary: "Get Stats"
+    };
+  }
 
-  rpc GetInvoices(GetInvoicesRequest) returns (GetInvoicesResponse);
-  rpc GetAllInvoices(GetAllInvoicesRequest) returns (GetAllInvoicesResponse);
-  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse);
-  rpc CreateInvoiceSignature(CreateInvoiceSignatureRequest) returns (CreateInvoiceSignatureResponse);
+  rpc GetInvoices(GetInvoicesRequest) returns (GetInvoicesResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Invoices"]
+      summary: "Get Invoices"
+    };
+  }
+  rpc GetAllInvoices(GetAllInvoicesRequest) returns (GetAllInvoicesResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Invoices"]
+      summary: "Get All Invoices"
+    };
+  }
+  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Invoices"]
+      summary: "Create Invoice"
+    };
+  }
+  rpc CreateInvoiceSignature(CreateInvoiceSignatureRequest) returns (CreateInvoiceSignatureResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Invoices"]
+      summary: "Create Invoice Signature"
+    };
+  }
 
-  rpc GetMints(GetMintsRequest) returns (GetMintsResponse);
-  rpc GetMint(GetMintRequest) returns (GetMintResponse);
-  rpc CreateMint(CreateMintRequest) returns (CreateMintResponse);
+  rpc GetMints(GetMintsRequest) returns (GetMintsResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Mints"]
+      summary: "Get Mints"
+    };
+  }
+  rpc GetMint(GetMintRequest) returns (GetMintResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Mints"]
+      summary: "Get Mint"
+    };
+  }
+  rpc CreateMint(CreateMintRequest) returns (CreateMintResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Mints"]
+      summary: "Create Mint"
+    };
+  }
+  rpc ExpandMint(ExpandMintRequest) returns (ExpandMintResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Mints"]
+      summary: "Expand Mint"
+    };
+  }
 
-  rpc CreateNewPayment(CreateNewPaymentRequest) returns (CreateNewPaymentResponse);
+  rpc CreateNewPayment(CreateNewPaymentRequest) returns (CreateNewPaymentResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Payments"]
+      summary: "Create Payment"
+    };
+  }
 
-  rpc GetPendingTokenBalances(GetPendingTokenBalancesRequest) returns (GetPendingTokenBalancesResponse);
-  rpc GetTokenBalances(GetTokenBalancesRequest) returns (GetTokenBalancesResponse);
+  rpc GetPendingTokenBalances(GetPendingTokenBalancesRequest) returns (GetPendingTokenBalancesResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Token Balances"]
+      summary: "Get Pending Token Balances"
+    };
+  }
+  rpc GetTokenBalances(GetTokenBalancesRequest) returns (GetTokenBalancesResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Token Balances"]
+      summary: "Get Token Balances"
+    };
+  }
 
-  rpc GetSellOffers(GetSellOffersRequest) returns (GetSellOffersResponse);
-  rpc CreateSellOffer(CreateSellOfferRequest) returns (CreateSellOfferResponse);
-  rpc DeleteSellOffer(DeleteSellOfferRequest) returns (DeleteSellOfferResponse);
+  rpc GetSellOffers(GetSellOffersRequest) returns (GetSellOffersResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Sell Offers"]
+      summary: "Get Sell Offers"
+    };
+  }
+  rpc CreateSellOffer(CreateSellOfferRequest) returns (CreateSellOfferResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Sell Offers"]
+      summary: "Create Sell Offer"
+    };
+  }
+  rpc DeleteSellOffer(DeleteSellOfferRequest) returns (DeleteSellOfferResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Sell Offers"]
+      summary: "Delete Sell Offer"
+    };
+  }
 
-  rpc GetBuyOffers(GetBuyOffersRequest) returns (GetBuyOffersResponse);
-  rpc CreateBuyOffer(CreateBuyOfferRequest) returns (CreateBuyOfferResponse);
-  rpc DeleteBuyOffer(DeleteBuyOfferRequest) returns (DeleteBuyOfferResponse);
+  rpc GetBuyOffers(GetBuyOffersRequest) returns (GetBuyOffersResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Buy Offers"]
+      summary: "Get Buy Offers"
+    };
+  }
+  rpc CreateBuyOffer(CreateBuyOfferRequest) returns (CreateBuyOfferResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Buy Offers"]
+      summary: "Create Buy Offer"
+    };
+  }
+  rpc DeleteBuyOffer(DeleteBuyOfferRequest) returns (DeleteBuyOfferResponse) {
+    option (gnostic.openapi.v3.operation) = {
+      tags: ["Buy Offers"]
+      summary: "Delete Buy Offer"
+    };
+  }
 }
