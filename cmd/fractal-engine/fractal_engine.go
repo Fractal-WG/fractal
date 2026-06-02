@@ -42,6 +42,7 @@ func main() {
 	var sellOfferLimit int
 	var embedDogenet bool
 	var corsAllowedOrigins string
+	var relayURL string
 	var showVersion bool
 	var databaseHost string
 	var databasePort string
@@ -77,6 +78,7 @@ func main() {
 	flag.IntVar(&buyOfferLimit, "buy-offer-limit", getEnvInt("BUY_OFFER_LIMIT", 3), "Buy Offer Limit (per buyer per mint)")
 	flag.IntVar(&sellOfferLimit, "sell-offer-limit", getEnvInt("SELL_OFFER_LIMIT", 3), "Sell Offer Limit (per seller per mint)")
 	flag.StringVar(&corsAllowedOrigins, "cors-allowed-origins", getEnv("CORS_ALLOWED_ORIGINS", "*"), "Comma-separated list of allowed CORS origins or *")
+	flag.StringVar(&relayURL, "relay-url", getEnv("RELAY_URL", "http://10.0.2.2:8891"), "Relay URL for DogeConnect payment relay")
 	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
 
 	flag.Parse()
@@ -110,6 +112,7 @@ func main() {
 		BuyOfferLimit:      buyOfferLimit,
 		SellOfferLimit:     sellOfferLimit,
 		CORSAllowedOrigins: corsAllowedOrigins,
+		RelayURL:           relayURL,
 	}
 
 	tokenStore, err := store.NewTokenisationStore(cfg.DatabaseURL, *cfg)

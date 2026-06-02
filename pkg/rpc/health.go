@@ -27,5 +27,11 @@ func (s *ConnectRpcService) GetHealth(ctx context.Context, _ *connect.Request[pr
 	resp.SetUpdatedAt(updatedAt.Format(time.RFC3339Nano))
 	resp.SetVersion(version.Version)
 	resp.SetWalletsEnabled(walletsEnabled)
+
+	keyPair := s.cfg.DogeNetKeyPair
+	if keyPair.Pub != nil {
+		resp.SetH(pubKeyHashStr(keyPair.Pub[:]))
+	}
+
 	return connect.NewResponse(resp), nil
 }

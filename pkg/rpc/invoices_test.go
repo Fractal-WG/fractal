@@ -30,7 +30,9 @@ func TestInvoices(t *testing.T) {
 	}, "owner")
 	assert.NilError(t, err)
 
+	// Seller signs the invoice, so the seller address must be derived from the keypair.
 	privHex, pubHex, sellOfferAddress, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
+	assert.NilError(t, err)
 
 	invoicePayload := rpc.CreateInvoiceRequestPayload{
 		PaymentAddress: paymentAddress,
@@ -132,6 +134,7 @@ func TestInvoicesWithSignatureRequired(t *testing.T) {
 	_, err = tokenisationStore.SaveMint(ctx, confirmedMint, "owner")
 	assert.NilError(t, err)
 
+	// Seller signs the invoice, so the seller address must be derived from the keypair.
 	privHex, pubHex, sellOfferAddress, err := doge.GenerateDogecoinKeypair(doge.PrefixRegtest)
 	assert.NilError(t, err)
 

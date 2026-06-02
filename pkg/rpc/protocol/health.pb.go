@@ -28,6 +28,7 @@ type GetHealthResponse struct {
 	xxx_hidden_UpdatedAt          *string                `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt"`
 	xxx_hidden_Version            *string                `protobuf:"bytes,5,opt,name=version"`
 	xxx_hidden_WalletsEnabled     bool                   `protobuf:"varint,6,opt,name=wallets_enabled,json=walletsEnabled"`
+	xxx_hidden_H                  *string                `protobuf:"bytes,7,opt,name=h"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -110,34 +111,49 @@ func (x *GetHealthResponse) GetWalletsEnabled() bool {
 	return false
 }
 
+func (x *GetHealthResponse) GetH() string {
+	if x != nil {
+		if x.xxx_hidden_H != nil {
+			return *x.xxx_hidden_H
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *GetHealthResponse) SetChain(v string) {
 	x.xxx_hidden_Chain = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *GetHealthResponse) SetCurrentBlockHeight(v int32) {
 	x.xxx_hidden_CurrentBlockHeight = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *GetHealthResponse) SetLatestBlockHeight(v int32) {
 	x.xxx_hidden_LatestBlockHeight = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *GetHealthResponse) SetUpdatedAt(v string) {
 	x.xxx_hidden_UpdatedAt = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
 }
 
 func (x *GetHealthResponse) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
 }
 
 func (x *GetHealthResponse) SetWalletsEnabled(v bool) {
 	x.xxx_hidden_WalletsEnabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
+}
+
+func (x *GetHealthResponse) SetH(v string) {
+	x.xxx_hidden_H = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
 }
 
 func (x *GetHealthResponse) HasChain() bool {
@@ -182,6 +198,13 @@ func (x *GetHealthResponse) HasWalletsEnabled() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
+func (x *GetHealthResponse) HasH() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
 func (x *GetHealthResponse) ClearChain() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Chain = nil
@@ -212,6 +235,11 @@ func (x *GetHealthResponse) ClearWalletsEnabled() {
 	x.xxx_hidden_WalletsEnabled = false
 }
 
+func (x *GetHealthResponse) ClearH() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_H = nil
+}
+
 type GetHealthResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -221,6 +249,7 @@ type GetHealthResponse_builder struct {
 	UpdatedAt          *string
 	Version            *string
 	WalletsEnabled     *bool
+	H                  *string
 }
 
 func (b0 GetHealthResponse_builder) Build() *GetHealthResponse {
@@ -228,28 +257,32 @@ func (b0 GetHealthResponse_builder) Build() *GetHealthResponse {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Chain != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
 		x.xxx_hidden_Chain = b.Chain
 	}
 	if b.CurrentBlockHeight != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
 		x.xxx_hidden_CurrentBlockHeight = *b.CurrentBlockHeight
 	}
 	if b.LatestBlockHeight != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
 		x.xxx_hidden_LatestBlockHeight = *b.LatestBlockHeight
 	}
 	if b.UpdatedAt != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
 		x.xxx_hidden_UpdatedAt = b.UpdatedAt
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
 		x.xxx_hidden_Version = b.Version
 	}
 	if b.WalletsEnabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
 		x.xxx_hidden_WalletsEnabled = *b.WalletsEnabled
+	}
+	if b.H != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
+		x.xxx_hidden_H = b.H
 	}
 	return m0
 }
@@ -301,7 +334,7 @@ var File_health_proto protoreflect.FileDescriptor
 
 const file_health_proto_rawDesc = "" +
 	"\n" +
-	"\fhealth.proto\x12\x14fractalengine.rpc.v1\"\xed\x01\n" +
+	"\fhealth.proto\x12\x14fractalengine.rpc.v1\"\xfb\x01\n" +
 	"\x11GetHealthResponse\x12\x14\n" +
 	"\x05chain\x18\x01 \x01(\tR\x05chain\x120\n" +
 	"\x14current_block_height\x18\x02 \x01(\x05R\x12currentBlockHeight\x12.\n" +
@@ -309,7 +342,8 @@ const file_health_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x04 \x01(\tR\tupdatedAt\x12\x18\n" +
 	"\aversion\x18\x05 \x01(\tR\aversion\x12'\n" +
-	"\x0fwallets_enabled\x18\x06 \x01(\bR\x0ewalletsEnabled\"\x12\n" +
+	"\x0fwallets_enabled\x18\x06 \x01(\bR\x0ewalletsEnabled\x12\f\n" +
+	"\x01h\x18\a \x01(\tR\x01h\"\x12\n" +
 	"\x10GetHealthRequestB.Z,dogecoin.org/fractal-engine/pkg/rpc/protocolb\beditionsp\xe8\a"
 
 var file_health_proto_msgTypes = make([]protoimpl.MessageInfo, 2)

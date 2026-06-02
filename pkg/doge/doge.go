@@ -13,11 +13,12 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+
 	"github.com/cosmos/btcutil/base58"
 	secp "github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
@@ -162,6 +163,7 @@ func SignRawTransaction(rawTxHex string, privKeyHex string, prevTxOuts []PrevOut
 			nil,
 			nil,
 			prevOut.Amount,
+			nil,
 		)
 		if err != nil {
 			return "", fmt.Errorf("failed to create script engine for input %d: %v", i, err)
