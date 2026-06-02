@@ -165,7 +165,7 @@ func ParseOpReturnData(vout types.RawTxnVOut) []byte {
 	asm := vout.ScriptPubKey.Asm
 	parts := strings.Split(asm, " ")
 
-	if len(parts) > 0 {
+	if len(parts) > 1 {
 		op := parts[0]
 
 		if op == "OP_RETURN" {
