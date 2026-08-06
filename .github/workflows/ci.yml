@@ -19,7 +19,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v16
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Run tests
         env:
