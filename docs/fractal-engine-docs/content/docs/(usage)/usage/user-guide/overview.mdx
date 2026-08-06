@@ -1,0 +1,70 @@
+---
+title: User Guide
+---
+
+This section covers practical, end-to-end flows for working with Fractal Engine. Start with minting a token, then follow the other guides as they are added.
+
+## Common setup (code walkthrough)
+
+1. Import the SDKs and helpers used throughout the flow.
+
+   ```ts
+   import { dogeToKoinu, signPayload } from "fractal-utils";
+   import {
+     CreateMintRequestPayload,
+     FractalEngineRpcService,
+   } from "fractal-engine-client-js";
+   import km2, { Crypto, Net } from "@houseofdoge/km2";
+   import { createClient } from "@connectrpc/connect";
+   import { createConnectTransport } from "@connectrpc/connect-node";
+   ```
+
+   These provide the Fractal Engine client, Dogecoin transaction utilities, and signing helpers.
+
+2. Configure constants for network, crypto, and API endpoint.
+
+   ```ts
+   const NETWORK = Net.Mainnet;
+   const CRYPTO = Crypto.Dogecoin;
+   const FRACTAL_ENGINE_URL = "http://localhost:8080";
+   const SEED_PHRASE =
+     "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+   ```
+
+   Replace the seed phrase with your wallet integration or a real mnemonic. Keep the URL in sync with your running Fractal Engine.
+
+3. Generate a keypair from the seed phrase.
+
+   ```ts
+   function generateKeypair() {
+     const seed = km2.SeedPhrase.from({
+       mnemonic: SEED_PHRASE,
+     });
+
+     const wallet = new km2.Wallet(seed, {
+       cryptocurrency: CRYPTO,
+       network: NETWORK,
+     });
+
+     const kp = wallet.deriveKeypair({ account: 0, change: 0, index: 0 });
+
+     return kp;
+   }
+   ```
+
+   This derives the first account/change/index keypair for signing the mint payload and the on-chain transaction.
+
+4. Create a Fractal Engine RPC client.
+
+   ```ts
+   function newClient() {
+     const transport = createConnectTransport({
+       baseUrl: FRACTAL_ENGINE_URL,
+       httpVersion: "1.1",
+     });
+
+     return createClient(FractalEngineRpcService, transport);
+   }
+   ```
+
+   The client sends RPC calls to the Fractal Engine service.

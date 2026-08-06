@@ -1,0 +1,4 @@
+{
+  "title": "User Guide",
+  "pages": ["overview", "mint-a-token", "create-an-invoice", "pay-an-invoice"]
+}

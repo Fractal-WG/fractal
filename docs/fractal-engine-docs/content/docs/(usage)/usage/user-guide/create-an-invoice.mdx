@@ -1,0 +1,117 @@
+---
+title: Create an Invoice
+---
+
+This guide walks through a invoice creation flow with short code snippets and explains the steps at a high level.
+You will need to do this in order to sell you tokens. Once you have a buyer, and settled on a price for them, you can create and send them an invoice.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A running Fractal Engine instance at `http://localhost:8080`
+- Dogecoin wallet tooling that can provide a funded UTXO
+- Access to the required packages listed in `package.json`
+
+## Step-by-step (code walkthrough)
+
+1. Start the main flow and provide a real UTXO.
+
+   ```ts
+   async function main() {
+     const sampleUtxo = {
+       value: "100", // Amount in Doge
+       vout: 1,
+       tx: "", // Transaction ID of your UTXO
+       script: "", // Script value of your UTXO
+     };
+   ```
+
+   Replace `sampleUtxo` with an actual funded UTXO from your wallet, including the correct transaction id and script.
+
+2. Build and sign the invoice payload.
+
+   ```ts
+   const kp = generateKeypair();
+   const feClient = newClient();
+
+   const invoicePayload = {
+      buyerAddress: "ADDRESS_OF_PERSON_BUYING",
+      mintHash: "HASH_OF_MINT",
+      paymentAddress: "ADDRESS_WHERE_TO_RECEIVE_PAYMENT",
+      sellerAddress: "ADDRESS_OF_SELLER_CAN_MATCH_PAYMENT_ADDRESS",
+      price: 10, // Price per unit in Doge
+      quantity: 100 // How many fractions to sell
+   } as CreateMintRequestPayload;
+
+   const signedInvoicePayload = await signPayload(
+     invoicePayload,
+     kp.privateKey,
+     kp.publicKey,
+   );
+   ```
+
+   The payload is signed with your private key so the server can verify ownership.
+
+3. Create invoice metadata on Fractal Engine.
+
+   ```ts
+   const invoiceResponse = await feClient.createInvoice({
+     payload: invoicePayload,
+     publicKey: kp.publicKey,
+     signature: signedInvoicePayload,
+   });
+   ```
+
+   The response includes data needed for the on-chain transaction (for example, the encoded transaction body).
+
+4. Build the unsigned Dogecoin transaction.
+
+   ```ts
+   const unsignedTransaction = new km2.UnsignedTransaction(CRYPTO, NETWORK);
+
+   const totalValue = dogeToKoinu(sampleUtxo.value);
+   const totalFee = dogeToKoinu("0.002");
+
+   unsignedTransaction.addInput({
+     outputIndex: sampleUtxo.vout,
+     prevTxId: sampleUtxo.tx,
+     scriptPubKeyHex: sampleUtxo.script,
+     value: totalValue,
+     sequence: 0xffffffff,
+   });
+   ```
+
+   This spends your UTXO and calculates a basic fee. Real wallets should estimate fees dynamically.
+
+5. Add outputs: change and the invoice hash (OP_RETURN).
+
+   ```ts
+   unsignedTransaction.addOutput({
+     kind: "payment",
+     address: kp.address,
+     value: totalValue - totalFee,
+   });
+
+   unsignedTransaction.addOutput({
+     kind: "opReturn",
+     data: invoiceResponse.encodedTransactionBody,
+     value: 0,
+   });
+   ```
+
+   The change output returns funds to your wallet, and the OP_RETURN output anchors the invoice on-chain.
+
+6. Sign and broadcast the transaction.
+
+   ```ts
+   const signedTrxn = unsignedTransaction.sign({
+     keypairs: [kp],
+   });
+
+   await feClient.dogeSend({
+     encodedTransactionHex: signedTrxn.rawHex,
+   });
+   }
+   ```
+
+   This signs the transaction with your keypair and submits it to Dogecoin Core via Fractal Engine.

@@ -1,0 +1,113 @@
+---
+title: Mint a token
+---
+
+This guide walks through a minting flow with short code snippets and explains the steps at a high level.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A running Fractal Engine instance at `http://localhost:8080`
+- Dogecoin wallet tooling that can provide a funded UTXO
+- Access to the required packages listed in `package.json`
+
+## Step-by-step (code walkthrough)
+
+1. Start the main flow and provide a real UTXO.
+
+   ```ts
+   async function main() {
+     const sampleUtxo = {
+       value: "100", // Amount in Doge
+       vout: 1,
+       tx: "", // Transaction ID of your UTXO
+       script: "", // Script value of your UTXO
+     };
+   ```
+
+   Replace `sampleUtxo` with an actual funded UTXO from your wallet, including the correct transaction id and script.
+
+2. Build and sign the mint payload.
+
+   ```ts
+   const kp = generateKeypair();
+   const feClient = newClient();
+
+   const mintPayload = {
+     title: "My New Mint",
+     description: "My New Mint Description",
+     fractionCount: 100,
+   } as CreateMintRequestPayload;
+
+   const signedMintPayload = await signPayload(
+     mintPayload,
+     kp.privateKey,
+     kp.publicKey,
+   );
+   ```
+
+   The payload is signed with your private key so the server can verify ownership.
+
+3. Create mint metadata on Fractal Engine.
+
+   ```ts
+   const mintResponse = await feClient.createMint({
+     payload: mintPayload,
+     publicKey: kp.publicKey,
+     signature: signedMintPayload,
+   });
+   ```
+
+   The response includes data needed for the on-chain transaction (for example, the encoded transaction body).
+
+4. Build the unsigned Dogecoin transaction.
+
+   ```ts
+   const unsignedTransaction = new km2.UnsignedTransaction(CRYPTO, NETWORK);
+
+   const totalValue = dogeToKoinu(sampleUtxo.value);
+   const totalFee = dogeToKoinu("0.002");
+
+   unsignedTransaction.addInput({
+     outputIndex: sampleUtxo.vout,
+     prevTxId: sampleUtxo.tx,
+     scriptPubKeyHex: sampleUtxo.script,
+     value: totalValue,
+     sequence: 0xffffffff,
+   });
+   ```
+
+   This spends your UTXO and calculates a basic fee. Real wallets should estimate fees dynamically.
+
+5. Add outputs: change and the mint hash (OP_RETURN).
+
+   ```ts
+   unsignedTransaction.addOutput({
+     kind: "payment",
+     address: kp.address,
+     value: totalValue - totalFee,
+   });
+
+   unsignedTransaction.addOutput({
+     kind: "opReturn",
+     data: mintResponse.encodedTransactionBody,
+     value: 0,
+   });
+   ```
+
+   The change output returns funds to your wallet, and the OP_RETURN output anchors the mint on-chain.
+
+6. Sign and broadcast the transaction.
+
+   ```ts
+   const signedTrxn = unsignedTransaction.sign({
+     keypairs: [kp],
+   });
+
+   await feClient.dogeSend({
+     encodedTransactionHex: signedTrxn.rawHex,
+   });
+   }
+   ```
+
+   This signs the transaction with your keypair and submits it to Dogecoin Core via Fractal Engine.
